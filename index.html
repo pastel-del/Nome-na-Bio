@@ -9,12 +9,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
-        :root { --accent: #b026ff; --bg: #050505; --card-bg: rgba(15, 15, 15, 0.7); --success: #00ffcc; }
+        :root { --accent: #b026ff; --bg: #050505; --card-bg: rgba(15, 15, 15, 0.7); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
 
-        /* FUNDO DINÂMICO */
+        /* FUNDO E OVERLAY */
         #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; }
         .overlay { position: fixed; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.9) 100%); z-index: -1; backdrop-filter: blur(8px); }
 
@@ -32,15 +32,6 @@
             border-radius: 40px; padding: 40px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
 
-        /* STATUS DE MÍDIA NO PAINEL */
-        .media-indicator {
-            display: flex; align-items: center; gap: 8px; font-size: 0.6rem; font-weight: 800;
-            padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.3); width: fit-content; margin-bottom: 8px;
-        }
-        .status-tag { width: 6px; height: 6px; border-radius: 50%; }
-        .status-on { background: var(--success); box-shadow: 0 0 8px var(--success); color: var(--success); }
-        .status-off { background: #ff4b4b; color: #ff4b4b; }
-
         /* ADMIN PANEL */
         .admin-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; color: var(--accent); font-size: 1.1rem; }
         .field { margin-bottom: 20px; text-align: left; }
@@ -52,14 +43,15 @@
         }
         input:focus { border-color: var(--accent); }
 
+        /* BOTÃO DE UPLOAD ESTILIZADO */
         .upload-area { 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; border: 1px dashed #333; border-radius: 20px; background: rgba(255,255,255,0.02);
+            padding: 18px; border: 1px solid #222; border-radius: 20px; background: rgba(255,255,255,0.02);
             cursor: pointer; transition: 0.3s; margin-top: 5px;
         }
         .upload-area:hover { border-color: var(--accent); background: rgba(176, 38, 255, 0.05); }
-        .upload-area i { font-size: 1.2rem; margin-bottom: 8px; color: #555; }
-        .upload-area span { font-size: 0.7rem; font-weight: 600; color: #888; }
+        .upload-area i { font-size: 1.1rem; margin-bottom: 6px; color: #555; }
+        .upload-area span { font-size: 0.65rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
 
         .btn-save { background: #fff; color: #000; padding: 20px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-save:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
@@ -99,25 +91,23 @@
         </div>
 
         <div id="admin-ui" class="card hidden" style="max-height: 90vh; overflow-y: auto;">
-            <div class="admin-header"><i class="fas fa-magic"></i> PAINEL DE EDIÇÃO</div>
+            <div class="admin-header"><i class="fas fa-magic"></i> CONFIGURAÇÕES</div>
             
-            <div class="field"><label>Apelido na URL</label><input type="text" id="username" placeholder="ex: luan7"></div>
-            <div class="field"><label>Nome no Perfil</label><input type="text" id="display_name" placeholder="Seu nome"></div>
+            <div class="field"><label>Nick na URL</label><input type="text" id="username" placeholder="ex: luan7"></div>
+            <div class="field"><label>Nome no Perfil</label><input type="text" id="display_name" placeholder="Como você quer ser chamado"></div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                 <div class="field">
                     <label>Avatar</label>
-                    <div id="stat-pfp" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
                     <div class="upload-area" onclick="document.getElementById('pfp-input').click()">
-                        <i class="fas fa-user-circle"></i><span>MUDAR</span>
+                        <i class="fas fa-user-circle"></i><span id="txt-pfp">ESCOLHER</span>
                     </div>
                     <input type="file" id="pfp-input" class="hidden">
                 </div>
                 <div class="field">
                     <label>Fundo</label>
-                    <div id="stat-bg" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
                     <div class="upload-area" onclick="document.getElementById('bg-input').click()">
-                        <i class="fas fa-image"></i><span>MUDAR</span>
+                        <i class="fas fa-image"></i><span id="txt-bg">ESCOLHER</span>
                     </div>
                     <input type="file" id="bg-input" class="hidden">
                 </div>
@@ -125,16 +115,15 @@
 
             <div class="field">
                 <label>Música de Fundo</label>
-                <div id="stat-audio" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
                 <div class="upload-area" onclick="document.getElementById('audio-input').click()">
-                    <i class="fas fa-music"></i><span>ESCOLHER MP3</span>
+                    <i class="fas fa-music"></i><span id="txt-audio">ESCOLHER</span>
                 </div>
                 <input type="file" id="audio-input" class="hidden">
             </div>
 
-            <div class="field"><label>Links (Nome,URL|Nome,URL)</label><textarea id="links" rows="2"></textarea></div>
+            <div class="field"><label>Links (Nome,URL|Nome,URL)</label><textarea id="links" rows="2" placeholder="Discord,https://..."></textarea></div>
             
-            <button class="btn-save" onclick="saveBio()" id="save-btn">SALVAR TUDO</button>
+            <button class="btn-save" onclick="saveBio()" id="save-btn">ATUALIZAR PERFIL</button>
         </div>
 
         <div id="bio-view" class="card hidden">
@@ -143,7 +132,7 @@
             
             <div id="discord-presence" class="hidden" style="background: rgba(0,0,0,0.4); border-radius: 25px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.05);">
                 <div style="position: relative; width: 50px; height: 50px;">
-                    <img id="dc-pfp" style="width: 100%; height: 100%; border-radius: 15px;">
+                    <img id="dc-pfp" style="width: 100%; height: 100%; border-radius: 12px;">
                     <div id="dc-status" style="position: absolute; bottom: -3px; right: -3px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #111;"></div>
                 </div>
                 <div>
@@ -188,27 +177,17 @@
                 document.getElementById('display_name').value = data.display_name || "";
                 document.getElementById('links').value = data.links || "";
                 
-                // ATUALIZA STATUS DAS MÍDIAS
-                updateMediaStatus('stat-pfp', data.pfp_url);
-                updateMediaStatus('stat-bg', data.bg_url);
-                updateMediaStatus('stat-audio', data.audio_url);
-            }
-        }
-
-        function updateMediaStatus(id, url) {
-            const el = document.getElementById(id);
-            if(url) {
-                el.innerHTML = `<div class="status-tag status-on"></div> CONECTADO`;
-                el.classList.add('status-on');
-            } else {
-                el.innerHTML = `<div class="status-tag status-off"></div> NENHUM`;
+                // MUDAR TEXTO DOS BOTÕES SE JÁ EXISTIR
+                if(data.pfp_url) document.getElementById('txt-pfp').innerText = "MUDAR";
+                if(data.bg_url) document.getElementById('txt-bg').innerText = "MUDAR";
+                if(data.audio_url) document.getElementById('txt-audio').innerText = "MUDAR";
             }
         }
 
         async function saveBio() {
             const user = (await _supabase.auth.getUser()).data.user;
             const btn = document.getElementById('save-btn');
-            btn.innerText = "UPANDO ARQUIVOS...";
+            btn.innerText = "SALVANDO...";
 
             const { data: current } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             let pfp = current?.pfp_url, bg = current?.bg_url, audio = current?.audio_url;
@@ -222,11 +201,11 @@
             };
 
             const nPfp = await up('pfp-input', 'pfp'); if(nPfp) pfp = nPfp;
-            const nBg = await up('bg-input', 'bg'); if(nPfp) bg = nBg;
+            const nBg = await up('bg-input', 'bg'); if(nBg) bg = nBg;
             const nAud = await up('audio-input', 'audio'); if(nAud) audio = nAud;
 
             await _supabase.from('bios').upsert({
-                user_id: user.id, username: document.getElementById('username').value,
+                user_id: user.id, username: document.getElementById('username').value.trim(),
                 display_name: document.getElementById('display_name').value,
                 discord_id: userDiscordId, links: document.getElementById('links').value,
                 pfp_url: pfp, bg_url: bg, audio_url: audio, show_discord: true
@@ -267,9 +246,11 @@
                 if(n && u) {
                     const a = document.createElement('a'); a.className = 'link-item'; a.href = u; a.target = "_blank";
                     let icon = '<i class="fas fa-link"></i>';
-                    if(u.includes('discord')) icon = '<i class="fab fa-discord"></i>';
-                    else if(u.includes('instagram')) icon = '<i class="fab fa-instagram"></i>';
-                    else if(u.includes('steam')) icon = '<i class="fab fa-steam"></i>';
+                    const low = u.toLowerCase();
+                    if(low.includes('discord')) icon = '<i class="fab fa-discord"></i>';
+                    else if(low.includes('instagram')) icon = '<i class="fab fa-instagram"></i>';
+                    else if(low.includes('steam')) icon = '<i class="fab fa-steam"></i>';
+                    else if(low.includes('twitch')) icon = '<i class="fab fa-twitch"></i>';
                     a.innerHTML = `${icon} ${n}`;
                     cont.appendChild(a);
                 }
