@@ -1,64 +1,49 @@
-loadUser()
+display_name.oninput=e=>{
+preview_name.innerText=e.target.value
+}
 
-async function loadUser(){
+bio_text.oninput=e=>{
+preview_bio.innerText=e.target.value
+}
 
-const {data} =
-await window.supabaseClient.auth.getUser()
+avatar.onchange=function(){
 
-if(!data.user){
+const reader=new FileReader()
 
-location.href="index.html"
-return
+reader.onload=e=>{
+preview_avatar.src=e.target.result
+}
+
+reader.readAsDataURL(this.files[0])
 
 }
 
-}
-async function loadUser() {
-
-  const { data } = await window.supabaseClient.auth.getSession();
-
-  if (!data.session) {
-    window.location.href = "index.html";
-    return;
-  }
-
-}
-
-loadUser();
 async function saveProfile(){
 
-const user =
-(await window.supabaseClient.auth.getUser()).data.user
-
-const username=user.id.substring(0,10)
+const user=(await window.supabaseClient.auth.getUser()).data.user
 
 await window.supabaseClient
 .from("bios")
 .upsert({
 
-username:username,
+username:user.id.substring(0,10),
 
-display_name:
-document.getElementById("display_name").value,
+display_name:display_name.value,
 
-bio_text:
-document.getElementById("bio_text").value,
+bio_text:bio_text.value,
 
-instagram:
-document.getElementById("instagram").value,
+music:music.value,
 
-tiktok:
-document.getElementById("tiktok").value,
+instagram:instagram.value,
 
-twitter:
-document.getElementById("twitter").value,
+tiktok:tiktok.value,
 
-youtube:
-document.getElementById("youtube").value
+twitter:twitter.value,
+
+youtube:youtube.value
 
 })
 
 alert("Perfil salvo")
 
 }
-
