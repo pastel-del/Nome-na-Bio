@@ -40,49 +40,29 @@
         /* Ranking UI */
         .ranking-container { margin-top: 30px; text-align: left; background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; border: 1px solid var(--border); }
         .rank-header { font-size: 11px; font-weight: 700; color: var(--text-sec); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .rank-item {
-            display: flex; align-items: center; gap: 12px; padding: 10px;
-            border-radius: 14px; text-decoration: none; color: inherit; transition: 0.2s;
-        }
-        .rank-item:hover { background: rgba(255,255,255,0.05); }
+        .rank-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 14px; text-decoration: none; color: inherit; transition: 0.2s; margin-bottom: 5px; }
+        .rank-item:hover { background: rgba(255,255,255,0.08); }
         .rank-pfp { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #222; }
-        .rank-info h4 { font-size: 14px; font-weight: 600; }
-        .rank-info p { font-size: 11px; color: var(--text-sec); }
 
-        /* Editor Styles */
+        /* Form / Editor */
         .admin-scroll { max-height: 70vh; overflow-y: auto; padding-right: 8px; text-align: left; }
         label { font-size: 10px; font-weight: 700; color: var(--text-sec); margin: 15px 0 5px 5px; display: block; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; font-size: 14px; }
+        input, textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; margin-bottom: 10px; }
         
-        .drop-zone {
-            border: 2px dashed var(--border); border-radius: 16px; padding: 15px;
-            text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
-        }
-        .drop-zone:hover { border-color: var(--blue); }
+        .drop-zone { border: 2px dashed var(--border); border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
         .preview-img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; margin-top: 10px; display: block; margin-inline: auto; }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; margin-top: 10px; }
+        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
         .btn-save { background: #fff; color: #000; }
         .btn-logout { background: transparent; color: var(--red); border: 1px solid rgba(255, 59, 48, 0.2); margin-top: 20px; }
-        .btn-logout:hover { background: rgba(255, 59, 48, 0.1); }
 
-        /* Success Link Box */
-        #link-box { 
-            margin-top: 20px; padding: 15px; background: rgba(0, 113, 227, 0.1); 
-            border: 1px solid var(--blue); border-radius: 16px; text-align: left;
-        }
-        .link-text { font-size: 12px; color: #fff; word-break: break-all; font-family: monospace; display: block; margin: 8px 0; }
-        .link-btns { display: flex; gap: 10px; }
-        .mini-btn { flex: 1; padding: 8px; border-radius: 8px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+        #link-box { margin-top: 20px; padding: 15px; background: rgba(0, 113, 227, 0.1); border: 1px solid var(--blue); border-radius: 16px; text-align: left; }
 
-        /* Profile View */
-        .pfp-view { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; border: 1px solid var(--border); }
-        .bio-text-view { font-size: 0.95rem; color: var(--text-sec); line-height: 1.6; overflow-wrap: break-word; margin-bottom: 20px; }
+        /* Discord Activity Card */
         .discord-card {
             background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px;
             padding: 15px; display: flex; align-items: center; gap: 12px; text-align: left;
-            text-decoration: none; color: inherit; margin-bottom: 20px;
+            text-decoration: none; color: inherit; margin: 20px 0; transition: 0.3s;
         }
 
         .hidden { display: none !important; }
@@ -95,29 +75,23 @@
 
     <div class="wrapper">
         <div id="login-ui" class="card hidden">
-            <h1 style="margin-bottom: 10px;">OmniBio</h1>
-            <p style="color: var(--text-sec); font-size: 13px; margin-bottom: 25px;">Personalize sua identidade digital.</p>
-            <button class="btn" style="background: #5865f2; color: white;" onclick="login()">
-                <i class="fa-brands fa-discord"></i> Entrar com Discord
-            </button>
+            <h1 style="margin-bottom: 25px;">OmniBio</h1>
+            <button class="btn" style="background: #5865f2; color: white;" onclick="login()">Entrar com Discord</button>
             
             <div class="ranking-container">
                 <div class="rank-header"><i class="fa-solid fa-fire"></i> Em Alta</div>
                 <div id="rank-list">
-                    <p style="font-size: 11px; color: var(--text-sec);">Carregando perfis...</p>
+                    <p style="font-size: 11px; color: var(--text-sec); text-align:center;">Buscando perfis...</p>
                 </div>
             </div>
         </div>
 
         <div id="admin-ui" class="card hidden">
             <div class="admin-scroll">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2 style="font-size: 20px;">Configurações</h2>
-                    <span id="user-tag" style="font-size: 10px; color: var(--text-sec); background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 20px;"></span>
-                </div>
+                <h2 style="margin-bottom: 20px;">Configurações</h2>
                 
                 <label>Seu @ (URL)</label>
-                <input type="text" id="username" placeholder="ex: lucas_dev">
+                <input type="text" id="username" placeholder="ex: lucas">
 
                 <label>Nome no Perfil</label>
                 <input type="text" id="display_name">
@@ -125,47 +99,29 @@
                 <label>Bio</label>
                 <textarea id="bio_text" rows="3"></textarea>
 
-                <label>Redes Sociais (icone,link | ...)</label>
+                <label>Redes (icone,link | ...)</label>
                 <input type="text" id="links_input" placeholder="instagram,link | github,link">
 
-                <label>Foto de Perfil</label>
-                <div class="drop-zone" onclick="document.getElementById('pfp-f').click()">
-                    <span style="font-size:12px;">Clique ou Arraste</span>
-                    <input type="file" id="pfp-f" accept="image/*" hidden>
-                    <img id="pfp-prev" class="preview-img hidden">
-                </div>
+                <label>PFP / BG / Música</label>
+                <div class="drop-zone" onclick="document.getElementById('pfp-f').click()">PFP <input type="file" id="pfp-f" hidden><img id="pfp-prev" class="preview-img hidden"></div>
+                <div class="drop-zone" onclick="document.getElementById('bg-f').click()">BG <input type="file" id="bg-f" hidden></div>
+                <div class="drop-zone" onclick="document.getElementById('audio-f').click()">Música <input type="file" id="audio-f" hidden></div>
 
-                <label>Fundo (Vídeo ou Imagem)</label>
-                <div class="drop-zone" onclick="document.getElementById('bg-f').click()">
-                    <span style="font-size:12px;">Selecione o arquivo</span>
-                    <input type="file" id="bg-f" hidden>
-                </div>
-
-                <label>Música (.mp3)</label>
-                <div class="drop-zone" onclick="document.getElementById('audio-f').click()">
-                    <span style="font-size:12px;">Selecione a trilha</span>
-                    <input type="file" id="audio-f" hidden>
-                </div>
-
-                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
+                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SALVAR</button>
 
                 <div id="link-box" class="hidden">
-                    <span style="font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase;">Perfil Publicado!</span>
-                    <span id="generated-url" class="link-text"></span>
-                    <div class="link-btns">
-                        <button class="mini-btn" style="background: var(--blue); color: #fff;" onclick="copyLink()">COPIAR</button>
-                        <a id="view-link" class="mini-btn" style="background: #fff; color: #000;" target="_blank">VER PERFIL</a>
-                    </div>
+                    <span id="generated-url" style="font-size: 11px; word-break: break-all; color: #fff; display: block; margin-bottom: 10px;"></span>
+                    <button class="btn" style="background: var(--blue); color: #fff; padding: 10px; font-size: 12px;" onclick="copyLink()">COPIAR LINK</button>
                 </div>
 
-                <button class="btn btn-logout" onclick="logout()">Sair da Conta</button>
+                <button class="btn btn-logout" onclick="logout()">SAIR</button>
             </div>
         </div>
 
         <div id="bio-view" class="card hidden">
-            <img id="view-pfp" class="pfp-view">
+            <img id="view-pfp" class="pfp-view" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 1px solid var(--border);">
             <h1 id="view-name"></h1>
-            <p id="view-frase" class="bio-text-view"></p>
+            <p id="view-frase" style="color: var(--text-sec); margin-bottom: 20px; font-size: 14px;"></p>
             
             <a id="dc-link" class="discord-card hidden" target="_blank">
                 <div style="position:relative; width:44px; height:44px;">
@@ -174,7 +130,7 @@
                 </div>
                 <div>
                     <h3 id="dc-user" style="font-size:13px; font-weight:600;"></h3>
-                    <p id="dc-activity" style="font-size:11px; color: var(--text-sec);"></p>
+                    <p id="dc-activity" style="font-size:11px; color: var(--text-sec);">Online</p>
                 </div>
             </a>
 
@@ -190,7 +146,7 @@
         async function init() {
             const u = new URLSearchParams(window.location.search).get('u');
             if (u) {
-                const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
+                const { data, error } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
                 if (data) { renderProfile(data); _supabase.rpc('increment_views', { target_username: u }); }
             } else {
                 const { data: { session } } = await _supabase.auth.getSession();
@@ -203,19 +159,23 @@
         }
 
         async function loadRanking() {
-            const { data } = await _supabase.from('bios').select('*').order('views', { ascending: false }).limit(5);
-            if(data) {
+            try {
+                const { data, error } = await _supabase.from('bios').select('*').order('views', { ascending: false }).limit(5);
                 const list = document.getElementById('rank-list');
+                if (error || !data || data.length === 0) {
+                    list.innerHTML = '<p style="font-size: 11px; color: var(--text-sec); text-align:center;">Nenhum perfil ainda.</p>';
+                    return;
+                }
                 list.innerHTML = data.map(p => `
                     <a href="?u=${p.username}" class="rank-item">
                         <img src="${p.pfp_url || 'https://ui-avatars.com/api/?name='+p.username}" class="rank-pfp">
                         <div class="rank-info">
-                            <h4>${p.display_name}</h4>
+                            <h4>${p.display_name || p.username}</h4>
                             <p>@${p.username} • ${p.views || 0} views</p>
                         </div>
                     </a>
                 `).join('');
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
@@ -253,21 +213,10 @@
                 };
 
                 await _supabase.from('bios').upsert(payload);
-                
-                // Exibe o link manualmente em vez de redirecionar
-                const url = window.location.origin + window.location.pathname + "?u=" + username;
                 document.getElementById('link-box').classList.remove('hidden');
-                document.getElementById('generated-url').innerText = url;
-                document.getElementById('view-link').href = url;
-                
-                btn.innerText = "SALVAR ALTERAÇÕES"; btn.disabled = false;
+                document.getElementById('generated-url').innerText = window.location.origin + window.location.pathname + "?u=" + username;
+                btn.innerText = "SALVAR"; btn.disabled = false;
             } catch (e) { alert("Erro ao salvar"); btn.disabled = false; }
-        }
-
-        function copyLink() {
-            const txt = document.getElementById('generated-url').innerText;
-            navigator.clipboard.writeText(txt);
-            alert("Link copiado!");
         }
 
         function renderProfile(d) {
@@ -285,20 +234,20 @@
 
             if(d.discord_id) {
                 fetch(`https://api.lanyard.rest/v1/users/${d.discord_id}`).then(r => r.json()).then(({data}) => {
-                    if(data) {
-                        document.getElementById('dc-link').classList.remove('hidden');
-                        document.getElementById('dc-user').innerText = data.discord_user.username;
-                        document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
-                        const s = data.discord_status;
-                        document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                        let act = "Online";
-                        if(data.activities.length > 0) {
-                            const main = data.activities.find(x => x.type === 0) || data.activities[0];
-                            act = (main.emoji ? main.emoji.name + ' ' : '') + (main.state || main.name);
-                        }
-                        document.getElementById('dc-activity').innerText = act;
+                    if(!data) return;
+                    const dc = document.getElementById('dc-link');
+                    dc.classList.remove('hidden');
+                    document.getElementById('dc-user').innerText = data.discord_user.username;
+                    document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
+                    const s = data.discord_status;
+                    document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
+                    let act = "Online";
+                    if(data.activities.length > 0) {
+                        const main = data.activities.find(x => x.type === 0) || data.activities[0];
+                        act = (main.emoji ? main.emoji.name + ' ' : '') + (main.state || main.name);
                     }
-                });
+                    document.getElementById('dc-activity').innerText = act;
+                }).catch(() => console.log("Lanyard error"));
             }
 
             if(d.links) {
@@ -307,7 +256,7 @@
                     const [icon, url] = l.split(',');
                     if(icon && url) {
                         const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank";
-                        a.style = "color:#fff; font-size:1.5rem; opacity:0.6; transition:0.3s";
+                        a.style = "color:#fff; font-size:1.5rem; opacity:0.6;";
                         let type = ['link', 'envelope'].includes(icon.trim()) ? 'fa-solid' : 'fa-brands';
                         a.innerHTML = `<i class="${type} fa-${icon.trim()}"></i>`;
                         s.appendChild(a);
@@ -318,17 +267,13 @@
 
         async function loadAdmin(user) {
             document.getElementById('admin-ui').classList.remove('hidden');
-            document.getElementById('user-tag').innerText = user.user_metadata.full_name || user.email;
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if(data) {
                 document.getElementById('username').value = data.username || "";
                 document.getElementById('display_name').value = data.display_name || "";
                 document.getElementById('bio_text').value = data.bio_text || "";
                 document.getElementById('links_input').value = data.links || "";
-                if(data.pfp_url) {
-                    document.getElementById('pfp-prev').src = data.pfp_url;
-                    document.getElementById('pfp-prev').classList.remove('hidden');
-                }
+                if(data.pfp_url) { document.getElementById('pfp-prev').src = data.pfp_url; document.getElementById('pfp-prev').classList.remove('hidden'); }
             }
         }
 
