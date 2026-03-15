@@ -10,110 +10,127 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg: #050505; --surface: #111111; --border: #222222;
-            --text-main: #ffffff; --text-dim: #888888; --accent: #0071e3;
+            --bg: #050505;
+            --surface: #111111;
+            --border: #222222;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --accent: #0071e3;
+            --success: #34c759;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); min-height: 100vh; }
+        body { background: var(--bg); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
         .hidden { display: none !important; }
 
-        /* Estilo do Dashboard */
+        /* --- Dashboard Admin --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
         .grid { display: grid; grid-template-columns: 1fr 320px; gap: 30px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
         h2 { font-size: 14px; margin-bottom: 20px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Inputs e Labels */
+        /* --- Inputs e Upload Zones --- */
         label { display: block; font-size: 11px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; margin-bottom: 15px; outline: none; }
-
-        /* Zonas de Upload (Drag & Drop) */
-        .upload-zone {
-            border: 2px dashed var(--border); border-radius: 12px; padding: 20px;
-            text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
-            position: relative; overflow: hidden;
+        input, textarea { 
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); 
+            color: #fff; border-radius: 8px; margin-bottom: 15px; outline: none; 
         }
-        .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(0, 113, 227, 0.05); }
-        .upload-zone i { font-size: 24px; color: var(--text-dim); margin-bottom: 10px; }
-        .upload-zone span { display: block; font-size: 12px; color: var(--text-dim); }
-        .upload-progress { position: absolute; bottom: 0; left: 0; height: 4px; background: var(--accent); width: 0%; transition: 0.3s; }
 
-        .btn { padding: 12px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; display: block; text-align: center; }
+        /* Estilo da área de Drag & Drop */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.02);
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(0, 113, 227, 0.05);
+        }
+        .upload-zone i { font-size: 24px; color: var(--text-dim); margin-bottom: 10px; }
+        .upload-zone p { font-size: 12px; color: var(--text-dim); }
+        .upload-zone.done { border-color: var(--success); }
+
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; width: 100%; text-align: center; }
         .btn-primary { background: var(--accent); color: white; }
-        
-        /* Profile Preview no Admin */
-        .preview-img-small { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-top: 5px; border: 1px solid var(--border); }
-        
-        /* Ranking */
-        .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; border-bottom: 1px solid var(--border); }
+        .btn-secondary { background: #222; color: #fff; }
+
+        /* --- Ranking --- */
+        .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; text-decoration: none; color: inherit; border-bottom: 1px solid var(--border); }
+        .rank-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="login-section" class="hidden">
-            <h1 style="text-align:center; margin-bottom:40px;">OmniBio</h1>
             <button class="btn btn-primary" onclick="login()">Entrar com Discord</button>
         </div>
 
         <div id="admin-section" class="hidden">
-            <header style="display:flex; justify-content:space-between; margin-bottom:30px;">
-                <div id="user-display" style="display:flex; align-items:center; gap:10px;"></div>
-                <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); cursor:pointer;">Sair</button>
+            <header>
+                <div id="user-info" style="display: flex; align-items: center; gap: 10px;">
+                    <img id="my-avatar" style="width: 35px; border-radius: 50%;">
+                    <span id="my-name"></span>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()" style="width: auto;">Sair</button>
             </header>
 
             <div class="grid">
                 <div class="editor">
                     <div class="card">
-                        <h2>Informações Básicas</h2>
+                        <h2>Personalização</h2>
                         <label>Username (URL)</label>
                         <input type="text" id="in_username">
                         <label>Nome de Exibição</label>
                         <input type="text" id="in_display_name">
                         <label>Bio</label>
-                        <textarea id="in_bio" rows="3"></textarea>
+                        <textarea id="in_bio" rows="2"></textarea>
                     </div>
 
                     <div class="card">
                         <h2>Mídias & Arquivos</h2>
                         
-                        <label>Foto de Perfil (Arraste ou Clique)</label>
-                        <div class="upload-zone" id="drop-pfp">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span id="txt-pfp">Upload PFP</span>
-                            <div class="upload-progress" id="prog-pfp"></div>
-                            <input type="file" id="file-pfp" hidden accept="image/*">
+                        <label>Foto de Perfil (PFP)</label>
+                        <div class="upload-zone" id="zone-pfp" onclick="triggerFile('file-pfp')">
+                            <i class="fa-solid fa-image"></i>
+                            <p id="label-pfp">Arraste ou clique para enviar imagem</p>
+                            <input type="file" id="file-pfp" class="hidden" accept="image/*">
                         </div>
-                        <input type="text" id="in_pfp_url" placeholder="Ou cole uma URL aqui">
+                        <input type="text" id="in_pfp_url" placeholder="Ou cole a URL aqui">
 
                         <label>Fundo (Imagem ou Vídeo)</label>
-                        <div class="upload-zone" id="drop-bg">
-                            <i class="fa-solid fa-image"></i>
-                            <span id="txt-bg">Upload Background</span>
-                            <div class="upload-progress" id="prog-bg"></div>
-                            <input type="file" id="file-bg" hidden accept="image/*,video/*">
+                        <div class="upload-zone" id="zone-bg" onclick="triggerFile('file-bg')">
+                            <i class="fa-solid fa-film"></i>
+                            <p id="label-bg">Arraste ou clique para enviar fundo</p>
+                            <input type="file" id="file-bg" class="hidden" accept="image/*,video/*">
                         </div>
                         <input type="text" id="in_bg_url" placeholder="URL do Background">
 
-                        <label>Música (.mp3)</label>
-                        <div class="upload-zone" id="drop-audio">
+                        <label>Música (Audio)</label>
+                        <div class="upload-zone" id="zone-audio" onclick="triggerFile('file-audio')">
                             <i class="fa-solid fa-music"></i>
-                            <span id="txt-audio">Upload Áudio</span>
-                            <div class="upload-progress" id="prog-audio"></div>
-                            <input type="file" id="file-audio" hidden accept="audio/*">
+                            <p id="label-audio">Arraste ou clique para enviar MP3</p>
+                            <input type="file" id="file-audio" class="hidden" accept="audio/*">
                         </div>
                         <input type="text" id="in_audio_url" placeholder="URL da Música">
 
-                        <button class="btn btn-primary" style="margin-top:20px;" onclick="saveData()">Publicar Perfil</button>
+                        <button class="btn btn-primary" onclick="saveData()" style="margin-top: 20px;">Publicar Perfil</button>
                     </div>
                 </div>
 
                 <div class="sidebar">
                     <div class="card">
-                        <h2>Ranking</h2>
-                        <div id="ranking-list"></div>
+                        <h2>Ranking Global</h2>
+                        <div id="side-ranking"></div>
                     </div>
                 </div>
             </div>
@@ -125,9 +142,63 @@
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+        // --- Configuração de Upload ---
+        
+        // Atalho para abrir seletor de arquivo
+        function triggerFile(id) { document.getElementById(id).click(); }
+
+        // Lógica de Drag & Drop e Upload
+        async function handleFileUpload(file, targetInputId, labelId, zoneId) {
+            if (!file) return;
+            
+            const label = document.getElementById(labelId);
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(targetInputId);
+            
+            label.innerText = "Enviando...";
+            
+            const { data: { user } } = await _supabase.auth.getUser();
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}/${Math.random()}.${fileExt}`;
+            const filePath = `uploads/${fileName}`;
+
+            const { data, error } = await _supabase.storage
+                .from('assets') // Certifique-se que o bucket 'assets' existe e é público
+                .upload(filePath, file);
+
+            if (error) {
+                alert("Erro no upload: " + error.message);
+                label.innerText = "Erro ao enviar";
+            } else {
+                const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(filePath);
+                input.value = publicUrl;
+                label.innerText = "Upload concluído!";
+                zone.classList.add('done');
+            }
+        }
+
+        // Configura os eventos para cada zona
+        ['pfp', 'bg', 'audio'].forEach(type => {
+            const zone = document.getElementById(`zone-${type}`);
+            const fileInput = document.getElementById(`file-${type}`);
+
+            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('dragover'); };
+            zone.ondragleave = () => zone.classList.remove('dragover');
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFileUpload(e.dataTransfer.files[0], `in_${type}_url`, `label-${type}`, `zone-${type}`);
+            };
+            fileInput.onchange = (e) => {
+                handleFileUpload(e.target.files[0], `in_${type}_url`, `label-${type}`, `zone-${type}`);
+            };
+        });
+
+        // --- Lógica Geral do App ---
+
         async function init() {
             const u = new URLSearchParams(window.location.search).get('u');
-            if (u) { /* Lógica de carregar perfil público aqui */ } 
+            if (u) { /* Lógica de carregar perfil público */ } 
             else {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) showAdmin(session.user);
@@ -135,55 +206,11 @@
             }
         }
 
-        // --- Gerenciamento de Upload ---
-        function setupUpload(zoneId, fileId, inputUrlId, progressId, folder) {
-            const zone = document.getElementById(zoneId);
-            const fileInput = document.getElementById(fileId);
-            const urlInput = document.getElementById(inputUrlId);
-            const progress = document.getElementById(progressId);
-
-            zone.onclick = () => fileInput.click();
-
-            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('dragover'); };
-            zone.ondragleave = () => zone.classList.remove('dragover');
-            
-            zone.ondrop = async (e) => {
-                e.preventDefault();
-                zone.classList.remove('dragover');
-                handleFile(e.dataTransfer.files[0]);
-            };
-
-            fileInput.onchange = () => handleFile(fileInput.files[0]);
-
-            async function handleFile(file) {
-                if (!file) return;
-                const { data: { user } } = await _supabase.auth.getUser();
-                const fileName = `${user.id}/${Date.now()}_${file.name}`;
-                
-                progress.style.width = '30%';
-                const { data, error } = await _supabase.storage.from('assets').upload(fileName, file);
-
-                if (error) {
-                    alert("Erro no upload: " + error.message);
-                    progress.style.width = '0%';
-                } else {
-                    progress.style.width = '100%';
-                    const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(fileName);
-                    urlInput.value = publicUrl;
-                    zone.querySelector('span').innerText = "Arquivo carregado!";
-                }
-            }
-        }
-
-        // Iniciar zonas de upload
-        setupUpload('drop-pfp', 'file-pfp', 'in_pfp_url', 'prog-pfp', 'pfp');
-        setupUpload('drop-bg', 'file-bg', 'in_bg_url', 'prog-bg', 'bg');
-        setupUpload('drop-audio', 'file-audio', 'in_audio_url', 'prog-audio', 'audio');
-
         async function showAdmin(user) {
             document.getElementById('admin-section').classList.remove('hidden');
-            document.getElementById('user-display').innerHTML = `<img src="${user.user_metadata.avatar_url}" style="width:30px; border-radius:50%"> <span>${user.user_metadata.full_name}</span>`;
-            
+            document.getElementById('my-avatar').src = user.user_metadata.avatar_url;
+            document.getElementById('my-name').innerText = user.user_metadata.full_name;
+
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if (data) {
                 document.getElementById('in_username').value = data.username || "";
@@ -208,12 +235,11 @@
                 discord_id: user.user_metadata.provider_id
             };
             const { error } = await _supabase.from('bios').upsert(payload);
-            if (!error) alert("Perfil Publicado!");
-            else alert("Erro ao salvar: " + error.message);
+            alert(error ? "Erro: " + error.message : "Perfil Publicado!");
         }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function logout() { await _supabase.auth.signOut(); location.reload(); }
+        async function logout() { await _supabase.auth.signOut(); location.href = 'index.html'; }
 
         init();
     </script>
