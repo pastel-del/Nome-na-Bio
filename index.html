@@ -3,112 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio Elite | Identity</title>
+    <title>OmniBio v3 | Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        :root {
-            --primary: #b026ff;
-            --accent: #00ffcc;
-            --glass: rgba(10, 10, 10, 0.75);
-            --border: rgba(255, 255, 255, 0.1);
-        }
+        :root { --primary: #b026ff; --accent: #00ffcc; --bg: #0a0a0a; --glass: rgba(18, 18, 18, 0.8); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #050505; color: #fff; min-height: 100vh; overflow-x: hidden; display: flex; justify-content: center; align-items: center; }
+        body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
 
-        /* --- BACKGROUND & MEDIA --- */
-        #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; display: none; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: -1; }
+        /* Background & Video */
+        #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; display: none; filter: brightness(0.5); }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, #000 150%); z-index: -1; }
 
-        /* --- UI COMPONENTS --- */
-        .wrapper { width: 100%; max-width: 420px; padding: 20px; z-index: 10; }
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
-            border-radius: 35px;
-            padding: 40px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            text-align: center;
+        /* Container Principal */
+        .wrapper { width: 100%; max-width: 450px; padding: 20px; z-index: 10; }
+        .card { 
+            background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); width: 100%;
         }
 
-        /* --- DASHBOARD STYLES --- */
-        .preview-box { 
-            width: 100%; height: 100px; background: #000; border-radius: 15px; 
-            margin: 10px 0; border: 1px dashed #333; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        /* Inputs e Layout Proporcional */
+        .field { margin-bottom: 20px; text-align: left; }
+        label { font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 8px; margin-left: 5px; }
+        
+        input, textarea { 
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; color: #fff; outline: none; transition: 0.3s;
         }
-        .preview-box img, .preview-box video { width: 100%; height: 100%; object-fit: cover; }
+        input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
 
-        input, textarea {
-            width: 100%; padding: 15px; margin: 8px 0; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border); border-radius: 15px; color: #fff; outline: none;
+        /* Preview Area */
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .preview-item { 
+            width: 100%; aspect-ratio: 1 / 1; background: #000; border-radius: 15px; border: 1px solid #222;
+            overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;
         }
-        input:focus { border-color: var(--primary); }
+        .preview-item img, .preview-item video { width: 100%; height: 100%; object-fit: cover; }
+        .preview-item span { font-size: 0.6rem; color: #444; position: absolute; }
 
-        .btn {
-            width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;
-            transition: 0.3s; margin-top: 15px;
-        }
-        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 10px 20px rgba(176, 38, 255, 0.3); }
-        .btn-discord { background: #5865F2; color: #fff; }
+        /* Botões */
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: #fff; margin-top: 10px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(176, 38, 255, 0.4); }
+        .btn-discord { background: #5865f2; color: #fff; }
 
-        /* --- BIO VIEW --- */
-        .pfp { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px; box-shadow: 0 0 20px var(--primary); }
-        .link-card {
-            display: block; padding: 16px; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border); border-radius: 18px; color: #fff;
-            text-decoration: none; font-weight: 600; margin-bottom: 12px; transition: 0.3s;
+        /* Bio View Elements */
+        .pfp-view { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--primary); margin: 0 auto 20px; object-fit: cover; }
+        .link-btn { 
+            display: block; width: 100%; padding: 16px; background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: #fff; 
+            text-decoration: none; font-weight: 600; margin-bottom: 12px; transition: 0.2s;
         }
-        .link-card:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); border-color: var(--accent); }
+        .link-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); transform: scale(1.02); }
 
-        #mute-hint {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); padding: 8px 20px; border-radius: 20px; font-size: 0.7rem; font-weight: 800;
-            z-index: 10000; cursor: pointer; animation: pulse 2s infinite;
+        /* Utils */
+        .hidden { display: none !important; }
+        #status-link-box { 
+            margin-top: 20px; padding: 15px; border-radius: 15px; background: rgba(0,255,204,0.1); 
+            border: 1px solid var(--accent); font-size: 0.8rem; word-break: break-all;
         }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div id="mute-hint" class="hidden" onclick="unmuteAudio()">🔈 CLIQUE PARA ATIVAR O SOM</div>
-    <div class="overlay"></div>
     <video id="bg-video" loop playsinline></video>
+    <div class="overlay"></div>
 
     <div class="wrapper">
         
-        <div id="login-ui" class="glass-panel">
-            <h1 style="font-size: 2.5rem; letter-spacing: -2px; margin-bottom: 10px;">Omni<span style="color:var(--primary)">Bio</span></h1>
-            <p style="color:#666; margin-bottom: 30px;">Identidade Visual de Elite</p>
-            <button class="btn btn-discord" onclick="login()">LOGAR COM DISCORD</button>
+        <div id="login-ui" class="card" style="text-align:center;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 10px;">Omni<span style="color:var(--primary)">Bio</span></h1>
+            <p style="color:#666; margin-bottom: 25px; font-size: 0.9rem;">Sua página profissional em minutos.</p>
+            <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
-        <div id="admin-ui" class="glass-panel hidden">
-            <h2 style="margin-bottom: 20px;">Personalizar</h2>
+        <div id="admin-ui" class="card hidden">
+            <h2 style="margin-bottom: 25px; font-size: 1.4rem;">Configurações</h2>
             
-            <input type="text" id="username" placeholder="URL Personalizada (ex: luan)">
-            <input type="text" id="display_name" placeholder="Nome de Exibição">
-            
-            <div style="text-align: left; font-size: 0.7rem; color: var(--primary); font-weight: 800; margin-top: 10px;">FOTO DE PERFIL</div>
-            <div class="preview-box" id="pfp-preview">Sem foto</div>
-            <input type="file" id="pfp-input" accept="image/*" onchange="previewMedia(this, 'pfp-preview')">
+            <div class="field">
+                <label>Nick da URL</label>
+                <input type="text" id="username" placeholder="ex: luan7">
+            </div>
 
-            <div style="text-align: left; font-size: 0.7rem; color: var(--primary); font-weight: 800; margin-top: 10px;">VÍDEO OU FOTO DE FUNDO</div>
-            <div class="preview-box" id="bg-preview">Sem fundo</div>
-            <input type="file" id="bg-input" accept="image/*,video/mp4" onchange="previewMedia(this, 'bg-preview')">
+            <div class="field">
+                <label>Nome no Perfil</label>
+                <input type="text" id="display_name" placeholder="Como as pessoas te verão">
+            </div>
 
-            <textarea id="links" rows="3" placeholder="Instagram,https://...|Discord,https://..."></textarea>
+            <div class="preview-grid">
+                <div class="field">
+                    <label>Avatar</label>
+                    <div class="preview-item" id="pfp-preview"><span>Preview</span></div>
+                    <input type="file" id="pfp-input" accept="image/*" style="display:none" onchange="preview(this, 'pfp-preview')">
+                    <button class="btn" style="background:#222; font-size:0.7rem; padding:10px;" onclick="document.getElementById('pfp-input').click()">UPLOAD</button>
+                </div>
+                <div class="field">
+                    <label>Fundo</label>
+                    <div class="preview-item" id="bg-preview"><span>Preview</span></div>
+                    <input type="file" id="bg-input" accept="image/*,video/mp4" style="display:none" onchange="preview(this, 'bg-preview')">
+                    <button class="btn" style="background:#222; font-size:0.7rem; padding:10px;" onclick="document.getElementById('bg-input').click()">UPLOAD</button>
+                </div>
+            </div>
 
-            <button class="btn btn-primary" onclick="saveBio()">SALVAR ALTERAÇÕES</button>
-            <div id="status-msg" style="margin-top:20px"></div>
+            <div class="field">
+                <label>Links (Nome,URL|Nome,URL)</label>
+                <textarea id="links" rows="3" placeholder="Discord,https://..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveBio()">SALVAR PERFIL</button>
+            <div id="status-link-box" class="hidden"></div>
         </div>
 
-        <div id="bio-view" class="glass-panel hidden">
-            <img id="bio-pfp" class="pfp" src="">
-            <h1 id="bio-name" style="font-weight: 800; font-size: 1.8rem;"></h1>
-            <div id="bio-links-container" style="margin-top: 30px;"></div>
+        <div id="bio-view" class="card hidden" style="text-align:center;">
+            <img id="bio-pfp" class="pfp-view" src="">
+            <h1 id="bio-name" style="font-weight: 800; font-size: 1.8rem; margin-bottom: 25px;"></h1>
+            <div id="bio-links-container"></div>
         </div>
 
     </div>
@@ -119,40 +130,31 @@
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
-        
-        // Preview de Mídia Imediato
-        function previewMedia(input, targetId) {
+
+        function preview(input, id) {
             const file = input.files[0];
-            const target = document.getElementById(targetId);
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    if (file.type.includes('video')) {
-                        target.innerHTML = `<video src="${e.target.result}" autoplay muted loop></video>`;
-                    } else {
-                        target.innerHTML = `<img src="${e.target.result}">`;
-                    }
-                };
-                reader.readAsDataURL(file);
+            const box = document.getElementById(id);
+            if(file) {
+                const url = URL.createObjectURL(file);
+                box.innerHTML = file.type.includes('video') ? `<video src="${url}" autoplay muted loop></video>` : `<img src="${url}">`;
             }
         }
 
         _supabase.auth.onAuthStateChange(async (event, session) => {
-            const urlUser = new URLSearchParams(window.location.search).get('u');
-            if (urlUser) loadBio(urlUser);
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('u')) loadBio(urlParams.get('u'));
             else if (session) showAdmin(session.user);
         });
 
         async function showAdmin(user) {
             document.getElementById('login-ui').classList.add('hidden');
-            const admin = document.getElementById('admin-ui');
-            admin.classList.remove('hidden');
+            document.getElementById('admin-ui').classList.remove('hidden');
 
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if (data) {
-                document.getElementById('username').value = data.username;
-                document.getElementById('display_name').value = data.display_name;
-                document.getElementById('links').value = data.links;
+                document.getElementById('username').value = data.username || "";
+                document.getElementById('display_name').value = data.display_name || "";
+                document.getElementById('links').value = data.links || "";
                 
                 if(data.pfp_url) document.getElementById('pfp-preview').innerHTML = `<img src="${data.pfp_url}">`;
                 if(data.bg_url) {
@@ -160,15 +162,24 @@
                     document.getElementById('bg-preview').innerHTML = tag;
                 }
 
-                const fullUrl = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                document.getElementById('status-msg').innerHTML = `<div style="border:1px solid var(--accent); padding:10px; border-radius:15px;"><small>Link Público:</small><br><a href="${fullUrl}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:800;">${fullUrl}</a></div>`;
+                showFinalLink(data.username);
             }
+        }
+
+        function showFinalLink(nick) {
+            const box = document.getElementById('status-link-box');
+            const cleanUrl = window.location.href.split('?')[0];
+            const final = `${cleanUrl}?u=${nick}`;
+            box.classList.remove('hidden');
+            box.innerHTML = `<span style="color:#888; font-size:0.7rem">SEU LINK:</span><br><a href="${final}" target="_blank" style="color:var(--accent); font-weight:800; text-decoration:none;">${final}</a>`;
         }
 
         async function saveBio() {
             const user = (await _supabase.auth.getUser()).data.user;
-            const msg = document.getElementById('status-msg');
-            msg.innerText = "⏳ Subindo arquivos...";
+            const nick = document.getElementById('username').value.trim().toLowerCase();
+            if(!nick) return alert("Defina um Nick!");
+
+            document.querySelector('.btn-primary').innerText = "SALVANDO...";
 
             try {
                 let pfpUrl = null, bgUrl = null;
@@ -176,28 +187,28 @@
                 const bgF = document.getElementById('bg-input').files[0];
 
                 if(pfpF) {
-                    const path = `pfp/${user.id}_${Date.now()}`;
-                    await _supabase.storage.from('assets').upload(path, pfpF);
+                    const path = `pfp/${user.id}`;
+                    await _supabase.storage.from('assets').upload(path, pfpF, { upsert: true });
                     pfpUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
                 if(bgF) {
-                    const path = `bg/${user.id}_${Date.now()}`;
-                    await _supabase.storage.from('assets').upload(path, bgF);
+                    const path = `bg/${user.id}`;
+                    await _supabase.storage.from('assets').upload(path, bgF, { upsert: true });
                     bgUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
 
-                const up = {
+                const payload = {
                     user_id: user.id,
-                    username: document.getElementById('username').value.trim().toLowerCase(),
+                    username: nick,
                     display_name: document.getElementById('display_name').value,
                     links: document.getElementById('links').value
                 };
-                if(pfpUrl) up.pfp_url = pfpUrl;
-                if(bgUrl) up.bg_url = bgUrl;
+                if(pfpUrl) payload.pfp_url = pfpUrl;
+                if(bgUrl) payload.bg_url = bgUrl;
 
-                await _supabase.from('bios').upsert(up, { onConflict: 'user_id' });
-                msg.innerHTML = "✅ TUDO ATUALIZADO!";
-                setTimeout(() => location.reload(), 1500);
+                await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
+                alert("Perfil Atualizado!");
+                location.reload();
             } catch (e) { alert(e.message); }
         }
 
@@ -206,41 +217,30 @@
             if(!data) return;
 
             document.getElementById('login-ui').classList.add('hidden');
+            document.getElementById('admin-ui').classList.add('hidden');
             document.getElementById('bio-view').classList.remove('hidden');
 
-            // ÁUDIO E VÍDEO (Lógica de Autoplay)
             if(data.bg_url) {
-                const vid = document.getElementById('bg-video');
                 if(data.bg_url.endsWith('.mp4')) {
-                    vid.src = data.bg_url;
-                    vid.style.display = 'block';
-                    vid.muted = true; // Inicia mudo para o navegador permitir
-                    vid.play();
-                    document.getElementById('mute-hint').classList.remove('hidden');
+                    const v = document.getElementById('bg-video');
+                    v.src = data.bg_url; v.style.display = 'block'; v.play();
                 } else {
                     document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
                 }
             }
 
-            document.getElementById('bio-pfp').src = data.pfp_url;
-            document.getElementById('bio-name').innerText = data.display_name;
+            document.getElementById('bio-pfp').src = data.pfp_url || '';
+            document.getElementById('bio-name').innerText = data.display_name || nick;
 
-            const cont = document.getElementById('bio-links-container');
-            data.links.split('|').forEach(linkStr => {
-                const [name, url] = linkStr.split(',');
+            const container = document.getElementById('bio-links-container');
+            data.links.split('|').forEach(l => {
+                const [name, url] = l.split(',');
                 if(name && url) {
                     const a = document.createElement('a');
-                    a.href = url; a.target = "_blank"; a.className = 'link-card';
-                    a.innerText = name.toUpperCase();
-                    cont.appendChild(a);
+                    a.className = 'link-btn'; a.href = url; a.target = "_blank"; a.innerText = name;
+                    container.appendChild(a);
                 }
             });
-        }
-
-        function unmuteAudio() {
-            const vid = document.getElementById('bg-video');
-            vid.muted = false;
-            document.getElementById('mute-hint').classList.add('hidden');
         }
     </script>
 </body>
