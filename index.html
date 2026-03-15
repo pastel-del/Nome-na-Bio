@@ -3,167 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Link Dinâmico</title>
+    <title>Elite Bio | 2026</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
+        :root {
+            --primary-glow: #b026ff;
+            --secondary-glow: #00ffcc;
+            --bg-dark: #050505;
+        }
+
         body {
-            background: #0a0a0a;
+            background: var(--bg-dark);
             color: white;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
             overflow: hidden;
         }
 
+        /* Fundo com Vídeo e Overlay de Granulado */
         #bg-video {
             position: fixed;
-            right: 0; bottom: 0;
+            top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
-            z-index: -1;
-            filter: brightness(0.3);
+            width: auto; height: auto;
+            z-index: -2;
+            transform: translate(-50%, -50%);
+            filter: brightness(0.4) blur(3px);
             object-fit: cover;
         }
 
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Tela de Entrada Profissional */
+        #entry-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            cursor: pointer;
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .entry-text {
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #555;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* Card Principal */
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 10, 10, 0.55);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            width: 380px;
             text-align: center;
-            width: 350px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .card.active { transform: scale(1); opacity: 1; }
+
+        /* Avatar com Anel de Status */
+        .avatar-wrapper {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 20px;
         }
 
         .profile-img {
-            width: 100px; height: 100px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            border: 2px solid #7289da;
-            margin-bottom: 15px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
-        .status-dot {
-            width: 12px; height: 12px;
+        .status-badge {
+            position: absolute;
+            bottom: 5px; right: 5px;
+            width: 20px; height: 20px;
             border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-            background: #747f8d; /* offline */
+            border: 3px solid #0a0a0a;
+            background: #747f8d;
         }
 
-        .online { background: #43b581; box-shadow: 0 0 10px #43b581; }
-        .dnd { background: #f04747; }
-        .idle { background: #faa61a; }
-
-        .discord-activity {
-            font-size: 0.8rem;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: none; /* Só aparece se estiver jogando algo */
+        /* Tipografia */
+        .username {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .links-container {
+        .user-bio {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* Atividade do Discord (Spotify / Game) */
+        .presence-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 20px 0;
+            display: none;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .presence-box small { color: var(--secondary-glow); font-weight: bold; font-size: 0.65rem; text-transform: uppercase; }
+        .presence-box p { margin: 4px 0 0; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Botões Estilizados */
+        .links-container { display: flex; flex-direction: column; gap: 12px; }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #eee;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
-        .btn {
-            background: white;
-            color: black;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: 0.3s;
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary-glow);
         }
 
-        .btn:hover { transform: scale(1.05); opacity: 0.8; }
+        /* Status Colors */
+        .online { background: #43b581 !important; box-shadow: 0 0 15px #43b581; }
+        .dnd { background: #f04747 !important; }
+        .idle { background: #faa61a !important; }
+
     </style>
 </head>
 <body>
 
+    <div id="entry-overlay" onclick="startBio()">
+        <span class="entry-text">Click to initialize</span>
+    </div>
+
     <video autoplay muted loop id="bg-video">
         <source id="video-src" src="" type="video/mp4">
     </video>
+    <div class="grain-overlay"></div>
 
-    <div class="card">
-        <img id="user-pfp" src="https://via.placeholder.com/100" class="profile-img">
-        <h2 id="user-name">Carregando...</h2>
-        <p id="user-bio" style="color: #bbb; font-size: 0.9rem;"></p>
+    <audio id="bg-audio" loop>
+        <source id="audio-src" src="" type="audio/mpeg">
+    </audio>
 
-        <div id="status-container">
-            <span id="dot" class="status-dot"></span>
-            <span id="status-text" style="font-size: 0.8rem;">Offline</span>
+    <div class="card" id="main-card">
+        <div class="avatar-wrapper">
+            <img id="user-pfp" src="https://via.placeholder.com/150" class="profile-img">
+            <div id="status-dot" class="status-badge"></div>
         </div>
 
-        <div id="activity" class="discord-activity">
-            <span id="game-name"></span>
+        <h2 id="user-name" class="username">Loading...</h2>
+        <p id="user-bio" class="user-bio"></p>
+
+        <div id="presence" class="presence-box">
+            <small id="presence-type">Listening to</small>
+            <p id="presence-name">Nothing</p>
         </div>
 
-        <div class="links-container" id="links">
-            </div>
+        <div class="links-container" id="links"></div>
     </div>
 
     <script>
-        // 1. Capturar dados da URL
         const params = new URLSearchParams(window.location.search);
-        const discordID = params.get('id');
-        const nome = params.get('nome') || "Usuário";
-        const bio = params.get('bio') || "Sem biografia";
-        const pfp = params.get('pfp');
-        const bg = params.get('bg'); // Link de um vídeo MP4
-        const linksRaw = params.get('links'); // Formato: Nome,url|Nome2,url2
+        
+        // Configuração via URL
+        const config = {
+            id: params.get('id'),
+            nome: params.get('nome') || "Unknown",
+            bio: params.get('bio') || "No status set.",
+            pfp: params.get('pfp'),
+            bg: params.get('bg'), // Link MP4
+            music: params.get('music'), // Link MP3
+            links: params.get('links') // Formato: Nome,url|Nome2,url2
+        };
 
-        // 2. Aplicar textos básicos
-        document.getElementById('user-name').innerText = nome;
-        document.getElementById('user-bio').innerText = bio;
-        if(pfp) document.getElementById('user-pfp').src = pfp;
-        if(bg) document.getElementById('video-src').src = bg;
+        function startBio() {
+            document.getElementById('entry-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('entry-overlay').style.display = 'none';
+                document.getElementById('main-card').classList.add('active');
+                
+                const audio = document.getElementById('bg-audio');
+                if(config.music) {
+                    document.getElementById('audio-src').src = config.music;
+                    audio.load();
+                    audio.volume = 0.4;
+                    audio.play();
+                }
+            }, 1000);
+        }
 
-        // 3. Gerar Links
-        if(linksRaw) {
+        // Setup Inicial
+        document.getElementById('user-name').innerText = config.nome;
+        document.getElementById('user-bio').innerText = config.bio;
+        if(config.pfp) document.getElementById('user-pfp').src = config.pfp;
+        if(config.bg) document.getElementById('video-src').src = config.bg;
+
+        // Gerar Links
+        if(config.links) {
             const container = document.getElementById('links');
-            linksRaw.split('|').forEach(linkPair => {
-                const [label, url] = linkPair.split(',');
+            config.links.split('|').forEach(l => {
+                const [name, url] = l.split(',');
                 const a = document.createElement('a');
                 a.className = 'btn';
                 a.href = url;
-                a.innerText = label;
                 a.target = "_blank";
+                a.innerText = name;
                 container.appendChild(a);
             });
         }
 
-        // 4. Conectar ao Discord via Lanyard API
-        if(discordID) {
-            function updateDiscord() {
-                fetch(`https://api.lanyard.rest/v1/users/${discordID}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const { discord_status, activities } = data.data;
-                        
-                        // Atualiza bolinha de status
-                        const dot = document.getElementById('dot');
-                        dot.className = 'status-dot ' + discord_status;
-                        document.getElementById('status-text').innerText = discord_status.toUpperCase();
+        // Lanyard API (Discord Status)
+        if(config.id) {
+            async function updateDiscord() {
+                try {
+                    const res = await fetch(`https://api.lanyard.rest/v1/users/${config.id}`);
+                    const { data } = await res.json();
+                    
+                    const dot = document.getElementById('status-dot');
+                    dot.className = `status-badge ${data.discord_status}`;
 
-                        // Atualiza Jogo/Atividade (Rainbow Six, FiveM, etc)
-                        if(activities.length > 0) {
-                            const game = activities.find(a => a.type === 0); // Pega o primeiro jogo
-                            if(game) {
-                                document.getElementById('activity').style.display = 'block';
-                                document.getElementById('game-name').innerText = "Jogando: " + game.name;
-                            }
+                    const presence = document.getElementById('presence');
+                    const pName = document.getElementById('presence-name');
+                    const pType = document.getElementById('presence-type');
+
+                    if(data.listening_to_spotify) {
+                        presence.style.display = 'block';
+                        pType.innerText = "Listening to Spotify";
+                        pName.innerText = `${data.spotify.song} - ${data.spotify.artist}`;
+                    } else if(data.activities.length > 0) {
+                        const game = data.activities.find(x => x.type === 0);
+                        if(game) {
+                            presence.style.display = 'block';
+                            pType.innerText = "Playing";
+                            pName.innerText = game.name;
                         }
-                    });
+                    } else {
+                        presence.style.display = 'none';
+                    }
+                } catch(e) { console.error("Lanyard Error"); }
             }
-            setInterval(updateDiscord, 10000); // Atualiza a cada 10 seg
+            setInterval(updateDiscord, 10000);
             updateDiscord();
         }
     </script>
