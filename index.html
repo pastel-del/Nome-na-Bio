@@ -6,119 +6,64 @@
     <title>OmniBio | Elite Identity</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        :root { 
-            --primary: #fff; 
-            --accent: #b026ff; 
-            --accent-glow: rgba(176, 38, 255, 0.4);
-            --bg: #050505; 
-            --card-bg: rgba(15, 15, 15, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        /* Reset & Base */
+        :root { --primary: #fff; --accent: #b026ff; --bg: #030303; --glass: rgba(255, 255, 255, 0.05); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
 
-        /* Background & Overlay */
-        #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; filter: brightness(0.4) contrast(1.1); }
-        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%); z-index: -1; backdrop-filter: blur(10px); }
+        /* VÍDEO E MÍDIA */
+        #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; filter: brightness(0.5); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: -1; backdrop-filter: blur(8px); }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #fff; } 50% { opacity: 0.3; } }
+        /* TELA DE ENTRADA */
+        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.6s ease; }
+        #enter-screen h1 { font-size: 1rem; letter-spacing: 7px; animation: pulse 2s infinite; font-weight: 800; color: #fff; }
+        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 20px var(--accent); } 50% { opacity: 0.3; } }
 
-        /* Tela de Entrada */
-        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.8s ease, visibility 0.8s; }
-        #enter-screen h1 { font-size: 0.85rem; letter-spacing: 10px; font-weight: 300; animation: pulse 2s infinite; }
-
-        /* Layout Container */
-        .wrapper { width: 100%; max-width: 440px; padding: 25px; z-index: 10; animation: fadeIn 1s ease-out; }
+        /* CARDS */
+        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; }
+        .card { background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
         
-        /* Glass Card */
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(30px); 
-            border: 1px solid var(--border); 
-            border-radius: 32px; 
-            padding: 40px 30px; 
-            text-align: center; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-        }
+        /* ELEMENTOS DO PERFIL */
+        .pfp-view { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto 20px; object-fit: cover; box-shadow: 0 0 40px rgba(176, 38, 255, 0.4); }
+        .link-btn { display: block; padding: 16px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; color: #fff; text-decoration: none; font-weight: 600; margin-bottom: 12px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .link-btn:hover { background: var(--accent); transform: scale(1.03); border-color: transparent; }
 
-        /* Bio Elements */
-        .pfp-view { 
-            width: 125px; height: 125px; border-radius: 50%; 
-            border: 2px solid var(--border); margin: 0 auto 20px; 
-            object-fit: cover; padding: 4px;
-            background: linear-gradient(var(--bg), var(--bg)) padding-box, 
-                        linear-gradient(135deg, var(--accent), transparent) border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .display-name { font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; letter-spacing: -0.5px; }
-
-        /* Links */
-        .link-btn { 
-            display: block; padding: 16px; margin-bottom: 12px;
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border); 
-            border-radius: 18px; color: #fff; 
-            text-decoration: none; font-weight: 600; font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .link-btn:hover { 
-            background: #fff; color: #000; 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
-        }
-
-        /* Discord Card */
-        .discord-card { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--border); 
-            border-radius: 20px; padding: 15px; margin-bottom: 25px; 
-            display: flex; align-items: center; text-align: left; gap: 15px; 
-        }
-        .dc-avatar { width: 52px; height: 52px; position: relative; }
-        .dc-avatar img { width: 100%; height: 100%; border-radius: 14px; }
-        .status-dot { position: absolute; bottom: -3px; right: -3px; width: 15px; height: 15px; border-radius: 50%; border: 3px solid #0f0f0f; }
+        /* DISCORD CARD - OFFLINE STYLE */
+        .discord-card { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 18px; margin-bottom: 25px; display: flex; align-items: center; text-align: left; gap: 15px; position: relative; overflow: hidden; }
+        .dc-avatar { width: 55px; height: 55px; position: relative; }
+        .dc-avatar img { width: 100%; height: 100%; border-radius: 15px; }
+        .status-dot { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #0a0a0a; }
+        
         .online { background: #23a559; box-shadow: 0 0 10px #23a559; } 
-        .idle { background: #f0b232; } .dnd { background: #f23f43; } .offline { background: #80848e; }
-        .dc-info h3 { font-size: 0.9rem; font-weight: 700; }
-        .dc-info p { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+        .idle { background: #f0b232; } .dnd { background: #f23f43; } 
+        
+        /* Status Offline Bonito */
+        .offline-status { filter: grayscale(1); opacity: 0.7; border-color: rgba(255,255,255,0.05); }
+        .offline { background: #80848e; }
+        .status-offline-text { color: #ff4d4d !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 1px; font-size: 0.65rem !important; }
 
-        /* Admin UI */
-        #admin-ui { max-height: 85vh; overflow-y: auto; scrollbar-width: none; }
-        #admin-ui::-webkit-scrollbar { display: none; }
-        .field { margin-bottom: 18px; text-align: left; }
-        label { font-size: 0.65rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
-        input[type="text"], textarea { 
-            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); 
-            border: 1px solid var(--border); color: #fff; border-radius: 14px; outline: none; transition: 0.3s;
-        }
-        input:focus, textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.5); }
+        /* UPLOAD BUTTONS MODERNOS */
+        .upload-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+        .file-input-wrapper { position: relative; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.2); border-radius: 15px; padding: 15px; transition: 0.3s; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .file-input-wrapper:hover { background: rgba(255,255,255,0.06); border-color: var(--accent); }
+        .file-input-wrapper input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .upload-info { display: flex; align-items: center; gap: 12px; }
+        .upload-label-text { font-size: 0.8rem; font-weight: 600; color: #eee; }
+        .action-tag { font-size: 0.6rem; padding: 4px 10px; border-radius: 8px; font-weight: 800; text-transform: uppercase; }
+        .tag-up { background: #23a559; color: #fff; }
+        .tag-change { background: var(--accent); color: #fff; }
 
-        /* Buttons */
-        .btn { 
-            width: 100%; padding: 16px; border: none; border-radius: 16px; 
-            font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 0.85rem; letter-spacing: 0.5px;
-        }
-        .btn-primary { background: #fff; color: #000; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
-        .btn-discord { background: #5865f2; color: #fff; margin-bottom: 15px; }
-        .btn:hover { transform: scale(1.02); filter: brightness(1.1); }
-
-        .file-upload { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 14px; border: 1px dashed #333; }
-        .current-media { width: 35px; height: 35px; border-radius: 8px; object-fit: cover; background: #111; border: 1px solid #222; }
-
-        .toggle-container { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .switch { position: relative; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background: #333; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background: var(--accent); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
+        /* ADMIN INPUTS */
+        .field { margin-bottom: 15px; text-align: left; }
+        label { font-size: 0.65rem; font-weight: 800; color: #666; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        input[type="text"], textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.4); border: 1px solid #222; color: #fff; border-radius: 14px; outline: none; transition: 0.3s; }
+        input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+        
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: #fff; color: #000; margin-top: 10px; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+        .btn-discord { background: #5865f2; color: #fff; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -129,64 +74,70 @@
     <div class="overlay"></div>
 
     <div id="enter-screen" class="hidden" onclick="enterSite()">
-        <h1>CLICK TO ENTER</h1>
+        <h1>[ CLIQUE PARA ENTRAR ]</h1>
     </div>
 
     <div class="wrapper">
         
         <div id="login-ui" class="card">
-            <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 8px;">Omni<span style="color:var(--accent)">Bio</span></h1>
-            <p style="color:#666; margin-bottom: 35px; font-size: 0.9rem;">Identity Excellence Platform</p>
+            <h1 style="font-size: 2.2rem; margin-bottom: 10px;">Omni<span style="color:var(--accent)">Bio</span></h1>
+            <p style="color:#666; margin-bottom: 30px; font-size: 0.85rem; letter-spacing: 1px;">ELITE IDENTITY MANAGEMENT</p>
             <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
-        <div id="admin-ui" class="card hidden">
-            <h2 style="margin-bottom: 25px; font-size: 1.4rem; font-weight: 700;">Configurações</h2>
+        <div id="admin-ui" class="card hidden" style="max-height: 85vh; overflow-y: auto;">
+            <h2 style="margin-bottom: 25px; font-size: 1.4rem;">Configurações</h2>
             
             <div class="field"><label>Nick da URL</label><input type="text" id="username" placeholder="ex: luan"></div>
             <div class="field"><label>Nome de Exibição</label><input type="text" id="display_name" placeholder="Como aparece no perfil"></div>
             
             <div class="toggle-container">
-                <span style="font-size: 0.8rem; font-weight: 600;">Status do Discord</span>
+                <span>Mostrar Status do Discord</span>
                 <label class="switch">
                     <input type="checkbox" id="toggle-discord" checked>
                     <span class="slider"></span>
                 </label>
             </div>
 
-            <div class="field">
-                <label>Foto de Perfil</label>
-                <div class="file-upload">
-                    <img id="curr-pfp" class="current-media" src="https://via.placeholder.com/35" title="Atual">
-                    <input type="file" id="pfp-input" accept="image/*" style="font-size: 0.7rem;">
+            <label>Mídias do Perfil</label>
+            <div class="upload-grid">
+                <div class="file-input-wrapper">
+                    <div class="upload-info">
+                        <img id="curr-pfp" class="current-media" src="https://via.placeholder.com/30">
+                        <span class="upload-label-text">Foto de Perfil</span>
+                    </div>
+                    <span id="label-pfp" class="action-tag tag-up">Upar</span>
+                    <input type="file" id="pfp-input" accept="image/*" onchange="updateTag('pfp')">
+                </div>
+
+                <div class="file-input-wrapper">
+                    <div class="upload-info">
+                        <div id="curr-bg" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">--</div>
+                        <span class="upload-label-text">Fundo (Vídeo/Foto)</span>
+                    </div>
+                    <span id="label-bg" class="action-tag tag-up">Upar</span>
+                    <input type="file" id="bg-input" accept="image/*,video/mp4" onchange="updateTag('bg')">
+                </div>
+
+                <div class="file-input-wrapper">
+                    <div class="upload-info">
+                        <div id="curr-audio" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">--</div>
+                        <span class="upload-label-text">Música (MP3)</span>
+                    </div>
+                    <span id="label-audio" class="action-tag tag-up">Upar</span>
+                    <input type="file" id="audio-input" accept="audio/*" onchange="updateTag('audio')">
                 </div>
             </div>
 
-            <div class="field">
-                <label>Fundo (Vídeo ou Foto)</label>
-                <div class="file-upload">
-                    <div id="curr-bg" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
-                    <input type="file" id="bg-input" accept="image/*,video/mp4" style="font-size: 0.7rem;">
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Música (MP3)</label>
-                <div class="file-upload">
-                    <div id="curr-audio" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
-                    <input type="file" id="audio-input" accept="audio/*" style="font-size: 0.7rem;">
-                </div>
-            </div>
-
-            <div class="field"><label>Links (Nome,URL | Nome,URL)</label><textarea id="links" rows="2" placeholder="Twitch,https://..."></textarea></div>
+            <div class="field"><label>Links (Nome,URL|Nome,URL)</label><textarea id="links" rows="2" placeholder="Steam,https://..."></textarea></div>
             
             <button class="btn btn-primary" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
-            <div id="status-box" style="margin-top: 20px; font-size: 0.75rem;"></div>
+            <div id="status-box" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
         <div id="bio-view" class="card hidden">
             <img id="bio-pfp" class="pfp-view" src="">
-            <h1 id="bio-name" class="display-name"></h1>
+            <h1 id="bio-name" style="font-weight: 800; font-size: 2rem; margin-bottom: 25px;"></h1>
             
             <div id="discord-presence" class="discord-card hidden">
                 <div class="dc-avatar">
@@ -194,7 +145,7 @@
                     <div id="dc-status" class="status-dot offline"></div>
                 </div>
                 <div class="dc-info">
-                    <h3 id="dc-user">User</h3>
+                    <h3 id="dc-user">Carregando...</h3>
                     <p id="dc-activity">Sincronizando...</p>
                 </div>
             </div>
@@ -210,6 +161,13 @@
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let userDiscordId = null;
+
+        // Função para mudar o texto das tags de upload
+        function updateTag(type) {
+            const el = document.getElementById(`label-${type}`);
+            el.innerText = "Mudar";
+            el.className = "action-tag tag-change";
+        }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
 
@@ -228,8 +186,7 @@
 
         async function showAdmin(user) {
             document.getElementById('login-ui').classList.add('hidden');
-            const adminUi = document.getElementById('admin-ui');
-            adminUi.classList.remove('hidden');
+            document.getElementById('admin-ui').classList.remove('hidden');
 
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if (data) {
@@ -238,12 +195,18 @@
                 document.getElementById('links').value = data.links || "";
                 document.getElementById('toggle-discord').checked = data.show_discord !== false;
                 
-                if(data.pfp_url) document.getElementById('curr-pfp').src = data.pfp_url;
-                if(data.bg_url) document.getElementById('curr-bg').innerHTML = "OK";
-                if(data.audio_url) document.getElementById('curr-audio').innerText = "OK";
-                
-                const finalLink = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                document.getElementById('status-box').innerHTML = `<a href="${finalLink}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:800;">MEU PERFIL: ${data.username}</a>`;
+                if(data.pfp_url) { 
+                    document.getElementById('curr-pfp').src = data.pfp_url;
+                    updateTag('pfp');
+                }
+                if(data.bg_url) {
+                    document.getElementById('curr-bg').innerText = "OK";
+                    updateTag('bg');
+                }
+                if(data.audio_url) {
+                    document.getElementById('curr-audio').innerText = "OK";
+                    updateTag('audio');
+                }
             }
         }
 
@@ -253,8 +216,8 @@
             btn.innerText = "⏳ SALVANDO...";
 
             try {
-                const { data: cur } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-                let pfpUrl = cur?.pfp_url, bgUrl = cur?.bg_url, audioUrl = cur?.audio_url;
+                const { data: currentData } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+                let pfpUrl = currentData?.pfp_url, bgUrl = currentData?.bg_url, audioUrl = currentData?.audio_url;
 
                 const pfpF = document.getElementById('pfp-input').files[0];
                 const bgF = document.getElementById('bg-input').files[0];
@@ -281,9 +244,9 @@
                     show_discord: document.getElementById('toggle-discord').checked,
                     links: document.getElementById('links').value,
                     pfp_url: pfpUrl, bg_url: bgUrl, audio_url: audioUrl
-                });
-
-                btn.innerText = "✅ SUCESSO!";
+                }, { onConflict: 'user_id' });
+                
+                btn.innerText = "✅ SALVO!";
                 setTimeout(() => location.reload(), 1000);
             } catch (e) { alert(e.message); btn.innerText = "ERRO"; }
         }
@@ -291,14 +254,14 @@
         let loadedBioData = null;
         async function prepareBio(nick) {
             const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
-            if(!data) return alert("Não encontrado");
+            if(!data) return alert("Perfil não encontrado!");
             loadedBioData = data;
         }
 
         function enterSite() {
             const scr = document.getElementById('enter-screen');
             scr.style.opacity = '0';
-            setTimeout(() => scr.style.visibility = 'hidden', 800);
+            setTimeout(() => scr.classList.add('hidden'), 600);
             
             const data = loadedBioData;
             document.getElementById('bio-view').classList.remove('hidden');
@@ -311,31 +274,28 @@
                     document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
                 }
             }
-
             if(data.audio_url) {
                 const aud = document.getElementById('bg-audio');
-                aud.src = data.audio_url; aud.volume = 0.4; aud.play();
+                aud.src = data.audio_url; aud.volume = 0.5; aud.play();
             }
 
             document.getElementById('bio-pfp').src = data.pfp_url || '';
             document.getElementById('bio-name').innerText = data.display_name;
 
             const container = document.getElementById('bio-links-container');
-            if(data.links) {
-                data.links.split('|').forEach(l => {
-                    const [name, url] = l.split(',');
-                    if(name && url) {
-                        const a = document.createElement('a');
-                        a.className = 'link-btn'; a.href = url; a.target = "_blank"; a.innerText = name;
-                        container.appendChild(a);
-                    }
-                });
-            }
+            data.links.split('|').forEach(l => {
+                const [name, url] = l.split(',');
+                if(name && url) {
+                    const a = document.createElement('a');
+                    a.className = 'link-btn'; a.href = url; a.target = "_blank"; a.innerText = name;
+                    container.appendChild(a);
+                }
+            });
 
             if(data.show_discord && data.discord_id) {
                 document.getElementById('discord-presence').classList.remove('hidden');
                 fetchDiscord(data.discord_id);
-                setInterval(() => fetchDiscord(data.discord_id), 15000);
+                setInterval(() => fetchDiscord(data.discord_id), 10000);
             }
         }
 
@@ -343,16 +303,31 @@
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
                 const { data } = await res.json();
+                const card = document.getElementById('discord-presence');
+                const activityEl = document.getElementById('dc-activity');
+                
                 if(data) {
                     document.getElementById('dc-user').innerText = data.discord_user.display_name || data.discord_user.username;
                     document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
                     document.getElementById('dc-status').className = `status-dot ${data.discord_status}`;
-                    let act = "Online";
-                    if(data.listening_to_spotify) act = `Ouvindo ${data.spotify.song}`;
-                    else if(data.activities.length > 0) act = data.activities[0].name;
-                    document.getElementById('dc-activity').innerText = act;
+
+                    if(data.discord_status === 'offline') {
+                        card.classList.add('offline-status');
+                        activityEl.innerText = "STATUS: OFFLINE";
+                        activityEl.className = "status-offline-text";
+                    } else {
+                        card.classList.remove('offline-status');
+                        activityEl.className = "";
+                        let activityText = "Online";
+                        if (data.activities && data.activities.length > 0) {
+                            const act = data.activities.find(a => a.type === 0);
+                            if (act) activityText = `Jogando ${act.name}`;
+                            else if (data.listening_to_spotify) activityText = `Ouvindo Spotify`;
+                        }
+                        activityEl.innerText = activityText;
+                    }
                 }
-            } catch (e) {}
+            } catch (e) { console.log("Erro Lanyard"); }
         }
     </script>
 </body>
