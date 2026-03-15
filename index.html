@@ -6,7 +6,7 @@
     <title>OmniBio | Elite Identity</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
         :root { 
             --primary: #fff; 
@@ -14,143 +14,112 @@
             --accent-glow: rgba(176, 38, 255, 0.4);
             --bg: #050505; 
             --card-bg: rgba(15, 15, 15, 0.6);
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
+        /* Reset & Base */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { 
-            background: var(--bg); 
-            color: #fff; 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-        }
+        body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
 
         /* Background & Overlay */
-        #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; filter: brightness(0.4); }
-        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%); z-index: -1; backdrop-filter: blur(8px); }
-
-        /* Custom Scrollbar */
-        #admin-ui::-webkit-scrollbar { width: 4px; }
-        #admin-ui::-webkit-scrollbar-track { background: transparent; }
-        #admin-ui::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; filter: brightness(0.4) contrast(1.1); }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%); z-index: -1; backdrop-filter: blur(10px); }
 
         /* Animations */
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #fff; } 50% { opacity: 0.3; } }
 
         /* Tela de Entrada */
-        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        #enter-screen h1 { font-size: 0.9rem; letter-spacing: 8px; color: #fff; font-weight: 300; animation: pulse 2.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.8; text-shadow: 0 0 20px #fff; } 50% { opacity: 0.2; text-shadow: none; } }
+        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.8s ease, visibility 0.8s; }
+        #enter-screen h1 { font-size: 0.85rem; letter-spacing: 10px; font-weight: 300; animation: pulse 2s infinite; }
 
-        /* Cards */
-        .wrapper { width: 100%; max-width: 420px; padding: 20px; z-index: 10; animation: fadeInScale 0.8s forwards; }
+        /* Layout Container */
+        .wrapper { width: 100%; max-width: 440px; padding: 25px; z-index: 10; animation: fadeIn 1s ease-out; }
+        
+        /* Glass Card */
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(25px); 
+            backdrop-filter: blur(30px); 
             border: 1px solid var(--border); 
-            border-radius: 30px; 
+            border-radius: 32px; 
             padding: 40px 30px; 
             text-align: center; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
 
-        /* Elementos de Perfil */
+        /* Bio Elements */
         .pfp-view { 
-            width: 120px; height: 120px; 
-            border-radius: 50%; 
-            border: 3px solid var(--border); 
-            margin: 0 auto 20px; 
-            object-fit: cover; 
-            padding: 5px;
+            width: 125px; height: 125px; border-radius: 50%; 
+            border: 2px solid var(--border); margin: 0 auto 20px; 
+            object-fit: cover; padding: 4px;
             background: linear-gradient(var(--bg), var(--bg)) padding-box, 
-                        linear-gradient(45deg, var(--accent), transparent) border-box;
+                        linear-gradient(135deg, var(--accent), transparent) border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
+        .display-name { font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; letter-spacing: -0.5px; }
+
+        /* Links */
         .link-btn { 
-            display: block; padding: 16px; 
+            display: block; padding: 16px; margin-bottom: 12px;
             background: rgba(255,255,255,0.03); 
             border: 1px solid var(--border); 
-            border-radius: 18px; 
-            color: #eee; 
-            text-decoration: none; 
-            font-weight: 500; 
-            margin-bottom: 12px; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            font-size: 0.95rem;
+            border-radius: 18px; color: #fff; 
+            text-decoration: none; font-weight: 600; font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .link-btn:hover { 
-            background: var(--accent); 
-            color: #fff; 
-            transform: translateY(-5px) scale(1.02); 
-            box-shadow: 0 10px 20px var(--accent-glow);
-            border-color: transparent;
+            background: #fff; color: #000; 
+            transform: translateY(-4px); 
+            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
         }
 
-        /* Discord Presence */
+        /* Discord Card */
         .discord-card { 
-            background: rgba(0,0,0,0.3); 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            padding: 18px; 
-            margin-bottom: 25px; 
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); 
+            border-radius: 20px; padding: 15px; margin-bottom: 25px; 
             display: flex; align-items: center; text-align: left; gap: 15px; 
         }
-        .dc-avatar { width: 55px; height: 55px; position: relative; }
-        .dc-avatar img { width: 100%; height: 100%; border-radius: 15px; }
-        .status-dot { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #111; }
-        
-        /* Inputs & Admin */
-        .field { margin-bottom: 20px; text-align: left; }
-        label { font-size: 0.7rem; font-weight: 700; color: #666; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .dc-avatar { width: 52px; height: 52px; position: relative; }
+        .dc-avatar img { width: 100%; height: 100%; border-radius: 14px; }
+        .status-dot { position: absolute; bottom: -3px; right: -3px; width: 15px; height: 15px; border-radius: 50%; border: 3px solid #0f0f0f; }
+        .online { background: #23a559; box-shadow: 0 0 10px #23a559; } 
+        .idle { background: #f0b232; } .dnd { background: #f23f43; } .offline { background: #80848e; }
+        .dc-info h3 { font-size: 0.9rem; font-weight: 700; }
+        .dc-info p { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+
+        /* Admin UI */
+        #admin-ui { max-height: 85vh; overflow-y: auto; scrollbar-width: none; }
+        #admin-ui::-webkit-scrollbar { display: none; }
+        .field { margin-bottom: 18px; text-align: left; }
+        label { font-size: 0.65rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
         input[type="text"], textarea { 
-            width: 100%; padding: 15px; 
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border); 
-            color: #fff; border-radius: 15px; outline: none; transition: 0.3s;
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); color: #fff; border-radius: 14px; outline: none; transition: 0.3s;
         }
-        input:focus, textarea:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
+        input:focus, textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.5); }
 
+        /* Buttons */
         .btn { 
-            width: 100%; padding: 18px; border: none; border-radius: 15px; 
-            font-weight: 700; cursor: pointer; transition: 0.4s; letter-spacing: 1px;
-            font-size: 0.85rem;
+            width: 100%; padding: 16px; border: none; border-radius: 16px; 
+            font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 0.85rem; letter-spacing: 0.5px;
         }
-        .btn-primary { 
-            background: #fff; color: #000; 
-            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,255,255,0.4); }
+        .btn-primary { background: #fff; color: #000; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+        .btn-discord { background: #5865f2; color: #fff; margin-bottom: 15px; }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        .btn-discord { 
-            background: #5865f2; color: #fff; 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        .file-upload { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 14px; border: 1px dashed #333; }
+        .current-media { width: 35px; height: 35px; border-radius: 8px; object-fit: cover; background: #111; border: 1px solid #222; }
 
-        .toggle-container { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; 
-            border: 1px solid var(--border); margin-bottom: 20px; 
-        }
+        .toggle-container { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .switch { position: relative; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         .hidden { display: none !important; }
-        
-        /* Helpers */
-        .accent-text { color: var(--accent); }
-        .status-box { 
-            background: rgba(176, 38, 255, 0.1); 
-            padding: 10px; border-radius: 10px; 
-            border: 1px solid var(--accent);
-        }
-
     </style>
 </head>
 <body>
@@ -160,28 +129,231 @@
     <div class="overlay"></div>
 
     <div id="enter-screen" class="hidden" onclick="enterSite()">
-        <h1>ENTER EXPERIENCE</h1>
+        <h1>CLICK TO ENTER</h1>
     </div>
 
     <div class="wrapper">
         
         <div id="login-ui" class="card">
-            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 5px;">Omni<span class="accent-text">Bio</span></h1>
-            <p style="color:#666; margin-bottom: 30px; font-size: 0.85rem; font-weight: 500;">Elite Identity Management</p>
-            <button class="btn btn-discord" onclick="login()">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.125-.094.252-.192.37-.29a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.196.373.29a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.89.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-                LOGIN COM DISCORD
-            </button>
+            <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 8px;">Omni<span style="color:var(--accent)">Bio</span></h1>
+            <p style="color:#666; margin-bottom: 35px; font-size: 0.9rem;">Identity Excellence Platform</p>
+            <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
-        ```
+        <div id="admin-ui" class="card hidden">
+            <h2 style="margin-bottom: 25px; font-size: 1.4rem; font-weight: 700;">Configurações</h2>
+            
+            <div class="field"><label>Nick da URL</label><input type="text" id="username" placeholder="ex: luan"></div>
+            <div class="field"><label>Nome de Exibição</label><input type="text" id="display_name" placeholder="Como aparece no perfil"></div>
+            
+            <div class="toggle-container">
+                <span style="font-size: 0.8rem; font-weight: 600;">Status do Discord</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-discord" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
 
-### O que mudou visualmente?
+            <div class="field">
+                <label>Foto de Perfil</label>
+                <div class="file-upload">
+                    <img id="curr-pfp" class="current-media" src="https://via.placeholder.com/35" title="Atual">
+                    <input type="file" id="pfp-input" accept="image/*" style="font-size: 0.7rem;">
+                </div>
+            </div>
 
-1.  **Tipografia:** Mudei os pesos da fonte. Títulos agora são `800` (extra-bold) e labels são `700` com espaçamento entre letras, dando um ar de sistema premium.
-2.  **Avatar:** Adicionei um gradiente na borda da foto de perfil que "brilha" discretamente.
-3.  **Botões de Link:** Agora eles usam curvas de animação `cubic-bezier`. No hover, eles não apenas mudam de cor, mas "saltam" levemente com uma sombra neon.
-4.  **Cards de Discord:** Estão mais compactos e modernos, com cantos arredondados que combinam com a interface mobile atual.
-5.  **Fundo:** Apliquei um `radial-gradient` por cima do vídeo/imagem. Isso garante que o conteúdo central sempre tenha contraste, independentemente do vídeo que o usuário escolher.
+            <div class="field">
+                <label>Fundo (Vídeo ou Foto)</label>
+                <div class="file-upload">
+                    <div id="curr-bg" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
+                    <input type="file" id="bg-input" accept="image/*,video/mp4" style="font-size: 0.7rem;">
+                </div>
+            </div>
 
-**Gostaria que eu adicionasse algum efeito específico, como partículas flutuando no fundo ou um efeito de digitação no nome?**
+            <div class="field">
+                <label>Música (MP3)</label>
+                <div class="file-upload">
+                    <div id="curr-audio" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
+                    <input type="file" id="audio-input" accept="audio/*" style="font-size: 0.7rem;">
+                </div>
+            </div>
+
+            <div class="field"><label>Links (Nome,URL | Nome,URL)</label><textarea id="links" rows="2" placeholder="Twitch,https://..."></textarea></div>
+            
+            <button class="btn btn-primary" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
+            <div id="status-box" style="margin-top: 20px; font-size: 0.75rem;"></div>
+        </div>
+
+        <div id="bio-view" class="card hidden">
+            <img id="bio-pfp" class="pfp-view" src="">
+            <h1 id="bio-name" class="display-name"></h1>
+            
+            <div id="discord-presence" class="discord-card hidden">
+                <div class="dc-avatar">
+                    <img id="dc-pfp" src="">
+                    <div id="dc-status" class="status-dot offline"></div>
+                </div>
+                <div class="dc-info">
+                    <h3 id="dc-user">User</h3>
+                    <p id="dc-activity">Sincronizando...</p>
+                </div>
+            </div>
+
+            <div id="bio-links-container"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
+        const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        let userDiscordId = null;
+
+        async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
+
+        _supabase.auth.onAuthStateChange(async (event, session) => {
+            const urlNick = new URLSearchParams(window.location.search).get('u');
+            if (urlNick) {
+                document.getElementById('login-ui').classList.add('hidden');
+                document.getElementById('enter-screen').classList.remove('hidden');
+                prepareBio(urlNick);
+            } else if (session) {
+                const identity = session.user.identities.find(i => i.provider === 'discord');
+                if(identity) userDiscordId = identity.id;
+                showAdmin(session.user);
+            }
+        });
+
+        async function showAdmin(user) {
+            document.getElementById('login-ui').classList.add('hidden');
+            const adminUi = document.getElementById('admin-ui');
+            adminUi.classList.remove('hidden');
+
+            const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+            if (data) {
+                document.getElementById('username').value = data.username || "";
+                document.getElementById('display_name').value = data.display_name || "";
+                document.getElementById('links').value = data.links || "";
+                document.getElementById('toggle-discord').checked = data.show_discord !== false;
+                
+                if(data.pfp_url) document.getElementById('curr-pfp').src = data.pfp_url;
+                if(data.bg_url) document.getElementById('curr-bg').innerHTML = "OK";
+                if(data.audio_url) document.getElementById('curr-audio').innerText = "OK";
+                
+                const finalLink = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
+                document.getElementById('status-box').innerHTML = `<a href="${finalLink}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:800;">MEU PERFIL: ${data.username}</a>`;
+            }
+        }
+
+        async function saveBio() {
+            const user = (await _supabase.auth.getUser()).data.user;
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "⏳ SALVANDO...";
+
+            try {
+                const { data: cur } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+                let pfpUrl = cur?.pfp_url, bgUrl = cur?.bg_url, audioUrl = cur?.audio_url;
+
+                const pfpF = document.getElementById('pfp-input').files[0];
+                const bgF = document.getElementById('bg-input').files[0];
+                const audF = document.getElementById('audio-input').files[0];
+
+                if(pfpF) {
+                    await _supabase.storage.from('assets').upload(`pfp/${user.id}`, pfpF, {upsert: true});
+                    pfpUrl = _supabase.storage.from('assets').getPublicUrl(`pfp/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                }
+                if(bgF) {
+                    await _supabase.storage.from('assets').upload(`bg/${user.id}`, bgF, {upsert: true});
+                    bgUrl = _supabase.storage.from('assets').getPublicUrl(`bg/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                }
+                if(audF) {
+                    await _supabase.storage.from('assets').upload(`audio/${user.id}`, audF, {upsert: true});
+                    audioUrl = _supabase.storage.from('assets').getPublicUrl(`audio/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                }
+
+                await _supabase.from('bios').upsert({
+                    user_id: user.id,
+                    username: document.getElementById('username').value.trim().toLowerCase(),
+                    display_name: document.getElementById('display_name').value,
+                    discord_id: userDiscordId,
+                    show_discord: document.getElementById('toggle-discord').checked,
+                    links: document.getElementById('links').value,
+                    pfp_url: pfpUrl, bg_url: bgUrl, audio_url: audioUrl
+                });
+
+                btn.innerText = "✅ SUCESSO!";
+                setTimeout(() => location.reload(), 1000);
+            } catch (e) { alert(e.message); btn.innerText = "ERRO"; }
+        }
+
+        let loadedBioData = null;
+        async function prepareBio(nick) {
+            const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
+            if(!data) return alert("Não encontrado");
+            loadedBioData = data;
+        }
+
+        function enterSite() {
+            const scr = document.getElementById('enter-screen');
+            scr.style.opacity = '0';
+            setTimeout(() => scr.style.visibility = 'hidden', 800);
+            
+            const data = loadedBioData;
+            document.getElementById('bio-view').classList.remove('hidden');
+
+            if(data.bg_url) {
+                if(data.bg_url.includes('.mp4')) {
+                    const v = document.getElementById('bg-video');
+                    v.src = data.bg_url; v.style.display = 'block'; v.play();
+                } else {
+                    document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
+                }
+            }
+
+            if(data.audio_url) {
+                const aud = document.getElementById('bg-audio');
+                aud.src = data.audio_url; aud.volume = 0.4; aud.play();
+            }
+
+            document.getElementById('bio-pfp').src = data.pfp_url || '';
+            document.getElementById('bio-name').innerText = data.display_name;
+
+            const container = document.getElementById('bio-links-container');
+            if(data.links) {
+                data.links.split('|').forEach(l => {
+                    const [name, url] = l.split(',');
+                    if(name && url) {
+                        const a = document.createElement('a');
+                        a.className = 'link-btn'; a.href = url; a.target = "_blank"; a.innerText = name;
+                        container.appendChild(a);
+                    }
+                });
+            }
+
+            if(data.show_discord && data.discord_id) {
+                document.getElementById('discord-presence').classList.remove('hidden');
+                fetchDiscord(data.discord_id);
+                setInterval(() => fetchDiscord(data.discord_id), 15000);
+            }
+        }
+
+        async function fetchDiscord(id) {
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+                const { data } = await res.json();
+                if(data) {
+                    document.getElementById('dc-user').innerText = data.discord_user.display_name || data.discord_user.username;
+                    document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
+                    document.getElementById('dc-status').className = `status-dot ${data.discord_status}`;
+                    let act = "Online";
+                    if(data.listening_to_spotify) act = `Ouvindo ${data.spotify.song}`;
+                    else if(data.activities.length > 0) act = data.activities[0].name;
+                    document.getElementById('dc-activity').innerText = act;
+                }
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
