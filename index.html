@@ -10,20 +10,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg: #000000;
+            --bg: #000;
             --glass: rgba(255, 255, 255, 0.08);
             --border: rgba(255, 255, 255, 0.12);
-            --text-secondary: #a1a1a6;
-            --apple-blue: #0071e3;
+            --text-sec: #a1a1a6;
+            --blue: #0071e3;
+            --red: #ff3b30;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
         
         #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; object-fit: cover; filter: brightness(0.4); display: none; }
-        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.5)); z-index: -1; }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.6)); z-index: -1; }
 
-        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; transition: all 0.5s ease; }
+        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; }
 
         .card { 
             background: var(--glass); 
@@ -31,71 +32,60 @@
             -webkit-backdrop-filter: blur(40px) saturate(180%);
             border: 1px solid var(--border); 
             border-radius: 32px; 
-            padding: 40px 28px; 
-            text-align: center; 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            width: 100%;
-        }
-
-        /* Ranking no Login */
-        .ranking-section { margin-top: 30px; text-align: left; }
-        .ranking-title { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; padding-left: 5px; }
-        .rank-item { 
-            display: flex; align-items: center; gap: 12px; padding: 10px; 
-            background: rgba(255,255,255,0.03); border-radius: 15px; 
-            margin-bottom: 8px; text-decoration: none; color: inherit; transition: 0.3s;
-            border: 1px solid transparent;
-        }
-        .rank-item:hover { background: rgba(255,255,255,0.08); border-color: var(--border); }
-        .rank-pfp { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .rank-info h4 { font-size: 13px; font-weight: 600; }
-        .rank-info p { font-size: 11px; color: var(--text-secondary); }
-
-        /* Dropzone / File Inputs */
-        .drop-zone {
-            border: 2px dashed var(--border);
-            border-radius: 15px;
-            padding: 20px;
+            padding: 35px 24px; 
             text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        .drop-zone:hover, .drop-zone.dragover { border-color: var(--apple-blue); background: rgba(0, 113, 227, 0.05); }
-        .drop-zone i { font-size: 20px; color: var(--text-secondary); margin-bottom: 8px; }
-        .drop-zone span { font-size: 12px; color: var(--text-secondary); display: block; }
-        .drop-zone input { display: none; }
-        .preview-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-top: 5px; border: 1px solid var(--border); }
-
-        /* Admin / Editor */
-        .admin-scroll { max-height: 75vh; overflow-y: auto; text-align: left; padding-right: 10px; }
-        label { font-size: 10px; font-weight: 700; color: var(--text-secondary); margin: 15px 0 5px 5px; display: block; text-transform: uppercase; }
-        input, textarea { 
-            width: 100%; padding: 14px; background: rgba(255,255,255,0.05); 
-            border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; font-size: 14px;
-        }
-        textarea { resize: none; overflow-wrap: break-word; }
-
-        .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-save { background: #fff; color: #000; margin-top: 20px; }
-
-        /* Bio Content */
-        .pfp-view { width: 110px; height: 110px; border-radius: 50%; margin-bottom: 20px; object-fit: cover; border: 1.5px solid var(--border); }
-        .display-name { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; }
-        .bio-text-view { 
-            color: var(--text-secondary); margin: 12px 0 25px; font-size: 0.95rem; 
-            line-height: 1.5; overflow-wrap: break-word; max-width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .discord-card { 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 22px; 
-            padding: 16px; display: flex; align-items: center; gap: 15px; text-align: left; 
-            text-decoration: none; color: inherit; margin-bottom: 25px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Ranking UI */
+        .ranking-container { margin-top: 30px; text-align: left; background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; border: 1px solid var(--border); }
+        .rank-header { font-size: 11px; font-weight: 700; color: var(--text-sec); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .rank-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px;
+            border-radius: 14px; text-decoration: none; color: inherit; transition: 0.2s;
+        }
+        .rank-item:hover { background: rgba(255,255,255,0.05); }
+        .rank-pfp { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #222; }
+        .rank-info h4 { font-size: 14px; font-weight: 600; }
+        .rank-info p { font-size: 11px; color: var(--text-sec); }
+
+        /* Editor Styles */
+        .admin-scroll { max-height: 70vh; overflow-y: auto; padding-right: 8px; text-align: left; }
+        label { font-size: 10px; font-weight: 700; color: var(--text-sec); margin: 15px 0 5px 5px; display: block; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; font-size: 14px; }
+        
+        .drop-zone {
+            border: 2px dashed var(--border); border-radius: 16px; padding: 15px;
+            text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
+        }
+        .drop-zone:hover { border-color: var(--blue); }
+        .preview-img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; margin-top: 10px; display: block; margin-inline: auto; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; margin-top: 10px; }
+        .btn-save { background: #fff; color: #000; }
+        .btn-logout { background: transparent; color: var(--red); border: 1px solid rgba(255, 59, 48, 0.2); margin-top: 20px; }
+        .btn-logout:hover { background: rgba(255, 59, 48, 0.1); }
+
+        /* Success Link Box */
+        #link-box { 
+            margin-top: 20px; padding: 15px; background: rgba(0, 113, 227, 0.1); 
+            border: 1px solid var(--blue); border-radius: 16px; text-align: left;
+        }
+        .link-text { font-size: 12px; color: #fff; word-break: break-all; font-family: monospace; display: block; margin: 8px 0; }
+        .link-btns { display: flex; gap: 10px; }
+        .mini-btn { flex: 1; padding: 8px; border-radius: 8px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+
+        /* Profile View */
+        .pfp-view { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; border: 1px solid var(--border); }
+        .bio-text-view { font-size: 0.95rem; color: var(--text-sec); line-height: 1.6; overflow-wrap: break-word; margin-bottom: 20px; }
+        .discord-card {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px;
+            padding: 15px; display: flex; align-items: center; gap: 12px; text-align: left;
+            text-decoration: none; color: inherit; margin-bottom: 20px;
         }
 
         .hidden { display: none !important; }
-        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -103,89 +93,92 @@
     <audio id="bg-audio" loop></audio>
     <div class="overlay"></div>
 
-    <div id="enter-screen" class="hidden" onclick="revealBio()">
-        <h2 style="font-size: 10px; letter-spacing: 6px; color: #555; font-weight: 400;">CLICK TO REVEAL</h2>
-    </div>
-
     <div class="wrapper">
         <div id="login-ui" class="card hidden">
             <h1 style="margin-bottom: 10px;">OmniBio</h1>
-            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 30px;">Your identity, minimalist.</p>
+            <p style="color: var(--text-sec); font-size: 13px; margin-bottom: 25px;">Personalize sua identidade digital.</p>
             <button class="btn" style="background: #5865f2; color: white;" onclick="login()">
-                <i class="fa-brands fa-discord" style="margin-right: 8px;"></i> Entrar com Discord
+                <i class="fa-brands fa-discord"></i> Entrar com Discord
             </button>
-
-            <div class="ranking-section">
-                <p class="ranking-title">Trending Profiles</p>
+            
+            <div class="ranking-container">
+                <div class="rank-header"><i class="fa-solid fa-fire"></i> Em Alta</div>
                 <div id="rank-list">
-                    </div>
+                    <p style="font-size: 11px; color: var(--text-sec);">Carregando perfis...</p>
+                </div>
             </div>
         </div>
 
         <div id="admin-ui" class="card hidden">
             <div class="admin-scroll">
-                <h2 style="margin-bottom: 20px; text-align: center;">Editor</h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="font-size: 20px;">Configurações</h2>
+                    <span id="user-tag" style="font-size: 10px; color: var(--text-sec); background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 20px;"></span>
+                </div>
                 
-                <label>Username na URL</label>
-                <input type="text" id="username" placeholder="ex: joao">
-                
-                <label>Nome Visível</label>
+                <label>Seu @ (URL)</label>
+                <input type="text" id="username" placeholder="ex: lucas_dev">
+
+                <label>Nome no Perfil</label>
                 <input type="text" id="display_name">
-                
-                <label>Biografia</label>
-                <textarea id="bio_text" rows="3" placeholder="Sua frase marcante..."></textarea>
-                
-                <label>Links (icon,url | icon,url)</label>
-                <input type="text" id="links_input" placeholder="instagram,url | github,url">
 
-                <label>Avatar (PFP)</label>
+                <label>Bio</label>
+                <textarea id="bio_text" rows="3"></textarea>
+
+                <label>Redes Sociais (icone,link | ...)</label>
+                <input type="text" id="links_input" placeholder="instagram,link | github,link">
+
+                <label>Foto de Perfil</label>
                 <div class="drop-zone" onclick="document.getElementById('pfp-f').click()">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>Arraste ou clique para trocar PFP</span>
-                    <input type="file" id="pfp-f" accept="image/*">
-                    <img id="pfp-preview" class="preview-thumb hidden">
+                    <span style="font-size:12px;">Clique ou Arraste</span>
+                    <input type="file" id="pfp-f" accept="image/*" hidden>
+                    <img id="pfp-prev" class="preview-img hidden">
                 </div>
-                
-                <label>Fundo (Imagem ou Vídeo)</label>
+
+                <label>Fundo (Vídeo ou Imagem)</label>
                 <div class="drop-zone" onclick="document.getElementById('bg-f').click()">
-                    <i class="fa-solid fa-film"></i>
-                    <span>Arraste imagem ou .mp4</span>
-                    <input type="file" id="bg-f">
+                    <span style="font-size:12px;">Selecione o arquivo</span>
+                    <input type="file" id="bg-f" hidden>
                 </div>
 
-                <label>Música de Fundo</label>
+                <label>Música (.mp3)</label>
                 <div class="drop-zone" onclick="document.getElementById('audio-f').click()">
-                    <i class="fa-solid fa-music"></i>
-                    <span>Arraste seu arquivo de áudio</span>
-                    <input type="file" id="audio-f">
+                    <span style="font-size:12px;">Selecione a trilha</span>
+                    <input type="file" id="audio-f" hidden>
                 </div>
 
-                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SALVAR PERFIL</button>
-                <div id="link-container" style="display:none; margin-top: 20px; font-size: 11px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;">
-                    <span id="generated-url"></span><br>
-                    <a href="#" onclick="copyLink()" style="color: var(--apple-blue); text-decoration: none; font-weight: 600; margin-top: 5px; display: inline-block;">Copiar link</a>
+                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
+
+                <div id="link-box" class="hidden">
+                    <span style="font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase;">Perfil Publicado!</span>
+                    <span id="generated-url" class="link-text"></span>
+                    <div class="link-btns">
+                        <button class="mini-btn" style="background: var(--blue); color: #fff;" onclick="copyLink()">COPIAR</button>
+                        <a id="view-link" class="mini-btn" style="background: #fff; color: #000;" target="_blank">VER PERFIL</a>
+                    </div>
                 </div>
-                <div id="status-msg" style="text-align:center; font-size:11px; margin-top:15px;"></div>
+
+                <button class="btn btn-logout" onclick="logout()">Sair da Conta</button>
             </div>
         </div>
 
         <div id="bio-view" class="card hidden">
             <img id="view-pfp" class="pfp-view">
-            <h1 id="view-name" class="display-name"></h1>
+            <h1 id="view-name"></h1>
             <p id="view-frase" class="bio-text-view"></p>
             
             <a id="dc-link" class="discord-card hidden" target="_blank">
-                <div style="position:relative; width:48px; height:48px;">
-                    <img id="dc-pfp" style="width:100%; border-radius:12px;">
-                    <div id="dc-status" style="position:absolute; bottom:-3px; right:-3px; width:15px; height:15px; border-radius:50%; border:3.5px solid #1a1a1a;"></div>
+                <div style="position:relative; width:44px; height:44px;">
+                    <img id="dc-pfp" style="width:100%; border-radius:10px;">
+                    <div id="dc-status" style="position:absolute; bottom:-2px; right:-2px; width:12px; height:12px; border-radius:50%; border:2px solid #1a1a1a;"></div>
                 </div>
                 <div>
-                    <h3 id="dc-user" style="font-size:14px; font-weight: 600;"></h3>
-                    <p id="dc-activity" style="font-size:11px; color: var(--text-secondary);"></p>
+                    <h3 id="dc-user" style="font-size:13px; font-weight:600;"></h3>
+                    <p id="dc-activity" style="font-size:11px; color: var(--text-sec);"></p>
                 </div>
             </a>
 
-            <div id="social-icons" class="social-links"></div>
+            <div id="social-icons" style="display:flex; justify-content:center; gap:20px;"></div>
         </div>
     </div>
 
@@ -193,31 +186,32 @@
         const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
-        let bioData = null;
 
         async function init() {
             const u = new URLSearchParams(window.location.search).get('u');
             if (u) {
                 const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
-                if (data) { bioData = data; document.getElementById('enter-screen').classList.remove('hidden'); await _supabase.rpc('increment_views', { target_username: u }); }
+                if (data) { renderProfile(data); _supabase.rpc('increment_views', { target_username: u }); }
             } else {
-                loadRanking();
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) loadAdmin(session.user);
-                else document.getElementById('login-ui').classList.remove('hidden');
+                else {
+                    document.getElementById('login-ui').classList.remove('hidden');
+                    loadRanking();
+                }
             }
         }
 
         async function loadRanking() {
-            const { data } = await _supabase.from('bios').select('username, display_name, pfp_url, views').order('views', { ascending: false }).limit(3);
-            if (data) {
+            const { data } = await _supabase.from('bios').select('*').order('views', { ascending: false }).limit(5);
+            if(data) {
                 const list = document.getElementById('rank-list');
                 list.innerHTML = data.map(p => `
                     <a href="?u=${p.username}" class="rank-item">
                         <img src="${p.pfp_url || 'https://ui-avatars.com/api/?name='+p.username}" class="rank-pfp">
                         <div class="rank-info">
                             <h4>${p.display_name}</h4>
-                            <p>@${p.username} • ${p.views} views</p>
+                            <p>@${p.username} • ${p.views || 0} views</p>
                         </div>
                     </a>
                 `).join('');
@@ -225,39 +219,20 @@
         }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
-
-        // Arrastar e Soltar (Drag & Drop)
-        document.querySelectorAll('.drop-zone').forEach(zone => {
-            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                zone.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                zone.querySelector('input').files = e.dataTransfer.files;
-                if(file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const preview = zone.querySelector('.preview-thumb');
-                        if(preview) { preview.src = e.target.result; preview.classList.remove('hidden'); }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
+        async function logout() { await _supabase.auth.signOut(); window.location.href = window.location.origin + window.location.pathname; }
 
         async function saveBio() {
             const btn = document.getElementById('save-btn');
-            btn.innerText = "UPDATING..."; btn.disabled = true;
+            btn.innerText = "Salvando..."; btn.disabled = true;
             try {
                 const { data: { user } } = await _supabase.auth.getUser();
                 const { data: curr } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
 
-                const upload = async (id, folder) => {
-                    const file = document.getElementById(id).files[0];
-                    if(!file) return null;
+                const upload = async (elId, folder) => {
+                    const f = document.getElementById(elId).files[0];
+                    if(!f) return null;
                     const path = `${folder}/${user.id}_${Date.now()}`;
-                    await _supabase.storage.from('assets').upload(path, file);
+                    await _supabase.storage.from('assets').upload(path, f);
                     return _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 };
 
@@ -276,16 +251,27 @@
                     audio_url: aud || curr?.audio_url,
                     discord_id: user.user_metadata.provider_id
                 };
+
                 await _supabase.from('bios').upsert(payload);
-                alert("Profile Saved!");
-                window.location.href = "?u=" + username;
-            } catch (e) { alert("Error saving."); btn.disabled = false; btn.innerText = "SAVE PERFIL"; }
+                
+                // Exibe o link manualmente em vez de redirecionar
+                const url = window.location.origin + window.location.pathname + "?u=" + username;
+                document.getElementById('link-box').classList.remove('hidden');
+                document.getElementById('generated-url').innerText = url;
+                document.getElementById('view-link').href = url;
+                
+                btn.innerText = "SALVAR ALTERAÇÕES"; btn.disabled = false;
+            } catch (e) { alert("Erro ao salvar"); btn.disabled = false; }
         }
 
-        function revealBio() {
-            document.getElementById('enter-screen').classList.add('hidden');
+        function copyLink() {
+            const txt = document.getElementById('generated-url').innerText;
+            navigator.clipboard.writeText(txt);
+            alert("Link copiado!");
+        }
+
+        function renderProfile(d) {
             document.getElementById('bio-view').classList.remove('hidden');
-            const d = bioData;
             document.getElementById('view-name').innerText = d.display_name;
             document.getElementById('view-frase').innerText = d.bio_text;
             document.getElementById('view-pfp').src = d.pfp_url || `https://ui-avatars.com/api/?name=${d.username}`;
@@ -296,20 +282,6 @@
                 } else document.body.style.background = `url(${d.bg_url}) center/cover no-repeat fixed`;
             }
             if(d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); }
-            
-            if(d.links) {
-                const s = document.getElementById('social-icons');
-                d.links.split('|').forEach(l => {
-                    const [icon, url] = l.split(',');
-                    if(icon && url) {
-                        const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank"; a.className = "social-icon";
-                        const name = icon.trim().toLowerCase();
-                        let type = ['link', 'globe', 'envelope'].includes(name) ? 'fa-solid' : 'fa-brands';
-                        a.innerHTML = `<i class="${type} fa-${name}"></i>`;
-                        s.appendChild(a);
-                    }
-                });
-            }
 
             if(d.discord_id) {
                 fetch(`https://api.lanyard.rest/v1/users/${d.discord_id}`).then(r => r.json()).then(({data}) => {
@@ -319,14 +291,26 @@
                         document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
                         const s = data.discord_status;
                         document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                        
-                        // Lógica de Atividade
-                        let activity = "Online";
+                        let act = "Online";
                         if(data.activities.length > 0) {
-                            const act = data.activities.find(x => x.type === 0) || data.activities[0];
-                            activity = (act.emoji ? act.emoji.name + ' ' : '') + (act.state || act.name);
+                            const main = data.activities.find(x => x.type === 0) || data.activities[0];
+                            act = (main.emoji ? main.emoji.name + ' ' : '') + (main.state || main.name);
                         }
-                        document.getElementById('dc-activity').innerText = activity;
+                        document.getElementById('dc-activity').innerText = act;
+                    }
+                });
+            }
+
+            if(d.links) {
+                const s = document.getElementById('social-icons');
+                d.links.split('|').forEach(l => {
+                    const [icon, url] = l.split(',');
+                    if(icon && url) {
+                        const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank";
+                        a.style = "color:#fff; font-size:1.5rem; opacity:0.6; transition:0.3s";
+                        let type = ['link', 'envelope'].includes(icon.trim()) ? 'fa-solid' : 'fa-brands';
+                        a.innerHTML = `<i class="${type} fa-${icon.trim()}"></i>`;
+                        s.appendChild(a);
                     }
                 });
             }
@@ -334,12 +318,17 @@
 
         async function loadAdmin(user) {
             document.getElementById('admin-ui').classList.remove('hidden');
+            document.getElementById('user-tag').innerText = user.user_metadata.full_name || user.email;
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if(data) {
                 document.getElementById('username').value = data.username || "";
                 document.getElementById('display_name').value = data.display_name || "";
                 document.getElementById('bio_text').value = data.bio_text || "";
                 document.getElementById('links_input').value = data.links || "";
+                if(data.pfp_url) {
+                    document.getElementById('pfp-prev').src = data.pfp_url;
+                    document.getElementById('pfp-prev').classList.remove('hidden');
+                }
             }
         }
 
