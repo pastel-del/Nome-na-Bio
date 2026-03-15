@@ -1,47 +1,82 @@
 body{
-
+margin:0;
+font-family:Arial;
 background:#050505;
 color:white;
-font-family:Arial;
-text-align:center;
-
 }
 
 .center{
-
+text-align:center;
 margin-top:200px;
-
 }
 
 .logo{
-
 font-size:60px;
-
 }
 
 .btn{
-
 padding:15px 40px;
 background:#0071e3;
 border:none;
+border-radius:15px;
 color:white;
-border-radius:12px;
 cursor:pointer;
+}
+
+.dashboard{
+max-width:1200px;
+margin:auto;
+padding:40px;
+}
+
+.editor{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+.form{
+background:rgba(255,255,255,0.05);
+padding:30px;
+border-radius:20px;
+}
+
+.form input,
+.form textarea{
+
+width:100%;
+padding:10px;
+margin-bottom:10px;
+background:#111;
+border:none;
+color:white;
 
 }
 
-.card{
+.preview{
+background:rgba(255,255,255,0.05);
+border-radius:20px;
+padding:30px;
+text-align:center;
+}
 
-width:400px;
-margin:auto;
-display:flex;
-flex-direction:column;
-gap:10px;
+.preview img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+}
 
+.banner{
+height:120px;
+background:#111;
+border-radius:15px;
+margin-bottom:20px;
 }
 
 .profile{
-
+max-width:500px;
+margin:auto;
 margin-top:100px;
-
+text-align:center;
 }
