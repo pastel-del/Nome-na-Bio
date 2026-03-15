@@ -3,148 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio - Superior Experience</title>
+    <title>OmniBio Cloud | Superior Experience</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
-        :root { --primary: #b026ff; --accent: #00ffcc; }
-        * { box-sizing: border-box; cursor: crosshair; }
-        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        :root { 
+            --main: #b026ff; 
+            --accent: #00ffcc;
+            --bg: #050505; 
+        }
 
-        /* --- ESTILO DA BIO --- */
-        #bg-dynamic { position: fixed; inset: 0; background-size: cover; background-position: center; filter: brightness(0.3) blur(2px); z-index: -2; transition: 1s; }
-        .overlay { position: fixed; inset: 0; background: radial-gradient(circle, transparent, #000); z-index: -1; }
+        * { box-sizing: border-box; }
+
+        body, html { 
+            margin: 0; padding: 0; 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- BACKGROUND DINÂMICO --- */
+        #bg-container {
+            position: fixed; inset: 0;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            transition: 1s ease-in-out;
+        }
+
+        #bg-video-element {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle, transparent, rgba(0,0,0,0.9));
+            z-index: -1;
+        }
+
+        /* --- PAINEL ADMIN --- */
+        .admin-wrapper {
+            display: flex; justify-content: center; align-items: center; padding: 40px 20px;
+        }
+
+        .panel {
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: 24px;
+            border: 1px solid #222;
+            width: 100%; max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        h2 { color: var(--main); margin-top: 0; font-weight: 800; }
+        label { display: block; font-size: 0.75rem; color: #777; margin: 15px 0 5px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .container { display: flex; justify-content: center; align-items: center; min-height: 100vh; perspective: 1000px; padding: 20px; }
-        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 40px; width: 100%; max-width: 400px; text-align: center; transform-style: preserve-3d; transition: 0.1s; display: none; }
-        
-        .pfp { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--primary); padding: 5px; margin-bottom: 15px; }
-        .status-dot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; background: #747f8d; margin-right: 5px; }
-        .online { background: #43b581; box-shadow: 0 0 10px #43b581; }
+        input, textarea {
+            width: 100%; padding: 12px; background: #000;
+            border: 1px solid #333; color: white; border-radius: 10px;
+            outline: none; transition: 0.3s;
+        }
 
-        /* --- ESTILO DO PAINEL ADMIN --- */
-        #admin-panel { max-width: 600px; margin: 50px auto; background: #111; padding: 30px; border-radius: 20px; border: 1px solid #222; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
-        button { width: 100%; padding: 15px; background: var(--primary); border: none; color: #fff; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        button:hover { filter: brightness(1.2); transform: scale(1.02); }
-        .result-link { background: #002211; border: 1px dashed var(--accent); padding: 15px; margin-top: 20px; word-break: break-all; display: none; }
+        input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(176, 38, 255, 0.2); }
 
-        /* Animações */
-        .listening { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; }
+        .btn {
+            width: 100%; padding: 16px; background: var(--main);
+            border: none; color: white; font-weight: 800;
+            border-radius: 12px; cursor: pointer; transition: 0.3s;
+            margin-top: 20px; text-transform: uppercase;
+        }
+
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(176, 38, 255, 0.4); }
+
+        /* --- BIO VIEW --- */
+        #bio-view {
+            display: none; position: fixed; inset: 0;
+            justify-content: center; align-items: center; z-index: 100;
+            perspective: 1000px;
+        }
+
+        .glass-card {
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(25px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 50px; border-radius: 35px;
+            text-align: center; width: 380px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease;
+        }
+
+        .pfp {
+            width: 130px; height: 130px; border-radius: 50%;
+            border: 3px solid var(--main); margin-bottom: 20px;
+            object-fit: cover; box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+
+        .link-btn {
+            display: block; padding: 14px; margin: 12px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px; color: white; text-decoration: none;
+            font-weight: 600; border: 1px solid rgba(255,255,255,0.08);
+            transition: 0.3s;
+        }
+
+        .link-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        #status-msg { font-size: 0.85rem; margin-top: 15px; color: var(--accent); word-break: break-all; }
     </style>
 </head>
 <body>
 
-    <div id="bg-dynamic"></div>
+    <div id="bg-container"></div>
+    <video id="bg-video-element" autoplay muted loop playsinline></video>
     <div class="overlay"></div>
-    <div class="container" id="bio-ui">
-        <div class="card" id="main-card">
-            <img id="user-pfp" src="" class="pfp">
-            <h1 id="user-name" style="margin:0; font-weight: 800;">NICKNAME</h1>
-            <p id="user-bio" style="color: #aaa;"></p>
-            <div id="status-area"><span id="dot" class="status-dot"></span><span id="status-text">OFFLINE</span></div>
-            <div id="links-area" style="margin-top: 20px;"></div>
-            <div class="listening">🎵 <span id="track-name">Carregando rádio...</span></div>
+
+    <div id="admin-ui" class="admin-wrapper">
+        <div class="panel">
+            <h2>OmniBio Builder</h2>
+            <input type="text" id="username" placeholder="Seu Nick Único (ex: luan7)">
+            
+            <label>Nome de Exibição</label>
+            <input type="text" id="display_name" placeholder="Ex: Luan | EB">
+            
+            <label>ID do Discord (Lanyard)</label>
+            <input type="text" id="discord_id" placeholder="Ex: 450123456789">
+            
+            <label>Sua Foto (do PC)</label>
+            <input type="file" id="pfp-input" accept="image/*">
+            
+            <label>Fundo (Imagem ou Vídeo MP4)</label>
+            <input type="file" id="bg-input" accept="image/*,video/mp4">
+            
+            <label>Links (Nome,URL | Nome2,URL2)</label>
+            <textarea id="links" rows="3" placeholder="Instagram,https://...|Discord,https://..."></textarea>
+            
+            <button class="btn" onclick="saveToCloud()">Publicar Bio</button>
+            <div id="status-msg"></div>
         </div>
     </div>
 
-    <div id="admin-panel">
-        <h2 style="color: var(--primary)">OmniBio Generator</h2>
-        <p style="color: #666">Crie sua bio superior ao guns.lol em segundos.</p>
-        
-        <input type="text" id="in-id" placeholder="Seu ID do Discord (Lanyard)">
-        <input type="text" id="in-nome" placeholder="Seu Nome/Nick">
-        <input type="text" id="in-tema" placeholder="Tema do Fundo (ex: cyberpunk, space, forest)">
-        <textarea id="in-links" placeholder="Links (Formato: Nome,url|Nome2,url2)"></textarea>
-        
-        <button onclick="generateLink()">GERAR MEU LINK DE BIO</button>
-        
-        <div id="result" class="result-link">
-            <p>Seu link pronto:</p>
-            <code id="final-url"></code>
-            <button style="margin-top:10px; background:#333" onclick="copyLink()">COPIAR LINK</button>
+    <div id="bio-view">
+        <div class="glass-card" id="tilt-card">
+            <img id="bio-pfp" class="pfp" src="">
+            <h1 id="bio-name" style="margin: 0; font-weight: 800; letter-spacing: -1px; font-size: 2rem;"></h1>
+            <p id="bio-status" style="color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; margin-top: 5px;">CARREGANDO STATUS...</p>
+            <div id="bio-links-container" style="margin-top: 30px;"></div>
         </div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const audio = new Audio();
+        // --- CONFIGURAÇÃO CONECTADA ---
+        const SB_URL = 'https://pastel.supabase.co';
+        const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        // Lógica de Inicialização
-        if (params.has('id')) {
-            document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('main-card').style.display = 'block';
-            startBio();
+        // --- SALVAR NO CLOUD ---
+        async function saveToCloud() {
+            const user = document.getElementById('username').value.trim().toLowerCase();
+            const msg = document.getElementById('status-msg');
+            const pfpFile = document.getElementById('pfp-input').files[0];
+            const bgFile = document.getElementById('bg-input').files[0];
+
+            if(!user) return alert("Por favor, escolha um Nick!");
+            msg.innerText = "⚡ Enviando arquivos para a nuvem...";
+
+            try {
+                let pfpUrl = "";
+                let bgUrl = "";
+
+                // Upload PFP
+                if(pfpFile) {
+                    const ext = pfpFile.name.split('.').pop();
+                    const path = `pfp/${user}_${Date.now()}.${ext}`;
+                    await _supabase.storage.from('assets').upload(path, pfpFile);
+                    pfpUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
+                }
+
+                // Upload BG
+                if(bgFile) {
+                    const ext = bgFile.name.split('.').pop();
+                    const path = `bg/${user}_${Date.now()}.${ext}`;
+                    await _supabase.storage.from('assets').upload(path, bgFile);
+                    bgUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
+                }
+
+                // Salvar informações no Banco
+                const { error } = await _supabase.from('bios').upsert({
+                    username: user,
+                    display_name: document.getElementById('display_name').value,
+                    discord_id: document.getElementById('discord_id').value,
+                    links: document.getElementById('links').value,
+                    pfp_url: pfpUrl,
+                    bg_url: bgUrl
+                });
+
+                if(error) throw error;
+                msg.innerHTML = `✅ Bio criada! Link:<br><b>${window.location.origin}${window.location.pathname}?u=${user}</b>`;
+
+            } catch (err) {
+                msg.innerText = "❌ Erro: " + err.message;
+            }
         }
 
-        function startBio() {
-            const theme = params.get('tema') || 'dark';
-            document.getElementById('bg-dynamic').style.backgroundImage = `url('https://source.unsplash.com/featured/1920x1080?${theme}')`;
+        // --- CARREGAR BIO ---
+        async function loadBio(username) {
+            const { data, error } = await _supabase.from('bios').select('*').eq('username', username).single();
             
-            updateDiscord();
-            fetchMusic(theme);
-            renderLinks();
-            
-            // Tilt 3D
-            document.addEventListener('mousemove', e => {
-                let x = (window.innerWidth / 2 - e.clientX) / 20;
-                let y = (window.innerHeight / 2 - e.clientY) / 20;
-                document.getElementById('main-card').style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-            });
+            if(data) {
+                document.getElementById('admin-ui').style.display = 'none';
+                const view = document.getElementById('bio-view');
+                view.style.display = 'flex';
+
+                // Configurar Background (Vídeo ou Imagem)
+                if(data.bg_url && data.bg_url.endsWith('.mp4')) {
+                    const vid = document.getElementById('bg-video-element');
+                    vid.src = data.bg_url;
+                    vid.style.display = 'block';
+                } else {
+                    document.getElementById('bg-container').style.backgroundImage = `url(${data.bg_url})`;
+                }
+                
+                document.getElementById('bio-pfp').src = data.pfp_url || 'https://via.placeholder.com/150';
+                document.getElementById('bio-name').innerText = data.display_name.toUpperCase();
+                
+                // Renderizar Links
+                const container = document.getElementById('bio-links-container');
+                if(data.links) {
+                    data.links.split('|').forEach(l => {
+                        const [name, url] = l.split(',');
+                        if(name && url) {
+                            const a = document.createElement('a');
+                            a.className = 'link-btn';
+                            a.href = url; a.target = "_blank"; a.innerText = name;
+                            container.appendChild(a);
+                        }
+                    });
+                }
+
+                // Efeito Tilt 3D
+                const card = document.getElementById('tilt-card');
+                document.addEventListener('mousemove', e => {
+                    let xAxis = (window.innerWidth / 2 - e.clientX) / 25;
+                    let yAxis = (window.innerHeight / 2 - e.clientY) / 25;
+                    card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                });
+
+                // Status Discord (Lanyard)
+                if(data.discord_id) {
+                    updateStatus(data.discord_id);
+                    setInterval(() => updateStatus(data.discord_id), 10000);
+                }
+            }
         }
 
-        async function updateDiscord() {
-            const id = params.get('id');
-            const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-            const { data } = await res.json();
-            
-            document.getElementById('user-name').innerText = (params.get('nome') || data.discord_user.username).toUpperCase();
-            document.getElementById('user-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
-            document.getElementById('dot').className = `status-dot ${data.discord_status}`;
-            document.getElementById('status-text').innerText = data.discord_status.toUpperCase();
+        async function updateStatus(id) {
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+                const { data } = await res.json();
+                const statusEl = document.getElementById('bio-status');
+                statusEl.innerText = data.discord_status.toUpperCase() + (data.activities[0] ? ` | JOGANDO: ${data.activities[0].name}` : "");
+                statusEl.style.color = data.discord_status === 'online' ? '#43b581' : '#f04747';
+            } catch(e) {}
         }
 
-        async function fetchMusic(tag) {
-            const res = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56d30c95&format=json&limit=1&order=random&tag=${tag}`);
-            const data = await res.json();
-            const track = data.results[0];
-            audio.src = track.audio;
-            document.getElementById('track-name').innerText = track.name;
-            audio.play().catch(() => { document.getElementById('track-name').innerText = "Clique para ouvir música"; });
-        }
-
-        function renderLinks() {
-            const raw = params.get('links');
-            if(!raw) return;
-            const area = document.getElementById('links-area');
-            raw.split('|').forEach(link => {
-                const [n, u] = link.split(',');
-                const a = document.createElement('a');
-                a.href = u; a.innerText = n;
-                a.target = "_blank";
-                a.style = "display:block; padding:12px; margin:8px 0; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-decoration:none; font-weight:bold;";
-                area.appendChild(a);
-            });
-        }
-
-        // Funções do Painel Admin
-        function generateLink() {
-            const id = document.getElementById('in-id').value;
-            const nome = document.getElementById('in-nome').value;
-            const tema = document.getElementById('in-tema').value;
-            const links = document.getElementById('in-links').value;
-            
-            const base = window.location.origin + window.location.pathname;
-            const final = `${base}?id=${id}&nome=${nome}&tema=${tema}&links=${links}`;
-            
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('final-url').innerText = final;
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(document.getElementById('final-url').innerText);
-            alert("Link copiado!");
-        }
+        // Lógica de URL
+        const u = new URLSearchParams(window.location.search).get('u');
+        if(u) loadBio(u);
     </script>
 </body>
 </html>
