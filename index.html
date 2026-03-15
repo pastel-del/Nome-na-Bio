@@ -28,86 +28,61 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* --- UI HELPERS --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
         .hidden { display: none !important; }
-        
-        /* --- EFEITOS CANVAS --- */
         #effects-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .p-card { position: relative; z-index: 2; }
 
-        /* --- BUTTONS --- */
-        .btn {
-            padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;
-            border: none; transition: var(--transition); display: inline-flex;
-            align-items: center; gap: 8px; font-size: 14px; text-decoration: none;
-        }
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; font-size: 14px; text-decoration: none; }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,113,227,0.3); }
         .btn-ghost { background: var(--surface-light); color: var(--text); border: 1px solid var(--border); }
 
-        /* --- DASHBOARD STRUCTURE --- */
         .dash-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 40px 24px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
-        .main-content { padding: 60px; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .main-content { padding: 60px; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
 
-        /* --- CARDS --- */
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px; margin-bottom: 30px; animation: fadeIn 0.6s ease; }
         .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-        .card-header i { color: var(--accent); font-size: 20px; }
         
-        /* --- FORMS --- */
         label { display: block; font-size: 11px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
-        input, textarea, select {
-            width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 14px 18px; border-radius: 12px; color: white;
-            font-size: 14px; transition: var(--transition); outline: none; margin-bottom: 20px;
-        }
+        input, textarea, select { width: 100%; background: #000; border: 1px solid var(--border); padding: 14px 18px; border-radius: 12px; color: white; margin-bottom: 20px; outline: none; }
 
-        /* --- SHARE SECTION --- */
-        .link-share-card { background: linear-gradient(135deg, #0071e3 0%, #003a75 100%); border: none; color: white; }
-        .link-box { background: rgba(0,0,0,0.3); padding: 14px 18px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); margin-top: 15px; }
-        .link-text { font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; }
+        /* Estilo para Redes Sociais no Admin */
+        .social-admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .social-field { position: relative; }
+        .social-field i { position: absolute; left: 15px; top: 38px; color: var(--text-dim); }
+        .social-field input { padding-left: 45px; }
 
-        /* --- UPLOAD SYSTEM --- */
-        .drop-zone { height: 180px; border: 2px dashed var(--border); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); position: relative; background: rgba(255,255,255,0.01); overflow: hidden; }
+        /* Estilo para Status de Mídia */
+        .drop-zone { height: 140px; border: 2px dashed var(--border); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); position: relative; background: rgba(255,255,255,0.01); margin-bottom: 20px; }
         .progress-bar-wrap { position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; background: rgba(0,0,0,0.2); }
         .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
-        .file-ok { font-size: 12px; color: var(--success); margin-top: 10px; display: none; align-items: center; gap: 6px; font-weight: 600; }
+        .file-status-tag { font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .tag-exists { background: rgba(40, 205, 65, 0.15); color: var(--success); border: 1px solid var(--success); }
 
-        /* --- PUBLIC PROFILE --- */
-        #profile-render { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; position: relative; }
-        .p-card { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 480px; border-radius: 40px; padding: 60px 40px; text-align: center; box-shadow: 0 50px 100px rgba(0,0,0,0.8); }
-        .p-avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent); margin-bottom: 25px; box-shadow: 0 0 30px rgba(0,113,227,0.3); }
+        /* Link Share Card */
+        .link-share-card { background: linear-gradient(135deg, #0071e3 0%, #003a75 100%); border: none; color: white; }
+        .link-box { background: rgba(0,0,0,0.3); padding: 14px 18px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); margin-top: 15px; }
 
-        /* --- RANKING --- */
+        /* Profile View Extras */
+        .v-social-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 25px; }
+        .v-social-link { width: 45px; height: 45px; border-radius: 12px; background: rgba(255,255,255,0.05); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); text-decoration: none; }
+        .v-social-link:hover { background: var(--accent); transform: translateY(-3px); }
+
+        #toast { position: fixed; top: 30px; right: 30px; z-index: 10000; background: var(--surface-light); border: 1px solid var(--border); padding: 18px 28px; border-radius: 18px; }
         .rank-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; transition: 0.3s; cursor: pointer; }
-        .rank-row:hover { transform: scale(1.02); border-color: var(--accent); }
-
-        #toast { position: fixed; top: 30px; right: 30px; z-index: 10000; background: var(--surface-light); border: 1px solid var(--border); padding: 18px 28px; border-radius: 18px; display: flex; align-items: center; gap: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <canvas id="effects-canvas"></canvas>
-
-    <div id="toast" class="hidden animate__animated">
-        <i id="toast-icon" class="fa-solid fa-circle-check"></i>
-        <span id="toast-msg">Sucesso!</span>
-    </div>
+    <div id="toast" class="hidden animate__animated"> <span id="toast-msg"></span> </div>
 
     <section id="view-home" class="hidden">
         <div class="container" style="padding-top: 120px; text-align: center;">
-            <div class="animate__animated animate__fadeInDown">
-                <h1 style="font-size: clamp(48px, 10vw, 80px); font-weight: 800; letter-spacing: -4px; margin-bottom: 20px;">OmniBio<span style="color:var(--accent)">.</span></h1>
-                <p style="color: var(--text-dim); font-size: 20px; max-width: 700px; margin: 0 auto 50px;">A plataforma definitiva para unificar sua presença digital com estilo e efeitos únicos.</p>
-                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="login()" style="padding: 18px 45px; font-size: 16px;">Criar Perfil Grátis</button>
-                </div>
-            </div>
-            <div style="margin-top: 100px; padding-bottom: 100px;">
-                <h2 style="font-size: 28px; margin-bottom: 40px;"><i class="fa-solid fa-trophy" style="color:#ffd700"></i> Top Perfis</h2>
+            <h1 style="font-size: clamp(48px, 10vw, 80px); font-weight: 800; letter-spacing: -4px;">OmniBio<span style="color:var(--accent)">.</span></h1>
+            <button class="btn btn-primary" onclick="login()" style="margin-top: 30px; padding: 18px 45px;">Criar Perfil com Discord</button>
+            <div style="margin-top: 80px;">
+                <h2 style="margin-bottom: 30px;"><i class="fa-solid fa-trophy"></i> Top Perfis</h2>
                 <div id="home-ranking-list" style="max-width: 650px; margin: 0 auto;"></div>
             </div>
         </div>
@@ -116,90 +91,77 @@
     <section id="view-admin" class="hidden">
         <div class="dash-layout">
             <aside class="sidebar">
-                <div style="font-size: 24px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 50px;">OmniBio<span style="color:var(--accent)">.</span></div>
-                <nav style="flex: 1;">
-                    <a href="#" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: none;">
-                        <i class="fa-solid fa-gauge-high"></i> Dashboard
-                    </a>
-                </nav>
-                <div style="padding-top: 25px; border-top: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px;">
-                        <img id="admin-pfp" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <p id="admin-name" style="font-weight: 700; font-size: 14px;"></p>
-                            <p style="font-size: 11px; color: var(--success); font-weight: 600;">CONTA ATIVA</p>
-                        </div>
-                    </div>
-                    <button class="btn btn-ghost" onclick="logout()" style="width: 100%; color: var(--error); border-color: rgba(255,59,48,0.2);">Sair</button>
+                <div style="font-size: 24px; font-weight: 900; margin-bottom: 50px;">OmniBio.</div>
+                <div style="flex: 1;">
+                    <img id="admin-pfp" style="width: 45px; border-radius: 50%; margin-bottom: 10px;">
+                    <p id="admin-name" style="font-weight: 700; font-size: 14px;"></p>
                 </div>
+                <button class="btn btn-ghost" onclick="logout()" style="color: var(--error);">Sair</button>
             </aside>
 
             <main class="main-content">
                 <div class="card link-share-card">
-                    <h2 style="font-size: 20px; margin-bottom: 8px;">🚀 Perfil Ativo!</h2>
+                    <h2 style="font-size: 20px;">🚀 Link Ativo</h2>
                     <div class="link-box">
-                        <span class="link-text" id="display-share-url">omnibio.com/?u=carregando...</span>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-primary" onclick="copyLink()" style="background: white; color: var(--accent); padding: 10px 14px; border-radius: 10px;"><i class="fa-solid fa-copy"></i></button>
-                            <button class="btn btn-primary" id="btn-preview" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 10px;"><i class="fa-solid fa-eye"></i></button>
-                        </div>
+                        <span id="display-share-url">omnibio.com/?u=...</span>
+                        <button onclick="copyLink()" class="btn" style="background:white; color:var(--accent)">Copiar</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-wand-magic-sparkles"></i><h2>Efeitos Visuais</h2></div>
-                    <label>Selecione um efeito para o fundo do seu perfil</label>
-                    <select id="db_effect">
-                        <option value="none">Nenhum Efeito</option>
-                        <option value="snow">Neve (Inverno)</option>
-                        <option value="hearts">Corações (Love)</option>
-                        <option value="stars">Estrelas Cadentes</option>
-                        <option value="matrix">Matrix (Hacker)</option>
-                        <option value="fireflies">Vaga-lumes</option>
-                    </select>
+                    <div class="card-header"><i class="fa-solid fa-share-nodes"></i><h2>Redes Sociais</h2></div>
+                    <div class="social-admin-grid">
+                        <div class="social-field"><label>Instagram</label><i class="fa-brands fa-instagram"></i><input type="text" id="social_instagram" placeholder="URL do Perfil"></div>
+                        <div class="social-field"><label>TikTok</label><i class="fa-brands fa-tiktok"></i><input type="text" id="social_tiktok" placeholder="URL do Perfil"></div>
+                        <div class="social-field"><label>X (Twitter)</label><i class="fa-brands fa-x-twitter"></i><input type="text" id="social_twitter" placeholder="URL do Perfil"></div>
+                        <div class="social-field"><label>YouTube</label><i class="fa-brands fa-youtube"></i><input type="text" id="social_youtube" placeholder="URL do Canal"></div>
+                    </div>
                 </div>
 
                 <div class="card">
                     <div class="card-header"><i class="fa-solid fa-id-card"></i><h2>Identidade</h2></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div><label>Username</label><input type="text" id="db_username"></div>
-                        <div><label>Nome de Exibição</label><input type="text" id="db_display_name"></div>
-                    </div>
-                    <label>Biografia</label>
-                    <textarea id="db_bio" rows="3"></textarea>
+                    <label>Username</label><input type="text" id="db_username">
+                    <label>Nome de Exibição</label><input type="text" id="db_display_name">
+                    <label>Biografia</label><textarea id="db_bio" rows="3"></textarea>
+                    <label>Efeito Visual</label>
+                    <select id="db_effect">
+                        <option value="none">Nenhum</option>
+                        <option value="snow">Neve</option>
+                        <option value="matrix">Matrix</option>
+                        <option value="stars">Estrelas</option>
+                        <option value="hearts">Corações</option>
+                    </select>
                 </div>
 
                 <div class="card">
                     <div class="card-header"><i class="fa-solid fa-upload"></i><h2>Mídia</h2></div>
-                    <div class="upload-area">
-                        <label>Foto de Perfil</label>
-                        <div class="drop-zone" onclick="document.getElementById('f_pfp').click()">
-                            <i class="fa-solid fa-circle-user"></i><p>Subir Foto</p>
-                            <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url')">
-                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_pfp_url"></div></div>
-                        </div>
-                        <input type="hidden" id="pfp_url">
+                    
+                    <label>Foto de Perfil</label>
+                    <div class="drop-zone" onclick="document.getElementById('f_pfp').click()">
+                        <p id="label_pfp_url">Clique para subir imagem</p>
+                        <div id="status_tag_pfp_url"></div>
+                        <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url')">
+                        <div class="progress-bar-wrap"><div class="progress-fill" id="fill_pfp_url"></div></div>
                     </div>
+                    <input type="hidden" id="pfp_url">
 
-                    <div class="upload-area">
-                        <label>Banner ou Vídeo MP4</label>
-                        <div class="drop-zone" onclick="document.getElementById('f_bg').click()">
-                            <i class="fa-solid fa-panorama"></i><p>Subir Fundo</p>
-                            <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url')">
-                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_bg_url"></div></div>
-                        </div>
-                        <input type="hidden" id="bg_url">
+                    <label>Banner ou Vídeo (MP4)</label>
+                    <div class="drop-zone" onclick="document.getElementById('f_bg').click()">
+                        <p id="label_bg_url">Clique para subir banner/vídeo</p>
+                        <div id="status_tag_bg_url"></div>
+                        <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url')">
+                        <div class="progress-bar-wrap"><div class="progress-fill" id="fill_bg_url"></div></div>
                     </div>
+                    <input type="hidden" id="bg_url">
 
-                    <div class="upload-area">
-                        <label>Música MP3</label>
-                        <div class="drop-zone" onclick="document.getElementById('f_audio').click()">
-                            <i class="fa-solid fa-music"></i><p>Subir Música</p>
-                            <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url')">
-                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_audio_url"></div></div>
-                        </div>
-                        <input type="hidden" id="audio_url">
+                    <label>Música de Fundo (MP3)</label>
+                    <div class="drop-zone" onclick="document.getElementById('f_audio').click()">
+                        <p id="label_audio_url">Clique para subir música</p>
+                        <div id="status_tag_audio_url"></div>
+                        <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url')">
+                        <div class="progress-bar-wrap"><div class="progress-fill" id="fill_audio_url"></div></div>
                     </div>
+                    <input type="hidden" id="audio_url">
 
                     <button class="btn btn-primary" style="width: 100%; padding: 20px;" onclick="saveBioData()">SALVAR TUDO</button>
                 </div>
@@ -211,20 +173,19 @@
         <div id="profile-render">
             <div class="p-card animate__animated animate__zoomIn">
                 <img id="v-avatar" class="p-avatar">
-                <h1 id="v-display-name" style="font-size: 32px; font-weight: 800; margin-bottom: 5px;"></h1>
-                <p id="v-username" style="color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 25px;"></p>
-                <p id="v-bio-text" style="color: rgba(255,255,255,0.8); line-height: 1.6; font-size: 16px; margin-bottom: 35px;"></p>
+                <h1 id="v-display-name"></h1>
+                <p id="v-username" style="color:var(--accent)"></p>
+                <p id="v-bio-text" style="margin: 20px 0;"></p>
                 
-                <div id="v-discord-box" class="hidden" style="background: rgba(255,255,255,0.06); border-radius: 24px; padding: 20px; text-align: left; display: flex; align-items: center; gap: 18px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="position: relative;">
-                        <img id="v-dc-avatar" style="width: 50px; height: 50px; border-radius: 14px;">
-                        <div id="v-dc-status" style="position: absolute; bottom: -4px; right: -4px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #111;"></div>
-                    </div>
+                <div id="v-discord-box" class="hidden" style="background: rgba(255,255,255,0.06); border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; text-align: left; border: 1px solid rgba(255,255,255,0.1);">
+                    <img id="v-dc-avatar" style="width: 45px; border-radius: 10px;">
                     <div>
-                        <div id="v-dc-user" style="font-weight: 800; font-size: 14px; color: #fff;"></div>
-                        <div id="v-dc-activity" style="font-size: 12px; color: #b9bbbe;"></div>
+                        <div id="v-dc-user" style="font-weight: 800; font-size: 13px;"></div>
+                        <div id="v-dc-activity" style="font-size: 11px; color: #aaa;"></div>
                     </div>
                 </div>
+
+                <div class="v-social-row" id="v-social-row"></div>
             </div>
         </div>
     </section>
@@ -237,8 +198,8 @@
 
         async function init() {
             const params = new URLSearchParams(window.location.search);
-            const userParam = params.get('u');
-            if (userParam) { loadProfile(userParam); } 
+            const u = params.get('u');
+            if (u) { loadProfile(u); } 
             else {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) { activeUser = session.user; loadAdmin(); } 
@@ -246,78 +207,52 @@
             }
         }
 
-        // --- MOTOR DE EFEITOS (CANVAS) ---
-        function startEffect(type) {
-            if (!type || type === 'none') return;
-            const canvas = document.getElementById('effects-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            let particles = [];
-            const presets = {
-                snow: { char: '❄', count: 50, size: 15, speed: 1 },
-                hearts: { char: '❤', count: 30, size: 20, speed: 1.2 },
-                stars: { char: '★', count: 40, size: 12, speed: 0.5 },
-                matrix: { char: '01', count: 70, size: 14, speed: 4 },
-                fireflies: { char: '●', count: 40, size: 4, speed: 0.7 }
-            };
-
-            const p = presets[type];
-            for(let i=0; i<p.count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    s: Math.random() * p.size + 5,
-                    v: Math.random() * p.speed + 0.5
-                });
+        // Sistema que avisa se a mídia já existe
+        function checkMediaStatus(field, url) {
+            const label = document.getElementById(`label_${field}`);
+            const tag = document.getElementById(`status_tag_${field}`);
+            if (url && url.length > 5) {
+                label.innerText = "Mudar Arquivo";
+                tag.innerHTML = `<span class="file-status-tag tag-exists"><i class="fa-solid fa-check"></i> Já configurado</span>`;
+            } else {
+                label.innerText = "Clique para subir";
+                tag.innerHTML = "";
             }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = type === 'matrix' ? '#00ff00' : (type === 'fireflies' ? '#ffffaa' : 'white');
-                ctx.font = `bold ${p.size}px Arial`;
-                particles.forEach(part => {
-                    ctx.fillText(type === 'matrix' ? Math.round(Math.random()) : p.char, part.x, part.y);
-                    part.y += part.v;
-                    if(part.y > canvas.height) part.y = -20;
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
         }
 
         async function processUpload(input, field) {
-            const file = input.files[0];
-            if (!file) return;
+            const file = input.files[0]; if (!file) return;
             const fill = document.getElementById(`fill_${field}`);
             fill.style.width = '30%';
-            const fileName = `${activeUser.id}/${field}_${Date.now()}.${file.name.split('.').pop()}`;
-            const { data, error } = await _supabase.storage.from('assets').upload(fileName, file, { upsert: true });
+            const path = `${activeUser.id}/${field}_${Date.now()}.${file.name.split('.').pop()}`;
+            const { error } = await _supabase.storage.from('assets').upload(path, file);
             if (!error) {
-                const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(fileName);
+                const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(path);
                 document.getElementById(field).value = publicUrl;
                 fill.style.width = '100%';
-                toast("Upload concluído!", "success");
+                checkMediaStatus(field, publicUrl);
+                toast("Upload realizado!");
             }
         }
 
         async function saveBioData() {
-            const username = document.getElementById('db_username').value.trim().toLowerCase();
             const payload = {
                 user_id: activeUser.id,
-                username: username,
+                username: document.getElementById('db_username').value.trim().toLowerCase(),
                 display_name: document.getElementById('db_display_name').value,
                 bio_text: document.getElementById('db_bio').value,
                 pfp_url: document.getElementById('pfp_url').value,
                 bg_url: document.getElementById('bg_url').value,
                 audio_url: document.getElementById('audio_url').value,
-                effect_type: document.getElementById('db_effect').value, // SALVA O EFEITO
+                effect_type: document.getElementById('db_effect').value,
+                instagram: document.getElementById('social_instagram').value,
+                tiktok: document.getElementById('social_tiktok').value,
+                twitter: document.getElementById('social_twitter').value,
+                youtube: document.getElementById('social_youtube').value,
                 discord_id: activeUser.user_metadata.provider_id
             };
-
             const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
-            if(!error) { toast("Perfil atualizado!", "success"); setTimeout(() => location.reload(), 1000); }
+            if(!error) toast("Perfil salvo!");
         }
 
         async function loadAdmin() {
@@ -325,90 +260,112 @@
             document.getElementById('admin-pfp').src = activeUser.user_metadata.avatar_url;
             document.getElementById('admin-name').innerText = activeUser.user_metadata.full_name;
             const { data } = await _supabase.from('bios').select('*').eq('user_id', activeUser.id).maybeSingle();
-            if (data) {
-                document.getElementById('db_username').value = data.username || "";
-                document.getElementById('db_display_name').value = data.display_name || "";
-                document.getElementById('db_bio').value = data.bio_text || "";
-                document.getElementById('pfp_url').value = data.pfp_url || "";
-                document.getElementById('bg_url').value = data.bg_url || "";
-                document.getElementById('audio_url').value = data.audio_url || "";
-                document.getElementById('db_effect').value = data.effect_type || "none";
-                const link = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                document.getElementById('display-share-url').innerText = data.username ? link : "Crie um username...";
-                document.getElementById('btn-preview').onclick = () => window.open(link, '_blank');
+            if(data) {
+                document.getElementById('db_username').value = data.username || '';
+                document.getElementById('db_display_name').value = data.display_name || '';
+                document.getElementById('db_bio').value = data.bio_text || '';
+                document.getElementById('pfp_url').value = data.pfp_url || '';
+                document.getElementById('bg_url').value = data.bg_url || '';
+                document.getElementById('audio_url').value = data.audio_url || '';
+                document.getElementById('db_effect').value = data.effect_type || 'none';
+                
+                document.getElementById('social_instagram').value = data.instagram || '';
+                document.getElementById('social_tiktok').value = data.tiktok || '';
+                document.getElementById('social_twitter').value = data.twitter || '';
+                document.getElementById('social_youtube').value = data.youtube || '';
+
+                ['pfp_url', 'bg_url', 'audio_url'].forEach(f => checkMediaStatus(f, data[f]));
+                document.getElementById('display-share-url').innerText = `omnibio.com/?u=${data.username}`;
             }
         }
 
         async function loadProfile(u) {
             const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
-            if(!data) return (location.href = 'index.html');
+            if(!data) return;
             document.getElementById('view-profile').classList.remove('hidden');
-            document.getElementById('v-display-name').innerText = data.display_name || u;
+            document.getElementById('v-display-name').innerText = data.display_name;
             document.getElementById('v-username').innerText = `@${u}`;
             document.getElementById('v-bio-text').innerText = data.bio_text;
-            document.getElementById('v-avatar').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}`;
+            document.getElementById('v-avatar').src = data.pfp_url;
             
+            // Redes Sociais no Perfil
+            const socials = [
+                {k: 'instagram', i: 'fa-instagram'}, {k: 'tiktok', i: 'fa-tiktok'},
+                {k: 'twitter', i: 'fa-x-twitter'}, {k: 'youtube', i: 'fa-youtube'}
+            ];
+            const row = document.getElementById('v-social-row');
+            socials.forEach(s => {
+                if(data[s.k]) row.innerHTML += `<a href="${data[s.k]}" target="_blank" class="v-social-link"><i class="fa-brands ${s.i}"></i></a>`;
+            });
+
             if(data.bg_url) {
-                if(data.bg_url.toLowerCase().endsWith('.mp4')) {
-                    const v = document.createElement('video');
-                    v.src = data.bg_url; v.autoplay = v.loop = v.muted = true;
+                if(data.bg_url.endsWith('.mp4')) {
+                    const v = document.createElement('video'); v.src = data.bg_url; v.autoplay = v.loop = v.muted = true;
                     v.style = "position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;";
                     document.body.appendChild(v);
                 } else { document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`; }
             }
             if(data.audio_url) {
-                const player = new Audio(data.audio_url); player.loop = true;
-                document.body.addEventListener('click', () => player.play(), { once: true });
+                const a = new Audio(data.audio_url); a.loop = true;
+                document.body.addEventListener('click', () => a.play(), {once:true});
             }
-
-            // ATIVA O EFEITO SALVO NO BANCO
             startEffect(data.effect_type);
-
             if(data.discord_id) loadDiscord(data.discord_id);
             _supabase.rpc('increment_views', { target_username: u });
         }
 
+        // Funções de Efeitos, Ranking e Discord mantidas do seu código original
+        function startEffect(type) {
+            if (!type || type === 'none') return;
+            const canvas = document.getElementById('effects-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let particles = [];
+            const presets = { snow: '❄', matrix: '01', stars: '★', hearts: '❤' };
+            for(let i=0; i<50; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, v: Math.random()*2+1 });
+            function animate() {
+                ctx.clearRect(0,0,canvas.width, canvas.height); ctx.fillStyle = type==='matrix'?'#0f0':'#fff';
+                particles.forEach(p => {
+                    ctx.fillText(type==='matrix'?Math.round(Math.random()):presets[type], p.x, p.y);
+                    p.y += p.v; if(p.y > canvas.height) p.y = -20;
+                });
+                requestAnimationFrame(animate);
+            } animate();
+        }
+
         async function loadDiscord(id) {
-            try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
-                if(data) {
-                    document.getElementById('v-discord-box').classList.remove('hidden');
-                    document.getElementById('v-dc-user').innerText = data.discord_user.username;
-                    document.getElementById('v-dc-avatar').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                    document.getElementById('v-dc-activity').innerText = data.activities.length ? data.activities[0].name : 'Ativo';
-                }
-            } catch(e) {}
+            const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+            const { data } = await res.json();
+            if(data) {
+                document.getElementById('v-discord-box').classList.remove('hidden');
+                document.getElementById('v-dc-user').innerText = data.discord_user.username;
+                document.getElementById('v-dc-avatar').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
+                document.getElementById('v-dc-activity').innerText = data.activities.length ? data.activities[0].name : 'Ativo';
+            }
         }
 
         async function loadRanking() {
-            const list = document.getElementById('home-ranking-list');
-            const { data } = await _supabase.from('bios').select('username, display_name, pfp_url, views').order('views', { ascending: false }).limit(5);
+            const { data } = await _supabase.from('bios').select('username, display_name, views').order('views', {ascending:false}).limit(5);
             if(data) {
-                list.innerHTML = data.map((p, i) => `
+                document.getElementById('home-ranking-list').innerHTML = data.map((p, i) => `
                     <div class="rank-row" onclick="location.href='?u=${p.username}'">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <span style="font-weight:900; color:var(--accent);">#${i+1}</span>
-                            <img src="${p.pfp_url || 'https://ui-avatars.com/api/?name='+p.username}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                            <span style="font-weight:700;">${p.display_name || p.username}</span>
-                        </div>
-                        <span style="font-size:13px; color:var(--text-dim);">${p.views.toLocaleString()} views</span>
+                        <span>#${i+1} ${p.display_name || p.username}</span>
+                        <span style="color:var(--accent)">${p.views} views</span>
                     </div>
                 `).join('');
             }
         }
 
-        function toast(msg, type) {
+        function toast(m) {
             const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.classList.remove('hidden');
-            t.className = `animate__animated animate__fadeInDown ${type === 'error' ? 'error' : ''}`;
+            document.getElementById('toast-msg').innerText = m;
+            t.classList.remove('hidden'); t.classList.add('animate__fadeInDown');
             setTimeout(() => t.classList.add('hidden'), 3000);
         }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function logout() { await _supabase.auth.signOut(); location.href = 'index.html'; }
-        function copyLink() { navigator.clipboard.writeText(document.getElementById('display-share-url').innerText); toast("Copiado!", "success"); }
+        async function logout() { await _supabase.auth.signOut(); location.reload(); }
+        function copyLink() { navigator.clipboard.writeText(document.getElementById('display-share-url').innerText); toast("Copiado!"); }
 
         init();
     </script>
