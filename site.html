@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Link Dinâmico</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #bg-video {
+            position: fixed;
+            right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -1;
+            filter: brightness(0.3);
+            object-fit: cover;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .profile-img {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 2px solid #7289da;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            background: #747f8d; /* offline */
+        }
+
+        .online { background: #43b581; box-shadow: 0 0 10px #43b581; }
+        .dnd { background: #f04747; }
+        .idle { background: #faa61a; }
+
+        .discord-activity {
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none; /* Só aparece se estiver jogando algo */
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            background: white;
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover { transform: scale(1.05); opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop id="bg-video">
+        <source id="video-src" src="" type="video/mp4">
+    </video>
+
+    <div class="card">
+        <img id="user-pfp" src="https://via.placeholder.com/100" class="profile-img">
+        <h2 id="user-name">Carregando...</h2>
+        <p id="user-bio" style="color: #bbb; font-size: 0.9rem;"></p>
+
+        <div id="status-container">
+            <span id="dot" class="status-dot"></span>
+            <span id="status-text" style="font-size: 0.8rem;">Offline</span>
+        </div>
+
+        <div id="activity" class="discord-activity">
+            <span id="game-name"></span>
+        </div>
+
+        <div class="links-container" id="links">
+            </div>
+    </div>
+
+    <script>
+        // 1. Capturar dados da URL
+        const params = new URLSearchParams(window.location.search);
+        const discordID = params.get('id');
+        const nome = params.get('nome') || "Usuário";
+        const bio = params.get('bio') || "Sem biografia";
+        const pfp = params.get('pfp');
+        const bg = params.get('bg'); // Link de um vídeo MP4
+        const linksRaw = params.get('links'); // Formato: Nome,url|Nome2,url2
+
+        // 2. Aplicar textos básicos
+        document.getElementById('user-name').innerText = nome;
+        document.getElementById('user-bio').innerText = bio;
+        if(pfp) document.getElementById('user-pfp').src = pfp;
+        if(bg) document.getElementById('video-src').src = bg;
+
+        // 3. Gerar Links
+        if(linksRaw) {
+            const container = document.getElementById('links');
+            linksRaw.split('|').forEach(linkPair => {
+                const [label, url] = linkPair.split(',');
+                const a = document.createElement('a');
+                a.className = 'btn';
+                a.href = url;
+                a.innerText = label;
+                a.target = "_blank";
+                container.appendChild(a);
+            });
+        }
+
+        // 4. Conectar ao Discord via Lanyard API
+        if(discordID) {
+            function updateDiscord() {
+                fetch(`https://api.lanyard.rest/v1/users/${discordID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const { discord_status, activities } = data.data;
+                        
+                        // Atualiza bolinha de status
+                        const dot = document.getElementById('dot');
+                        dot.className = 'status-dot ' + discord_status;
+                        document.getElementById('status-text').innerText = discord_status.toUpperCase();
+
+                        // Atualiza Jogo/Atividade (Rainbow Six, FiveM, etc)
+                        if(activities.length > 0) {
+                            const game = activities.find(a => a.type === 0); // Pega o primeiro jogo
+                            if(game) {
+                                document.getElementById('activity').style.display = 'block';
+                                document.getElementById('game-name').innerText = "Jogando: " + game.name;
+                            }
+                        }
+                    });
+            }
+            setInterval(updateDiscord, 10000); // Atualiza a cada 10 seg
+            updateDiscord();
+        }
+    </script>
+</body>
+</html>
