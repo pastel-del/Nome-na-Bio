@@ -13,7 +13,18 @@ return
 }
 
 }
+async function loadUser() {
 
+  const { data } = await window.supabaseClient.auth.getSession();
+
+  if (!data.session) {
+    window.location.href = "index.html";
+    return;
+  }
+
+}
+
+loadUser();
 async function saveProfile(){
 
 const user =
