@@ -3,117 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Identity</title>
+    <title>OmniBio | Elite Identity</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        :root { --primary: #b026ff; --accent: #00ffcc; }
-
+        :root { --primary: #fff; --accent: #b026ff; --bg: #030303; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        /* VÍDEO E MÍDIA */
+        #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1; backdrop-filter: blur(4px); }
+
+        /* TELA DE ENTRADA */
+        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.6s ease; }
+        #enter-screen h1 { font-size: 1.2rem; letter-spacing: 5px; animation: pulse 2s infinite; font-weight: 800; }
+        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px #fff; } 50% { opacity: 0.3; text-shadow: none; } }
+
+        /* CARDS */
+        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; }
+        .card { background: rgba(15, 15, 15, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 25px; padding: 35px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
-        body { 
-            background: #000; 
-            color: #fff; 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-        }
+        /* ELEMENTOS DO PERFIL */
+        .pfp-view { width: 115px; height: 115px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); margin: 0 auto 15px; object-fit: cover; box-shadow: 0 0 30px rgba(176, 38, 255, 0.3); }
+        .link-btn { display: block; padding: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; color: #fff; text-decoration: none; font-weight: 600; margin-bottom: 12px; transition: 0.3s; }
+        .link-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); border-color: var(--accent); }
 
-        /* VÍDEO DE FUNDO - OCUPA TUDO */
-        #bg-video { 
-            position: fixed; 
-            top: 50%; left: 50%; 
-            min-width: 100%; min-height: 100%; 
-            width: auto; height: auto; 
-            z-index: -2; 
-            transform: translateX(-50%) translateY(-50%);
-            object-fit: cover;
-            display: none;
-        }
+        /* DISCORD CARD */
+        .discord-card { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; text-align: left; gap: 15px; }
+        .dc-avatar { width: 50px; height: 50px; position: relative; }
+        .dc-avatar img { width: 100%; height: 100%; border-radius: 50%; }
+        .status-dot { position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #000; }
+        .online { background: #23a559; } .idle { background: #f0b232; } .dnd { background: #f23f43; } .offline { background: #80848e; }
+        .dc-info h3 { font-size: 0.9rem; margin-bottom: 2px; }
+        .dc-info p { font-size: 0.75rem; color: #aaa; }
 
-        /* CAMADA ESCURA PARA DAR LEITURA */
-        .overlay { 
-            position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.6); 
-            z-index: -1; 
-        }
-
-        .wrapper { width: 100%; max-width: 420px; padding: 20px; z-index: 10; }
-
-        /* CARD ESTILO VIDRO */
-        .card { 
-            background: rgba(10, 10, 10, 0.6); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 35px; 
-            padding: 40px; 
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
-        /* ELEMENTOS DA BIO */
-        .pfp-view { 
-            width: 120px; height: 120px; 
-            border-radius: 50%; 
-            border: 3px solid var(--primary); 
-            margin: 0 auto 20px; 
-            object-fit: cover;
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
-        }
-
-        .link-btn { 
-            display: block; padding: 16px; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 18px; color: #fff; 
-            text-decoration: none; font-weight: 600; 
-            margin-bottom: 12px; transition: 0.3s;
-        }
-        .link-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.03); border-color: var(--accent); }
-
-        /* DASHBOARD ADMIN */
+        /* PAINEL ADMIN E INPUTS */
         .field { margin-bottom: 15px; text-align: left; }
-        label { font-size: 0.7rem; font-weight: 800; color: var(--primary); display: block; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 14px; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; }
+        label { font-size: 0.65rem; font-weight: 800; color: #888; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        input[type="text"], textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; }
+        input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
         
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: #fff; margin-top: 10px; }
-        .btn-discord { background: #5865f2; color: #fff; }
+        .file-upload { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px dashed #444; }
+        .file-upload input { flex: 1; font-size: 0.75rem; color: #aaa; }
+        .current-media { width: 30px; height: 30px; border-radius: 5px; object-fit: cover; background: #222; }
 
+        /* TOGGLE SWITCH (Botão Liga/Desliga) */
+        .toggle-container { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        .toggle-container span { font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: #fff; color: #000; margin-top: 10px; }
+        .btn-discord { background: #5865f2; color: #fff; }
         .hidden { display: none !important; }
-        #status-box { margin-top: 15px; font-size: 0.8rem; color: var(--accent); }
     </style>
 </head>
 <body>
 
     <video id="bg-video" loop playsinline></video>
+    <audio id="bg-audio" loop></audio>
     <div class="overlay"></div>
+
+    <div id="enter-screen" class="hidden" onclick="enterSite()">
+        <h1>[ CLIQUE PARA ENTRAR ]</h1>
+    </div>
 
     <div class="wrapper">
         
         <div id="login-ui" class="card">
-            <h1 style="font-size: 2.2rem; margin-bottom: 10px;">Omni<span style="color:var(--primary)">Bio</span></h1>
-            <p style="color:#888; margin-bottom: 25px;">Sua bio profissional estilo Guns.lol</p>
+            <h1 style="font-size: 2rem; margin-bottom: 10px;">Omni<span style="color:var(--accent)">Bio</span></h1>
+            <p style="color:#888; margin-bottom: 25px; font-size: 0.8rem;">Painel de Controle</p>
             <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
-        <div id="admin-ui" class="card hidden">
-            <h2 style="margin-bottom: 20px;">Configurar Bio</h2>
-            <div class="field"><label>NICK DA URL</label><input type="text" id="username" placeholder="luan7"></div>
-            <div class="field"><label>NOME NO PERFIL</label><input type="text" id="display_name" placeholder="Ex: Luan | Dev"></div>
-            <div class="field"><label>FOTO PERFIL (URL)</label><input type="text" id="pfp-url" placeholder="Link da imagem"></div>
-            <div class="field"><label>FUNDO MP4/IMG (URL)</label><input type="text" id="bg-url" placeholder="Link do vídeo ou imagem"></div>
-            <div class="field"><label>LINKS (Nome,URL|Nome,URL)</label><textarea id="links" rows="2"></textarea></div>
-            <button class="btn btn-primary" onclick="saveBio()">SALVAR PERFIL</button>
-            <div id="status-box"></div>
+        <div id="admin-ui" class="card hidden" style="max-height: 85vh; overflow-y: auto;">
+            <h2 style="margin-bottom: 20px; font-size: 1.3rem;">Configurações</h2>
+            
+            <div class="field"><label>Nick da URL</label><input type="text" id="username" placeholder="ex: luan"></div>
+            <div class="field"><label>Nome de Exibição</label><input type="text" id="display_name" placeholder="Como aparece no perfil"></div>
+            
+            <div class="toggle-container">
+                <span>Mostrar Status do Discord</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-discord" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="field">
+                <label>Foto de Perfil</label>
+                <div class="file-upload">
+                    <img id="curr-pfp" class="current-media" src="https://via.placeholder.com/30" title="Atual">
+                    <input type="file" id="pfp-input" accept="image/*">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Fundo (Vídeo MP4 ou Foto)</label>
+                <div class="file-upload">
+                    <div id="curr-bg" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
+                    <input type="file" id="bg-input" accept="image/*,video/mp4">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Música de Fundo (MP3)</label>
+                <div class="file-upload">
+                    <div id="curr-audio" class="current-media" style="display:flex;align-items:center;justify-content:center;font-size:0.5rem">Sem</div>
+                    <input type="file" id="audio-input" accept="audio/*">
+                </div>
+            </div>
+
+            <div class="field"><label>Links (Nome,URL|Nome,URL)</label><textarea id="links" rows="2" placeholder="Steam,https://..."></textarea></div>
+            
+            <button class="btn btn-primary" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
+            <div id="status-box" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
         <div id="bio-view" class="card hidden">
             <img id="bio-pfp" class="pfp-view" src="">
-            <h1 id="bio-name" style="font-weight: 800; font-size: 2rem; margin-bottom: 30px;"></h1>
+            <h1 id="bio-name" style="font-weight: 800; font-size: 1.8rem; margin-bottom: 25px;"></h1>
+            
+            <div id="discord-presence" class="discord-card hidden">
+                <div class="dc-avatar">
+                    <img id="dc-pfp" src="">
+                    <div id="dc-status" class="status-dot offline"></div>
+                </div>
+                <div class="dc-info">
+                    <h3 id="dc-user">Carregando...</h3>
+                    <p id="dc-activity">Sincronizando...</p>
+                </div>
+            </div>
+
             <div id="bio-links-container"></div>
         </div>
 
@@ -124,17 +152,21 @@
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+        let userDiscordId = null; // Guarda o ID pego do login
+
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
 
         _supabase.auth.onAuthStateChange(async (event, session) => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const userParam = urlParams.get('u');
-
-            if (userParam) {
-                // SE TIVER ?u= NO LINK, SÓ MOSTRA O PERFIL
-                loadBio(userParam);
+            const urlNick = new URLSearchParams(window.location.search).get('u');
+            
+            if (urlNick) {
+                document.getElementById('login-ui').classList.add('hidden');
+                document.getElementById('enter-screen').classList.remove('hidden');
+                prepareBio(urlNick);
             } else if (session) {
-                // SE NÃO TIVER PARÂMETRO E TIVER LOGADO, MOSTRA ADMIN
+                // Extrai o ID do Discord silenciosamente do login
+                const identity = session.user.identities.find(i => i.provider === 'discord');
+                if(identity) userDiscordId = identity.id;
                 showAdmin(session.user);
             }
         });
@@ -147,57 +179,106 @@
             if (data) {
                 document.getElementById('username').value = data.username || "";
                 document.getElementById('display_name').value = data.display_name || "";
-                document.getElementById('pfp-url').value = data.pfp_url || "";
-                document.getElementById('bg-url').value = data.bg_url || "";
                 document.getElementById('links').value = data.links || "";
                 
+                // Set toggle status
+                document.getElementById('toggle-discord').checked = data.show_discord !== false; // Padrão é true
+                
+                // Mostra o que já está salvo nas miniaturas
+                if(data.pfp_url) document.getElementById('curr-pfp').src = data.pfp_url;
+                if(data.bg_url) {
+                    const cb = document.getElementById('curr-bg');
+                    cb.innerHTML = data.bg_url.includes('.mp4') ? 'VID' : `<img src="${data.bg_url}" style="width:100%;height:100%;object-fit:cover;border-radius:5px">`;
+                }
+                if(data.audio_url) document.getElementById('curr-audio').innerText = "MP3";
+                
                 const finalLink = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                document.getElementById('status-box').innerHTML = `Seu link: <a href="${finalLink}" target="_blank" style="color:#fff">${finalLink}</a>`;
+                document.getElementById('status-box').innerHTML = `<a href="${finalLink}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">MEU LINK: ${finalLink}</a>`;
             }
         }
 
         async function saveBio() {
             const user = (await _supabase.auth.getUser()).data.user;
-            const payload = {
-                user_id: user.id,
-                username: document.getElementById('username').value.trim().toLowerCase(),
-                display_name: document.getElementById('display_name').value,
-                pfp_url: document.getElementById('pfp-url').value,
-                bg_url: document.getElementById('bg-url').value,
-                links: document.getElementById('links').value
-            };
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "⏳ SALVANDO (AGUARDE)...";
 
-            const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
-            if (error) alert("Erro ao salvar!");
-            else { alert("Perfil Atualizado!"); location.reload(); }
+            try {
+                // Recupera os dados atuais para não apagar o que já existe se não upar nada novo
+                const { data: currentData } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+                
+                let pfpUrl = currentData?.pfp_url || null;
+                let bgUrl = currentData?.bg_url || null;
+                let audioUrl = currentData?.audio_url || null;
+
+                const pfpF = document.getElementById('pfp-input').files[0];
+                const bgF = document.getElementById('bg-input').files[0];
+                const audF = document.getElementById('audio-input').files[0];
+
+                if(pfpF) {
+                    const p = `pfp/${user.id}`; await _supabase.storage.from('assets').upload(p, pfpF, {upsert: true});
+                    pfpUrl = _supabase.storage.from('assets').getPublicUrl(p).data.publicUrl + "?t=" + Date.now();
+                }
+                if(bgF) {
+                    const p = `bg/${user.id}`; await _supabase.storage.from('assets').upload(p, bgF, {upsert: true});
+                    bgUrl = _supabase.storage.from('assets').getPublicUrl(p).data.publicUrl + "?t=" + Date.now();
+                }
+                if(audF) {
+                    const p = `audio/${user.id}`; await _supabase.storage.from('assets').upload(p, audF, {upsert: true});
+                    audioUrl = _supabase.storage.from('assets').getPublicUrl(p).data.publicUrl + "?t=" + Date.now();
+                }
+
+                const payload = {
+                    user_id: user.id,
+                    username: document.getElementById('username').value.trim().toLowerCase(),
+                    display_name: document.getElementById('display_name').value,
+                    discord_id: userDiscordId, // Salva o ID que pegou do login
+                    show_discord: document.getElementById('toggle-discord').checked,
+                    links: document.getElementById('links').value,
+                    pfp_url: pfpUrl,
+                    bg_url: bgUrl,
+                    audio_url: audioUrl
+                };
+
+                const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
+                if(error) throw error;
+                
+                btn.innerText = "✅ SALVO!";
+                setTimeout(() => location.reload(), 1500);
+            } catch (e) { alert(e.message); btn.innerText = "ERRO AO SALVAR"; }
         }
 
-        async function loadBio(nick) {
-            const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
-            if(!data) { alert("Perfil não encontrado!"); return; }
+        let loadedBioData = null;
 
-            // ESCONDE TUDO E MOSTRA SÓ A BIO
-            document.getElementById('login-ui').classList.add('hidden');
-            document.getElementById('admin-ui').classList.add('hidden');
+        async function prepareBio(nick) {
+            const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
+            if(!data) return alert("Perfil não encontrado!");
+            loadedBioData = data;
+        }
+
+        function enterSite() {
+            const scr = document.getElementById('enter-screen');
+            scr.style.opacity = '0';
+            setTimeout(() => scr.classList.add('hidden'), 600);
+            
+            const data = loadedBioData;
             document.getElementById('bio-view').classList.remove('hidden');
 
-            // VÍDEO MP4 NO FUNDO
             if(data.bg_url) {
                 if(data.bg_url.includes('.mp4')) {
                     const v = document.getElementById('bg-video');
-                    v.src = data.bg_url;
-                    v.style.display = 'block';
-                    v.play().catch(() => {
-                        // Se o navegador bloquear o som, clica na tela para tocar
-                        document.body.onclick = () => v.play();
-                    });
+                    v.src = data.bg_url; v.style.display = 'block'; v.play();
                 } else {
                     document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
                 }
             }
 
+            if(data.audio_url) {
+                const aud = document.getElementById('bg-audio');
+                aud.src = data.audio_url; aud.volume = 0.5; aud.play();
+            }
+
             document.getElementById('bio-pfp').src = data.pfp_url || '';
-            document.getElementById('bio-name').innerText = data.display_name || nick;
+            document.getElementById('bio-name').innerText = data.display_name;
 
             const container = document.getElementById('bio-links-container');
             data.links.split('|').forEach(l => {
@@ -208,6 +289,37 @@
                     container.appendChild(a);
                 }
             });
+
+            // DISCORD PRESENCE - Só ativa se a chave "show_discord" estiver ligada
+            if(data.show_discord && data.discord_id) {
+                document.getElementById('discord-presence').classList.remove('hidden');
+                fetchDiscord(data.discord_id);
+                setInterval(() => fetchDiscord(data.discord_id), 10000);
+            }
+        }
+
+        async function fetchDiscord(id) {
+            try {
+                // A API do Lanyard exige que você esteja no servidor deles: discord.gg/lanyard
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+                const { data } = await res.json();
+                
+                if(data) {
+                    document.getElementById('dc-user').innerText = data.discord_user.display_name || data.discord_user.username;
+                    document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
+                    
+                    const dot = document.getElementById('dc-status');
+                    dot.className = `status-dot ${data.discord_status}`;
+
+                    let activityText = "Online";
+                    if (data.activities && data.activities.length > 0) {
+                        const act = data.activities.find(a => a.type === 0);
+                        if (act) activityText = `Jogando ${act.name}`;
+                        else if (data.listening_to_spotify) activityText = `Ouvindo Spotify`;
+                    }
+                    document.getElementById('dc-activity').innerText = activityText;
+                }
+            } catch (e) { console.log("Lanyard não conseguiu ler o status."); }
         }
     </script>
 </body>
