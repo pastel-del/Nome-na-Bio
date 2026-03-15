@@ -28,13 +28,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* --- UTILITÁRIOS --- */
+        /* --- UI HELPERS --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
         .hidden { display: none !important; }
         .skeleton { background: var(--surface-light); animation: pulse 1.5s infinite; border-radius: 12px; height: 60px; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* --- COMPONENTES DE BOTÃO --- */
+        /* --- BUTTONS --- */
         .btn {
             padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;
             border: none; transition: var(--transition); display: inline-flex;
@@ -45,7 +45,7 @@
         .btn-ghost { background: var(--surface-light); color: var(--text); border: 1px solid var(--border); }
         .btn-ghost:hover { border-color: var(--text-dim); background: var(--surface); }
 
-        /* --- LAYOUT DO PAINEL (ADMIN) --- */
+        /* --- DASHBOARD STRUCTURE --- */
         .dash-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         
         .sidebar { 
@@ -64,7 +64,7 @@
         .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
         .card-header i { color: var(--accent); font-size: 20px; }
         
-        /* --- CAMPOS DE ENTRADA --- */
+        /* --- FORMS --- */
         label { display: block; font-size: 11px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
         input, textarea {
             width: 100%; background: #000; border: 1px solid var(--border);
@@ -73,7 +73,7 @@
         }
         input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
 
-        /* --- COMPARTILHAMENTO --- */
+        /* --- SHARE SECTION --- */
         .link-share-card { background: linear-gradient(135deg, #0071e3 0%, #003a75 100%); border: none; color: white; }
         .link-box {
             background: rgba(0,0,0,0.3); padding: 14px 18px; border-radius: 14px;
@@ -82,13 +82,13 @@
         }
         .link-text { font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; }
 
-        /* --- SISTEMA DE UPLOAD --- */
+        /* --- UPLOAD SYSTEM --- */
         .upload-area { margin-bottom: 25px; }
         .drop-zone {
             height: 180px; border: 2px dashed var(--border); border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: var(--transition); position: relative;
-            background: rgba(255,255,255,0.01);
+            background: rgba(255,255,255,0.01); overflow: hidden;
         }
         .drop-zone:hover { border-color: var(--accent); background: rgba(0,113,227,0.04); }
         .drop-zone i { font-size: 32px; color: var(--text-dim); margin-bottom: 12px; }
@@ -99,7 +99,7 @@
 
         .file-ok { font-size: 12px; color: var(--success); margin-top: 10px; display: none; align-items: center; gap: 6px; font-weight: 600; }
 
-        /* --- PERFIL PÚBLICO --- */
+        /* --- PUBLIC PROFILE --- */
         #profile-render { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
         .p-card {
             background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(25px);
@@ -181,14 +181,14 @@
             <main class="main-content">
                 <div class="card link-share-card">
                     <h2 style="font-size: 20px; margin-bottom: 8px;">🚀 Seu Perfil está Pronto!</h2>
-                    <p style="font-size: 14px; opacity: 0.9;">Copie o link abaixo e coloque na sua bio do Instagram ou TikTok.</p>
+                    <p style="font-size: 14px; opacity: 0.9;">Copie o link abaixo para compartilhar.</p>
                     <div class="link-box">
                         <span class="link-text" id="display-share-url">omnibio.com/?u=carregando...</span>
                         <div style="display: flex; gap: 10px;">
                             <button class="btn btn-primary" onclick="copyLink()" style="background: white; color: var(--accent); padding: 10px 14px; border-radius: 10px;">
                                 <i class="fa-solid fa-copy"></i>
                             </button>
-                            <button class="btn btn-primary" onclick="openPreview()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 10px;">
+                            <button class="btn btn-primary" id="btn-preview" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 10px;">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
@@ -208,42 +208,42 @@
                         </div>
                     </div>
                     <label>Biografia Curta</label>
-                    <textarea id="db_bio" rows="3" placeholder="Conte quem você é em poucas palavras..."></textarea>
+                    <textarea id="db_bio" rows="3" placeholder="Conte quem você é..."></textarea>
                 </div>
 
                 <div class="card">
                     <div class="card-header"><i class="fa-solid fa-upload"></i><h2>Arquivos & Mídia</h2></div>
                     
                     <div class="upload-area">
-                        <label>Foto de Perfil (Avatar)</label>
+                        <label>Foto de Perfil</label>
                         <div class="drop-zone" onclick="document.getElementById('f_pfp').click()" id="z_pfp">
                             <i class="fa-solid fa-circle-user"></i>
-                            <p>Arraste ou clique para selecionar imagem</p>
-                            <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url', 'z_pfp')">
+                            <p>Arraste ou clique para selecionar</p>
+                            <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url')">
                             <div class="progress-bar-wrap"><div class="progress-fill" id="fill_pfp_url"></div></div>
                         </div>
-                        <div class="file-ok" id="ok_pfp_url"><i class="fa-solid fa-circle-check"></i> Foto pronta para salvar</div>
+                        <div class="file-ok" id="ok_pfp_url"><i class="fa-solid fa-circle-check"></i> Foto pronta</div>
                         <input type="hidden" id="pfp_url">
                     </div>
 
                     <div class="upload-area">
-                        <label>Fundo do Perfil (Imagem ou Vídeo MP4)</label>
+                        <label>Fundo (Banner ou Vídeo MP4)</label>
                         <div class="drop-zone" onclick="document.getElementById('f_bg').click()" id="z_bg">
                             <i class="fa-solid fa-panorama"></i>
                             <p>Suba seu banner ou vídeo de fundo</p>
-                            <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url', 'z_bg')">
+                            <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url')">
                             <div class="progress-bar-wrap"><div class="progress-fill" id="fill_bg_url"></div></div>
                         </div>
-                        <div class="file-ok" id="ok_bg_url"><i class="fa-solid fa-circle-check"></i> Fundo configurado</div>
+                        <div class="file-ok" id="ok_bg_url"><i class="fa-solid fa-circle-check"></i> Fundo pronto</div>
                         <input type="hidden" id="bg_url">
                     </div>
 
                     <div class="upload-area">
-                        <label>Música MP3 (Auto-play)</label>
+                        <label>Música MP3</label>
                         <div class="drop-zone" onclick="document.getElementById('f_audio').click()" id="z_audio">
                             <i class="fa-solid fa-music"></i>
-                            <p>Arraste o arquivo .mp3 da sua música</p>
-                            <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url', 'z_audio')">
+                            <p>Arquivo .mp3 (Auto-play)</p>
+                            <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url')">
                             <div class="progress-bar-wrap"><div class="progress-fill" id="fill_audio_url"></div></div>
                         </div>
                         <div class="file-ok" id="ok_audio_url"><i class="fa-solid fa-circle-check"></i> Áudio pronto</div>
@@ -251,7 +251,7 @@
                     </div>
 
                     <button class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 16px; margin-top: 10px;" onclick="saveBioData()">
-                        ATUALIZAR MEU PERFIL PÚBLICO
+                        SALVAR ALTERAÇÕES
                     </button>
                 </div>
             </main>
@@ -278,105 +278,69 @@
                 </div>
 
                 <div style="margin-top: 60px;">
-                    <a href="index.html" style="font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 2px; text-transform: uppercase; font-weight: 700;">Criar Perfil OmniBio</a>
+                    <a href="index.html" style="font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">OmniBio Identity System</a>
                 </div>
             </div>
         </div>
     </section>
 
     <script>
-        // CONFIGURAÇÕES SUPABASE
         const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let activeUser = null;
 
-        async function bootstrap() {
+        async function init() {
             const params = new URLSearchParams(window.location.search);
             const userParam = params.get('u');
 
             if (userParam) {
-                renderPublicProfile(userParam);
+                loadProfile(userParam);
             } else {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) {
                     activeUser = session.user;
-                    loadAdminDashboard();
+                    loadAdmin();
                 } else {
                     document.getElementById('view-home').classList.remove('hidden');
-                    loadGlobalRanking();
+                    loadRanking();
                 }
             }
         }
 
-        // --- SISTEMA DE UPLOAD (CORRIGIDO 409) ---
-        async function processUpload(input, targetField, zoneId) {
+        // --- UPLOAD (CORREÇÃO 409) ---
+        async function processUpload(input, field) {
             const file = input.files[0];
             if (!file) return;
 
-            const fill = document.getElementById(`fill_${targetField}`);
-            const ok = document.getElementById(`ok_${targetField}`);
-            
+            const fill = document.getElementById(`fill_${field}`);
+            const ok = document.getElementById(`ok_${field}`);
             fill.style.width = '30%';
             
-            const fileExt = file.name.split('.').pop();
-            // NOME ÚNICO: ID_DO_USER + TIMESTAMP + CAMPO (Evita 409 Conflict)
-            const fileName = `${activeUser.id}/${targetField}_${Date.now()}.${fileExt}`;
+            // NOME ÚNICO PARA EVITAR 409 NO STORAGE
+            const fileName = `${activeUser.id}/${field}_${Date.now()}.${file.name.split('.').pop()}`;
 
             const { data, error } = await _supabase.storage
                 .from('assets')
-                .upload(fileName, file, { 
-                    cacheControl: '3600',
-                    upsert: true // Se por algum motivo o nome bater, ele sobrescreve em vez de dar erro
-                });
+                .upload(fileName, file, { upsert: true });
 
             if (error) {
                 toast("Erro no upload: " + error.message, "error");
                 fill.style.width = '0%';
             } else {
                 const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(fileName);
-                document.getElementById(targetField).value = publicUrl;
+                document.getElementById(field).value = publicUrl;
                 fill.style.width = '100%';
                 ok.style.display = 'flex';
-                toast("Arquivo processado!", "success");
+                toast("Upload concluído!", "success");
             }
         }
 
-        // --- PAINEL ADMINISTRATIVO ---
-        async function loadAdminDashboard() {
-            document.getElementById('view-admin').classList.remove('hidden');
-            document.getElementById('admin-pfp').src = activeUser.user_metadata.avatar_url;
-            document.getElementById('admin-name').innerText = activeUser.user_metadata.full_name;
-
-            const { data } = await _supabase.from('bios').select('*').eq('user_id', activeUser.id).maybeSingle();
-            
-            if (data) {
-                document.getElementById('db_username').value = data.username || "";
-                document.getElementById('db_display_name').value = data.display_name || "";
-                document.getElementById('db_bio').value = data.bio_text || "";
-                document.getElementById('pfp_url').value = data.pfp_url || "";
-                document.getElementById('bg_url').value = data.bg_url || "";
-                document.getElementById('audio_url').value = data.audio_url || "";
-                
-                if(data.username) {
-                    const fullLink = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                    document.getElementById('display-share-url').innerText = fullLink;
-                }
-
-                // Marcar campos já preenchidos
-                ['pfp_url', 'bg_url', 'audio_url'].forEach(f => {
-                    if(document.getElementById(f).value) {
-                        document.getElementById(`ok_${f}`).style.display = 'flex';
-                        document.getElementById(`fill_${f}`).style.width = '100%';
-                    }
-                });
-            }
-        }
-
+        // --- SALVAR (CORREÇÃO 409 NO DB) ---
         async function saveBioData() {
             const username = document.getElementById('db_username').value.trim().toLowerCase();
-            if(!username) return toast("Username é obrigatório!", "error");
+            if(!username) return toast("Username obrigatório!", "error");
 
             const payload = {
                 user_id: activeUser.id,
@@ -389,63 +353,59 @@
                 discord_id: activeUser.user_metadata.provider_id
             };
 
-            const { error } = await _supabase.from('bios').upsert(payload);
+            // onConflict: 'user_id' resolve o erro 409 no banco de dados
+            const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
             
             if(!error) {
-                toast("Perfil publicado com sucesso!", "success");
-                setTimeout(() => location.reload(), 1500);
+                toast("Perfil atualizado!", "success");
+                const link = `${window.location.origin}${window.location.pathname}?u=${username}`;
+                document.getElementById('display-share-url').innerText = link;
+                document.getElementById('btn-preview').onclick = () => window.open(link, '_blank');
             } else {
-                toast("Erro ao salvar: Escolha outro username.", "error");
+                toast("Erro: Username já em uso ou inválido.", "error");
             }
         }
 
-        // --- FUNÇÕES DE UTILIDADE ---
-        function copyLink() {
-            const link = document.getElementById('display-share-url').innerText;
-            if(link.includes('...')) return toast("Salve seu perfil primeiro!", "error");
-            navigator.clipboard.writeText(link);
-            toast("Link copiado!", "success");
+        // --- LOADERS ---
+        async function loadAdmin() {
+            document.getElementById('view-admin').classList.remove('hidden');
+            document.getElementById('admin-pfp').src = activeUser.user_metadata.avatar_url;
+            document.getElementById('admin-name').innerText = activeUser.user_metadata.full_name;
+
+            const { data } = await _supabase.from('bios').select('*').eq('user_id', activeUser.id).maybeSingle();
+            if (data) {
+                document.getElementById('db_username').value = data.username || "";
+                document.getElementById('db_display_name').value = data.display_name || "";
+                document.getElementById('db_bio').value = data.bio_text || "";
+                document.getElementById('pfp_url').value = data.pfp_url || "";
+                document.getElementById('bg_url').value = data.bg_url || "";
+                document.getElementById('audio_url').value = data.audio_url || "";
+                
+                const link = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
+                document.getElementById('display-share-url').innerText = data.username ? link : "Defina um username...";
+                document.getElementById('btn-preview').onclick = () => data.username ? window.open(link, '_blank') : toast("Crie um username primeiro!", "error");
+
+                ['pfp_url', 'bg_url', 'audio_url'].forEach(f => {
+                    if(document.getElementById(f).value) {
+                        document.getElementById(`ok_${f}`).style.display = 'flex';
+                        document.getElementById(`fill_${f}`).style.width = '100%';
+                    }
+                });
+            }
         }
 
-        function openPreview() {
-            const user = document.getElementById('db_username').value;
-            if(user) window.open(`?u=${user}`, '_blank');
-        }
-
-        function toast(msg, type) {
-            const t = document.getElementById('toast');
-            const m = document.getElementById('toast-msg');
-            const i = document.getElementById('toast-icon');
-            
-            m.innerText = msg;
-            t.className = `animate__animated animate__fadeInDown ${type === 'error' ? 'error' : ''}`;
-            i.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
-            i.style.color = type === 'success' ? 'var(--success)' : 'var(--error)';
-            t.classList.remove('hidden');
-            
-            setTimeout(() => {
-                t.classList.replace('animate__fadeInDown', 'animate__fadeOutUp');
-                setTimeout(() => t.classList.add('hidden'), 500);
-            }, 3000);
-        }
-
-        // --- CARREGAMENTO DO PERFIL PÚBLICO ---
-        async function renderPublicProfile(u) {
+        async function loadProfile(u) {
             const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
             if(!data) return (location.href = 'index.html');
 
             document.getElementById('view-profile').classList.remove('hidden');
-            document.title = `${data.display_name || u} | OmniBio`;
-            
             document.getElementById('v-display-name').innerText = data.display_name || u;
             document.getElementById('v-username').innerText = `@${u}`;
             document.getElementById('v-bio-text').innerText = data.bio_text;
-            document.getElementById('v-avatar').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}&background=random`;
+            document.getElementById('v-avatar').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}`;
 
-            // Background Inteligente (Imagem ou Vídeo)
             if(data.bg_url) {
-                const isVideo = data.bg_url.toLowerCase().endsWith('.mp4');
-                if(isVideo) {
+                if(data.bg_url.toLowerCase().endsWith('.mp4')) {
                     const v = document.createElement('video');
                     v.src = data.bg_url; v.autoplay = true; v.loop = true; v.muted = true;
                     v.style = "position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;";
@@ -455,71 +415,69 @@
                 }
             }
 
-            // Audio Autoplay
             if(data.audio_url) {
                 const player = new Audio(data.audio_url);
                 player.loop = true;
-                // Navegadores exigem interação para tocar áudio
                 document.body.addEventListener('click', () => player.play(), { once: true });
             }
 
-            // Lanyard (Discord Status)
-            if(data.discord_id) initLanyard(data.discord_id);
-            
-            // Incrementar views
+            if(data.discord_id) loadDiscord(data.discord_id);
             _supabase.rpc('increment_views', { target_username: u });
         }
 
-        async function initLanyard(id) {
+        async function loadDiscord(id) {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
                 const { data } = await res.json();
                 if(!data) return;
-
-                const box = document.getElementById('v-discord-box');
-                box.classList.remove('hidden');
+                document.getElementById('v-discord-box').classList.remove('hidden');
                 document.getElementById('v-dc-user').innerText = data.discord_user.username;
                 document.getElementById('v-dc-avatar').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                
-                const statusDot = document.getElementById('v-dc-status');
                 const colors = { online: '#43b581', dnd: '#f04747', idle: '#faa61a', offline: '#747f8d' };
-                statusDot.style.backgroundColor = colors[data.discord_status] || colors.offline;
-
-                let activityText = "Atualmente offline";
-                if(data.activities.length > 0) {
-                    const act = data.activities[0];
-                    activityText = `${act.name}: ${act.details || act.state || 'Jogando'}`;
-                } else if (data.discord_status !== 'offline') {
-                    activityText = "Online no Discord";
-                }
-                document.getElementById('v-dc-activity').innerText = activityText;
-            } catch (e) { console.error("Falha ao carregar Discord Status"); }
+                document.getElementById('v-dc-status').style.backgroundColor = colors[data.discord_status] || colors.offline;
+                document.getElementById('v-dc-activity').innerText = data.activities.length ? data.activities[0].name : (data.discord_status !== 'offline' ? 'Online' : 'Offline');
+            } catch (e) {}
         }
 
-        async function loadGlobalRanking() {
+        async function loadRanking() {
             const list = document.getElementById('home-ranking-list');
-            list.innerHTML = `<div class="skeleton"></div>`;
-
             const { data } = await _supabase.from('bios').select('username, display_name, pfp_url, views').order('views', { ascending: false }).limit(5);
-
             if(data) {
                 list.innerHTML = data.map((p, i) => `
                     <div class="rank-row" onclick="location.href='?u=${p.username}'">
                         <div style="display:flex; align-items:center; gap:15px;">
-                            <span style="font-weight:900; color:var(--accent); font-size:18px;">#${i+1}</span>
+                            <span style="font-weight:900; color:var(--accent);">#${i+1}</span>
                             <img src="${p.pfp_url || 'https://ui-avatars.com/api/?name='+p.username}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                             <span style="font-weight:700;">${p.display_name || p.username}</span>
                         </div>
-                        <span style="font-size:13px; color:var(--text-dim); font-weight:600;">${p.views.toLocaleString()} views</span>
+                        <span style="font-size:13px; color:var(--text-dim);">${p.views.toLocaleString()} views</span>
                     </div>
                 `).join('');
             }
         }
 
+        function copyLink() {
+            const link = document.getElementById('display-share-url').innerText;
+            if(link.includes('...')) return toast("Defina um username!", "error");
+            navigator.clipboard.writeText(link);
+            toast("Link copiado!", "success");
+        }
+
+        function toast(msg, type) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.className = `animate__animated animate__fadeInDown ${type === 'error' ? 'error' : ''}`;
+            t.classList.remove('hidden');
+            setTimeout(() => {
+                t.classList.replace('animate__fadeInDown', 'animate__fadeOutUp');
+                setTimeout(() => t.classList.add('hidden'), 500);
+            }, 3000);
+        }
+
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
         async function logout() { await _supabase.auth.signOut(); location.href = 'index.html'; }
 
-        bootstrap();
+        init();
     </script>
 </body>
 </html>
