@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Identity System Pro</title>
+    <title>OmniBio | Professional Identity System</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,369 +28,398 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* --- UI COMPONENTS --- */
+        /* --- UTILITÁRIOS --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
         .hidden { display: none !important; }
+        .skeleton { background: var(--surface-light); animation: pulse 1.5s infinite; border-radius: 12px; height: 60px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
+        /* --- COMPONENTES DE BOTÃO --- */
         .btn {
             padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;
             border: none; transition: var(--transition); display: inline-flex;
             align-items: center; gap: 8px; font-size: 14px; text-decoration: none;
         }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); box-shadow: 0 10px 20px rgba(0,113,227,0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,113,227,0.3); }
         .btn-ghost { background: var(--surface-light); color: var(--text); border: 1px solid var(--border); }
-        .btn-ghost:hover { border-color: var(--text-dim); }
+        .btn-ghost:hover { border-color: var(--text-dim); background: var(--surface); }
 
-        /* --- DASHBOARD LAYOUT --- */
-        .dash-container { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+        /* --- LAYOUT DO PAINEL (ADMIN) --- */
+        .dash-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         
         .sidebar { 
             background: var(--surface); border-right: 1px solid var(--border); padding: 40px 24px;
             display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
         }
 
-        .main-content { padding: 60px; max-width: 900px; }
+        .main-content { padding: 60px; max-width: 1000px; margin: 0 auto; width: 100%; }
 
-        /* --- CARDS & FORMS --- */
+        /* --- CARDS --- */
         .card { 
             background: var(--surface); border: 1px solid var(--border); 
             border-radius: 24px; padding: 32px; margin-bottom: 30px;
-            animation: fadeIn 0.8s ease;
+            animation: fadeIn 0.6s ease;
         }
-        
         .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
         .card-header i { color: var(--accent); font-size: 20px; }
-        .card h2 { font-size: 18px; font-weight: 700; }
-
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
         
+        /* --- CAMPOS DE ENTRADA --- */
+        label { display: block; font-size: 11px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
         input, textarea {
             width: 100%; background: #000; border: 1px solid var(--border);
             padding: 14px 18px; border-radius: 12px; color: white;
             font-size: 14px; transition: var(--transition); outline: none; margin-bottom: 20px;
         }
-        input:focus { border-color: var(--accent); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
 
-        /* --- LINK SHARING CARD --- */
-        .link-share-card {
-            background: linear-gradient(135deg, #0071e3 0%, #003a75 100%);
-            border: none; color: white;
-        }
+        /* --- COMPARTILHAMENTO --- */
+        .link-share-card { background: linear-gradient(135deg, #0071e3 0%, #003a75 100%); border: none; color: white; }
         .link-box {
-            background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px;
+            background: rgba(0,0,0,0.3); padding: 14px 18px; border-radius: 14px;
             display: flex; align-items: center; justify-content: space-between;
             border: 1px solid rgba(255,255,255,0.1); margin-top: 15px;
         }
-        .link-text { font-family: monospace; font-size: 13px; opacity: 0.9; }
+        .link-text { font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; }
 
-        /* --- ADVANCED UPLOAD ZONE --- */
-        .upload-wrapper { margin-bottom: 25px; }
+        /* --- SISTEMA DE UPLOAD --- */
+        .upload-area { margin-bottom: 25px; }
         .drop-zone {
-            height: 160px; border: 2px dashed var(--border); border-radius: 20px;
+            height: 180px; border: 2px dashed var(--border); border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: var(--transition); position: relative;
-            background: rgba(255,255,255,0.01); overflow: hidden;
+            background: rgba(255,255,255,0.01);
         }
-        .drop-zone:hover { border-color: var(--accent); background: rgba(0,113,227,0.05); }
-        .drop-zone i { font-size: 30px; color: var(--text-dim); margin-bottom: 12px; transition: 0.3s; }
-        .drop-zone:hover i { transform: translateY(-5px); color: var(--accent); }
+        .drop-zone:hover { border-color: var(--accent); background: rgba(0,113,227,0.04); }
+        .drop-zone i { font-size: 32px; color: var(--text-dim); margin-bottom: 12px; }
         .drop-zone p { font-size: 13px; color: var(--text-dim); font-weight: 500; }
         
-        .progress-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
-            background: transparent;
-        }
-        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        .progress-bar-wrap { position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; background: rgba(0,0,0,0.2); }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
 
-        .file-status {
-            font-size: 12px; color: var(--success); margin-top: 8px; display: none;
-            align-items: center; gap: 5px;
-        }
+        .file-ok { font-size: 12px; color: var(--success); margin-top: 10px; display: none; align-items: center; gap: 6px; font-weight: 600; }
 
-        /* --- PROFILE VIEW --- */
-        #profile-page {
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 40px 20px; position: relative;
-        }
-        .profile-card {
-            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(30px);
+        /* --- PERFIL PÚBLICO --- */
+        #profile-render { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .p-card {
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(25px);
             border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 480px;
-            border-radius: 40px; padding: 50px 30px; text-align: center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.6);
+            border-radius: 40px; padding: 60px 40px; text-align: center;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
+        .p-avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent); margin-bottom: 25px; box-shadow: 0 0 30px rgba(0,113,227,0.3); }
+
+        /* --- RANKING --- */
+        .rank-row { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; margin-bottom: 10px; transition: 0.3s; cursor: pointer;
+        }
+        .rank-row:hover { transform: scale(1.02); border-color: var(--accent); }
 
         /* --- TOAST --- */
         #toast {
-            position: fixed; top: 30px; right: 30px; z-index: 9999;
+            position: fixed; top: 30px; right: 30px; z-index: 10000;
             background: var(--surface-light); border: 1px solid var(--border);
-            padding: 16px 24px; border-radius: 16px; display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 18px 28px; border-radius: 18px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="toast" class="hidden animate__animated">
         <i id="toast-icon" class="fa-solid fa-circle-check"></i>
-        <span id="toast-msg"></span>
+        <span id="toast-msg">Sucesso!</span>
     </div>
 
-    <div id="view-home" class="hidden">
-        <div class="container" style="padding-top: 100px; text-align: center;">
-            <h1 style="font-size: 64px; font-weight: 800; letter-spacing: -3px; margin-bottom: 20px;">OmniBio<span style="color:var(--accent)">.</span></h1>
-            <p style="color: var(--text-dim); font-size: 18px; max-width: 600px; margin: 0 auto 40px;">Sua bio profissional com status de Discord, músicas e uploads direto do seu computador.</p>
-            <button class="btn btn-primary" onclick="login()" style="padding: 16px 40px; font-size: 16px;">Criar meu perfil agora</button>
-            
-            <div style="margin-top: 80px;">
-                <h2 style="font-size: 24px; margin-bottom: 30px;">Comunidade Ativa</h2>
-                <div id="home-ranking" style="max-width: 600px; margin: 0 auto; display: grid; gap: 15px;"></div>
+    <section id="view-home" class="hidden">
+        <div class="container" style="padding-top: 120px; text-align: center;">
+            <div class="animate__animated animate__fadeInDown">
+                <h1 style="font-size: clamp(48px, 10vw, 80px); font-weight: 800; letter-spacing: -4px; margin-bottom: 20px;">OmniBio<span style="color:var(--accent)">.</span></h1>
+                <p style="color: var(--text-dim); font-size: 20px; max-width: 700px; margin: 0 auto 50px;">A plataforma definitiva para unificar sua presença digital com estilo, música e integração total com Discord.</p>
+                
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="login()" style="padding: 18px 45px; font-size: 16px;">Criar Perfil Grátis</button>
+                    <a href="https://discord.gg/3nn9YknWES" target="_blank" class="btn btn-ghost" style="padding: 18px 45px; font-size: 16px;"><i class="fa-brands fa-discord"></i> Discord Oficial</a>
+                </div>
+            </div>
+
+            <div style="margin-top: 100px; padding-bottom: 100px;">
+                <h2 style="font-size: 28px; margin-bottom: 40px;"><i class="fa-solid fa-trophy" style="color:#ffd700"></i> Top Perfis da Comunidade</h2>
+                <div id="home-ranking-list" style="max-width: 650px; margin: 0 auto;">
+                    </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-admin" class="hidden">
-        <div class="dash-container">
+    <section id="view-admin" class="hidden">
+        <div class="dash-layout">
             <aside class="sidebar">
-                <div style="font-size: 22px; font-weight: 800; margin-bottom: 50px;">OmniBio</div>
+                <div style="font-size: 24px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 50px;">OmniBio<span style="color:var(--accent)">.</span></div>
+                
                 <nav style="flex: 1;">
-                    <a href="#" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; margin-bottom: 10px; background: var(--border); border: none;">
-                        <i class="fa-solid fa-house"></i> Dashboard
+                    <a href="#" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: none;">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard
                     </a>
                 </nav>
-                <div style="padding-top: 20px; border-top: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                        <img id="user-pfp" style="width: 35px; border-radius: 50%;">
-                        <span id="user-name" style="font-weight: 600; font-size: 14px;"></span>
+
+                <div style="padding-top: 25px; border-top: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px;">
+                        <img id="admin-pfp" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <p id="admin-name" style="font-weight: 700; font-size: 14px;"></p>
+                            <p style="font-size: 11px; color: var(--success); font-weight: 600;">CONTA ATIVA</p>
+                        </div>
                     </div>
-                    <button class="btn btn-ghost" onclick="logout()" style="width: 100%; color: var(--error);">Sair da conta</button>
+                    <button class="btn btn-ghost" onclick="logout()" style="width: 100%; color: var(--error); border-color: rgba(255,59,48,0.2);">Sair</button>
                 </div>
             </aside>
 
             <main class="main-content">
                 <div class="card link-share-card">
-                    <h2 style="margin-bottom: 5px;">Seu perfil está online!</h2>
-                    <p style="font-size: 13px; opacity: 0.8;">Compartilhe seu link exclusivo com o mundo:</p>
+                    <h2 style="font-size: 20px; margin-bottom: 8px;">🚀 Seu Perfil está Pronto!</h2>
+                    <p style="font-size: 14px; opacity: 0.9;">Copie o link abaixo e coloque na sua bio do Instagram ou TikTok.</p>
                     <div class="link-box">
-                        <span class="link-text" id="share-url">omnibio.com/?u=username</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-primary" onclick="copyLink()" style="background: white; color: var(--accent); padding: 8px 12px; border-radius: 8px;">
+                        <span class="link-text" id="display-share-url">omnibio.com/?u=carregando...</span>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="copyLink()" style="background: white; color: var(--accent); padding: 10px 14px; border-radius: 10px;">
                                 <i class="fa-solid fa-copy"></i>
                             </button>
-                            <button class="btn btn-primary" onclick="viewMyProfile()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 8px 12px; border-radius: 8px;">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <button class="btn btn-primary" onclick="openPreview()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 10px;">
+                                <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-user-pen"></i><h2>Informações Gerais</h2></div>
-                    <label>Username (Identificador na URL)</label>
-                    <input type="text" id="in_username" placeholder="ex: lucas.dev">
-                    <label>Nome de Exibição</label>
-                    <input type="text" id="in_display_name" placeholder="Como você quer ser chamado">
-                    <label>Sua Bio</label>
-                    <textarea id="in_bio" rows="3" placeholder="Escreva algo sobre você..."></textarea>
+                    <div class="card-header"><i class="fa-solid fa-id-card"></i><h2>Identidade Digital</h2></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label>Username Único</label>
+                            <input type="text" id="db_username" placeholder="ex: jhonny.dev">
+                        </div>
+                        <div>
+                            <label>Nome no Perfil</label>
+                            <input type="text" id="db_display_name" placeholder="Ex: Jhonny Silva">
+                        </div>
+                    </div>
+                    <label>Biografia Curta</label>
+                    <textarea id="db_bio" rows="3" placeholder="Conte quem você é em poucas palavras..."></textarea>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-cloud-arrow-up"></i><h2>Arquivos do Perfil</h2></div>
+                    <div class="card-header"><i class="fa-solid fa-upload"></i><h2>Arquivos & Mídia</h2></div>
                     
-                    <div class="upload-wrapper">
-                        <label>Foto de Perfil</label>
-                        <div class="drop-zone" onclick="document.getElementById('file_pfp').click()" id="zone_pfp">
-                            <i class="fa-solid fa-image"></i>
-                            <p>Clique ou arraste sua foto aqui</p>
-                            <input type="file" id="file_pfp" class="hidden" accept="image/*" onchange="uploadFile(this, 'pfp_url', 'zone_pfp')">
-                            <div class="progress-container"><div class="progress-bar" id="pb_pfp_url"></div></div>
+                    <div class="upload-area">
+                        <label>Foto de Perfil (Avatar)</label>
+                        <div class="drop-zone" onclick="document.getElementById('f_pfp').click()" id="z_pfp">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <p>Arraste ou clique para selecionar imagem</p>
+                            <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url', 'z_pfp')">
+                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_pfp_url"></div></div>
                         </div>
-                        <div class="file-status" id="st_pfp_url"><i class="fa-solid fa-check-circle"></i> Arquivo pronto</div>
+                        <div class="file-ok" id="ok_pfp_url"><i class="fa-solid fa-circle-check"></i> Foto pronta para salvar</div>
                         <input type="hidden" id="pfp_url">
                     </div>
 
-                    <div class="upload-wrapper">
-                        <label>Imagem ou Vídeo de Fundo</label>
-                        <div class="drop-zone" onclick="document.getElementById('file_bg').click()" id="zone_bg">
-                            <i class="fa-solid fa-clapperboard"></i>
-                            <p>Upload de Banner (JPG, PNG ou MP4)</p>
-                            <input type="file" id="file_bg" class="hidden" accept="image/*,video/mp4" onchange="uploadFile(this, 'bg_url', 'zone_bg')">
-                            <div class="progress-container"><div class="progress-bar" id="pb_bg_url"></div></div>
+                    <div class="upload-area">
+                        <label>Fundo do Perfil (Imagem ou Vídeo MP4)</label>
+                        <div class="drop-zone" onclick="document.getElementById('f_bg').click()" id="z_bg">
+                            <i class="fa-solid fa-panorama"></i>
+                            <p>Suba seu banner ou vídeo de fundo</p>
+                            <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url', 'z_bg')">
+                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_bg_url"></div></div>
                         </div>
-                        <div class="file-status" id="st_bg_url"><i class="fa-solid fa-check-circle"></i> Fundo carregado</div>
+                        <div class="file-ok" id="ok_bg_url"><i class="fa-solid fa-circle-check"></i> Fundo configurado</div>
                         <input type="hidden" id="bg_url">
                     </div>
 
-                    <div class="upload-wrapper">
-                        <label>Trilha Sonora (MP3)</label>
-                        <div class="drop-zone" onclick="document.getElementById('file_audio').click()" id="zone_audio">
+                    <div class="upload-area">
+                        <label>Música MP3 (Auto-play)</label>
+                        <div class="drop-zone" onclick="document.getElementById('f_audio').click()" id="z_audio">
                             <i class="fa-solid fa-music"></i>
-                            <p>Arraste seu arquivo .mp3 aqui</p>
-                            <input type="file" id="file_audio" class="hidden" accept="audio/mpeg" onchange="uploadFile(this, 'audio_url', 'zone_audio')">
-                            <div class="progress-container"><div class="progress-bar" id="pb_audio_url"></div></div>
+                            <p>Arraste o arquivo .mp3 da sua música</p>
+                            <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url', 'z_audio')">
+                            <div class="progress-bar-wrap"><div class="progress-fill" id="fill_audio_url"></div></div>
                         </div>
-                        <div class="file-status" id="st_audio_url"><i class="fa-solid fa-check-circle"></i> Áudio pronto</div>
+                        <div class="file-ok" id="ok_audio_url"><i class="fa-solid fa-circle-check"></i> Áudio pronto</div>
                         <input type="hidden" id="audio_url">
                     </div>
 
-                    <button class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px;" onclick="saveData()">
-                        SALVAR TODAS AS ALTERAÇÕES
+                    <button class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 16px; margin-top: 10px;" onclick="saveBioData()">
+                        ATUALIZAR MEU PERFIL PÚBLICO
                     </button>
                 </div>
             </main>
         </div>
-    </div>
+    </section>
 
-    <div id="view-profile" class="hidden">
-        <section id="profile-page">
-            <div class="profile-card">
-                <img id="v-pfp" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 25px;">
-                <h1 id="v-name" style="font-size: 30px; font-weight: 800;"></h1>
-                <p id="v-username" style="color: var(--accent); font-weight: 600; font-size: 15px; margin-bottom: 20px;"></p>
-                <p id="v-bio" style="color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 30px;"></p>
+    <section id="view-profile" class="hidden">
+        <div id="profile-render">
+            <div class="p-card animate__animated animate__zoomIn">
+                <img id="v-avatar" class="p-avatar">
+                <h1 id="v-display-name" style="font-size: 32px; font-weight: 800; margin-bottom: 5px;"></h1>
+                <p id="v-username" style="color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 25px;"></p>
+                <p id="v-bio-text" style="color: rgba(255,255,255,0.8); line-height: 1.6; font-size: 16px; margin-bottom: 35px;"></p>
                 
-                <div id="v-discord" class="hidden" style="background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; text-align: left; display: flex; align-items: center; gap: 15px;">
-                    <img id="v-dc-img" style="width: 45px; border-radius: 12px;">
-                    <div>
-                        <div id="v-dc-name" style="font-weight: 700; font-size: 14px;"></div>
-                        <div id="v-dc-act" style="font-size: 12px; color: var(--text-dim);"></div>
+                <div id="v-discord-box" class="hidden" style="background: rgba(255,255,255,0.06); border-radius: 24px; padding: 20px; text-align: left; display: flex; align-items: center; gap: 18px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="position: relative;">
+                        <img id="v-dc-avatar" style="width: 50px; height: 50px; border-radius: 14px;">
+                        <div id="v-dc-status" style="position: absolute; bottom: -4px; right: -4px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #111;"></div>
+                    </div>
+                    <div style="overflow: hidden;">
+                        <div id="v-dc-user" style="font-weight: 800; font-size: 14px; color: #fff;"></div>
+                        <div id="v-dc-activity" style="font-size: 12px; color: #b9bbbe; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"></div>
                     </div>
                 </div>
 
-                <div style="margin-top: 50px;">
-                    <a href="index.html" style="font-size: 10px; color: var(--text-dim); text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Powered by OmniBio</a>
+                <div style="margin-top: 60px;">
+                    <a href="index.html" style="font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 2px; text-transform: uppercase; font-weight: 700;">Criar Perfil OmniBio</a>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
     <script>
+        // CONFIGURAÇÕES SUPABASE
         const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let userSession = null;
+        let activeUser = null;
 
-        async function init() {
-            const u = new URLSearchParams(window.location.search).get('u');
-            if (u) {
-                loadPublicProfile(u);
+        async function bootstrap() {
+            const params = new URLSearchParams(window.location.search);
+            const userParam = params.get('u');
+
+            if (userParam) {
+                renderPublicProfile(userParam);
             } else {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) {
-                    userSession = session.user;
-                    showAdmin();
+                    activeUser = session.user;
+                    loadAdminDashboard();
                 } else {
                     document.getElementById('view-home').classList.remove('hidden');
-                    loadHomeRanking();
+                    loadGlobalRanking();
                 }
             }
         }
 
-        // --- UPLOAD LOGIC ---
-        async function uploadFile(input, fieldId, zoneId) {
+        // --- SISTEMA DE UPLOAD (CORRIGIDO 409) ---
+        async function processUpload(input, targetField, zoneId) {
             const file = input.files[0];
             if (!file) return;
 
-            const progressBar = document.getElementById(`pb_${fieldId}`);
-            const statusLabel = document.getElementById(`st_${fieldId}`);
+            const fill = document.getElementById(`fill_${targetField}`);
+            const ok = document.getElementById(`ok_${targetField}`);
             
-            progressBar.style.width = '30%';
+            fill.style.width = '30%';
             
             const fileExt = file.name.split('.').pop();
-            const fileName = `${userSession.id}/${Date.now()}.${fileExt}`;
+            // NOME ÚNICO: ID_DO_USER + TIMESTAMP + CAMPO (Evita 409 Conflict)
+            const fileName = `${activeUser.id}/${targetField}_${Date.now()}.${fileExt}`;
 
             const { data, error } = await _supabase.storage
                 .from('assets')
-                .upload(fileName, file, { upsert: true });
+                .upload(fileName, file, { 
+                    cacheControl: '3600',
+                    upsert: true // Se por algum motivo o nome bater, ele sobrescreve em vez de dar erro
+                });
 
             if (error) {
-                notify("Erro no upload: " + error.message, "error");
-                progressBar.style.width = '0%';
+                toast("Erro no upload: " + error.message, "error");
+                fill.style.width = '0%';
             } else {
                 const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(fileName);
-                document.getElementById(fieldId).value = publicUrl;
-                progressBar.style.width = '100%';
-                statusLabel.style.display = 'flex';
-                notify("Arquivo carregado com sucesso!", "success");
+                document.getElementById(targetField).value = publicUrl;
+                fill.style.width = '100%';
+                ok.style.display = 'flex';
+                toast("Arquivo processado!", "success");
             }
         }
 
-        // --- ADMIN LOGIC ---
-        async function showAdmin() {
+        // --- PAINEL ADMINISTRATIVO ---
+        async function loadAdminDashboard() {
             document.getElementById('view-admin').classList.remove('hidden');
-            document.getElementById('user-pfp').src = userSession.user_metadata.avatar_url;
-            document.getElementById('user-name').innerText = userSession.user_metadata.full_name;
+            document.getElementById('admin-pfp').src = activeUser.user_metadata.avatar_url;
+            document.getElementById('admin-name').innerText = activeUser.user_metadata.full_name;
 
-            const { data } = await _supabase.from('bios').select('*').eq('user_id', userSession.id).maybeSingle();
+            const { data } = await _supabase.from('bios').select('*').eq('user_id', activeUser.id).maybeSingle();
+            
             if (data) {
-                document.getElementById('in_username').value = data.username || "";
-                document.getElementById('in_display_name').value = data.display_name || "";
-                document.getElementById('in_bio').value = data.bio_text || "";
+                document.getElementById('db_username').value = data.username || "";
+                document.getElementById('db_display_name').value = data.display_name || "";
+                document.getElementById('db_bio').value = data.bio_text || "";
                 document.getElementById('pfp_url').value = data.pfp_url || "";
                 document.getElementById('bg_url').value = data.bg_url || "";
                 document.getElementById('audio_url').value = data.audio_url || "";
                 
-                // Update Share URL
                 if(data.username) {
-                    const link = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                    document.getElementById('share-url').innerText = link;
+                    const fullLink = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
+                    document.getElementById('display-share-url').innerText = fullLink;
                 }
 
-                // Check for existing uploads to show status
+                // Marcar campos já preenchidos
                 ['pfp_url', 'bg_url', 'audio_url'].forEach(f => {
                     if(document.getElementById(f).value) {
-                        document.getElementById(`st_${f}`).style.display = 'flex';
-                        document.getElementById(`pb_${f}`).style.width = '100%';
+                        document.getElementById(`ok_${f}`).style.display = 'flex';
+                        document.getElementById(`fill_${f}`).style.width = '100%';
                     }
                 });
             }
         }
 
-        async function saveData() {
+        async function saveBioData() {
+            const username = document.getElementById('db_username').value.trim().toLowerCase();
+            if(!username) return toast("Username é obrigatório!", "error");
+
             const payload = {
-                user_id: userSession.id,
-                username: document.getElementById('in_username').value.trim().toLowerCase(),
-                display_name: document.getElementById('in_display_name').value,
-                bio_text: document.getElementById('in_bio').value,
+                user_id: activeUser.id,
+                username: username,
+                display_name: document.getElementById('db_display_name').value,
+                bio_text: document.getElementById('db_bio').value,
                 pfp_url: document.getElementById('pfp_url').value,
                 bg_url: document.getElementById('bg_url').value,
                 audio_url: document.getElementById('audio_url').value,
-                discord_id: userSession.user_metadata.provider_id
+                discord_id: activeUser.user_metadata.provider_id
             };
 
-            if(!payload.username) return notify("Username é obrigatório", "error");
-
             const { error } = await _supabase.from('bios').upsert(payload);
+            
             if(!error) {
-                notify("Perfil atualizado!", "success");
-                setTimeout(() => location.reload(), 1000);
+                toast("Perfil publicado com sucesso!", "success");
+                setTimeout(() => location.reload(), 1500);
             } else {
-                notify("Erro ao salvar dados", "error");
+                toast("Erro ao salvar: Escolha outro username.", "error");
             }
         }
 
-        // --- UTILS ---
+        // --- FUNÇÕES DE UTILIDADE ---
         function copyLink() {
-            const text = document.getElementById('share-url').innerText;
-            navigator.clipboard.writeText(text);
-            notify("Link copiado para a área de transferência!", "success");
+            const link = document.getElementById('display-share-url').innerText;
+            if(link.includes('...')) return toast("Salve seu perfil primeiro!", "error");
+            navigator.clipboard.writeText(link);
+            toast("Link copiado!", "success");
         }
 
-        function viewMyProfile() {
-            const user = document.getElementById('in_username').value;
+        function openPreview() {
+            const user = document.getElementById('db_username').value;
             if(user) window.open(`?u=${user}`, '_blank');
         }
 
-        function notify(msg, type) {
+        function toast(msg, type) {
             const t = document.getElementById('toast');
             const m = document.getElementById('toast-msg');
             const i = document.getElementById('toast-icon');
             
             m.innerText = msg;
-            t.className = `animate__animated animate__fadeInDown ${type === 'success' ? '' : 'error'}`;
+            t.className = `animate__animated animate__fadeInDown ${type === 'error' ? 'error' : ''}`;
+            i.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
             i.style.color = type === 'success' ? 'var(--success)' : 'var(--error)';
             t.classList.remove('hidden');
             
@@ -400,53 +429,97 @@
             }, 3000);
         }
 
-        // --- PUBLIC PROFILE LOAD ---
-        async function loadPublicProfile(u) {
+        // --- CARREGAMENTO DO PERFIL PÚBLICO ---
+        async function renderPublicProfile(u) {
             const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
             if(!data) return (location.href = 'index.html');
 
             document.getElementById('view-profile').classList.remove('hidden');
-            document.getElementById('v-name').innerText = data.display_name || u;
+            document.title = `${data.display_name || u} | OmniBio`;
+            
+            document.getElementById('v-display-name').innerText = data.display_name || u;
             document.getElementById('v-username').innerText = `@${u}`;
-            document.getElementById('v-bio').innerText = data.bio_text;
-            document.getElementById('v-pfp').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}`;
+            document.getElementById('v-bio-text').innerText = data.bio_text;
+            document.getElementById('v-avatar').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}&background=random`;
 
+            // Background Inteligente (Imagem ou Vídeo)
             if(data.bg_url) {
-                if(data.bg_url.includes('.mp4')) {
-                    const vid = document.createElement('video');
-                    vid.src = data.bg_url; vid.autoplay = true; vid.loop = true; vid.muted = true;
-                    vid.style = "position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;";
-                    document.body.appendChild(vid);
+                const isVideo = data.bg_url.toLowerCase().endsWith('.mp4');
+                if(isVideo) {
+                    const v = document.createElement('video');
+                    v.src = data.bg_url; v.autoplay = true; v.loop = true; v.muted = true;
+                    v.style = "position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;";
+                    document.body.appendChild(v);
                 } else {
                     document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
                 }
             }
 
+            // Audio Autoplay
             if(data.audio_url) {
-                const audio = new Audio(data.audio_url);
-                audio.loop = true;
-                document.body.onclick = () => audio.play();
+                const player = new Audio(data.audio_url);
+                player.loop = true;
+                // Navegadores exigem interação para tocar áudio
+                document.body.addEventListener('click', () => player.play(), { once: true });
             }
 
-            if(data.discord_id) fetchLanyard(data.discord_id);
+            // Lanyard (Discord Status)
+            if(data.discord_id) initLanyard(data.discord_id);
+            
+            // Incrementar views
             _supabase.rpc('increment_views', { target_username: u });
         }
 
-        async function fetchLanyard(id) {
-            const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-            const { data } = await res.json();
+        async function initLanyard(id) {
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+                const { data } = await res.json();
+                if(!data) return;
+
+                const box = document.getElementById('v-discord-box');
+                box.classList.remove('hidden');
+                document.getElementById('v-dc-user').innerText = data.discord_user.username;
+                document.getElementById('v-dc-avatar').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
+                
+                const statusDot = document.getElementById('v-dc-status');
+                const colors = { online: '#43b581', dnd: '#f04747', idle: '#faa61a', offline: '#747f8d' };
+                statusDot.style.backgroundColor = colors[data.discord_status] || colors.offline;
+
+                let activityText = "Atualmente offline";
+                if(data.activities.length > 0) {
+                    const act = data.activities[0];
+                    activityText = `${act.name}: ${act.details || act.state || 'Jogando'}`;
+                } else if (data.discord_status !== 'offline') {
+                    activityText = "Online no Discord";
+                }
+                document.getElementById('v-dc-activity').innerText = activityText;
+            } catch (e) { console.error("Falha ao carregar Discord Status"); }
+        }
+
+        async function loadGlobalRanking() {
+            const list = document.getElementById('home-ranking-list');
+            list.innerHTML = `<div class="skeleton"></div>`;
+
+            const { data } = await _supabase.from('bios').select('username, display_name, pfp_url, views').order('views', { ascending: false }).limit(5);
+
             if(data) {
-                document.getElementById('v-discord').classList.remove('hidden');
-                document.getElementById('v-dc-name').innerText = data.discord_user.username;
-                document.getElementById('v-dc-img').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                document.getElementById('v-dc-act').innerText = data.activities.length ? data.activities[0].name : 'Online';
+                list.innerHTML = data.map((p, i) => `
+                    <div class="rank-row" onclick="location.href='?u=${p.username}'">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <span style="font-weight:900; color:var(--accent); font-size:18px;">#${i+1}</span>
+                            <img src="${p.pfp_url || 'https://ui-avatars.com/api/?name='+p.username}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            <span style="font-weight:700;">${p.display_name || p.username}</span>
+                        </div>
+                        <span style="font-size:13px; color:var(--text-dim); font-weight:600;">${p.views.toLocaleString()} views</span>
+                    </div>
+                `).join('');
             }
         }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
         async function logout() { await _supabase.auth.signOut(); location.href = 'index.html'; }
 
-        init();
+        bootstrap();
     </script>
 </body>
 </html>
