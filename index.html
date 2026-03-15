@@ -3,81 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio Pro | Cloud</title>
+    <title>OmniBio | Digital Identity</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        :root { --main: #b026ff; --bg: #050505; --accent: #00ffcc; }
-        * { box-sizing: border-box; transition: 0.3s ease-out; }
-        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-        /* PAINEL E LOGIN */
-        .container { max-width: 480px; margin: 50px auto; padding: 20px; }
-        .panel { background: #111; padding: 35px; border-radius: 28px; border: 1px solid #222; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+        :root {
+            --primary: #b026ff;
+            --secondary: #00ffcc;
+            --bg: #030303;
+            --card-bg: rgba(15, 15, 15, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- BACKGROUNDS E EFEITOS --- */
+        #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; display: none; filter: brightness(0.4); }
+        .bg-gradient { position: fixed; inset: 0; background: radial-gradient(circle at center, #1a0a2a 0%, #030303 100%); z-index: -3; }
+        .mesh { position: fixed; inset: 0; background-image: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.15; z-index: -1; pointer-events: none; }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; }
+
+        /* --- GLASS CARD --- */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            text-align: center;
+            transform-style: preserve-3d;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- FORMULÁRIOS --- */
+        h2 { font-weight: 800; font-size: 1.8rem; margin-bottom: 8px; letter-spacing: -1px; }
+        p.subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+
+        .input-group { text-align: left; margin-bottom: 18px; }
+        label { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; margin-left: 12px; margin-bottom: 6px; display: block; }
+        
+        input, textarea {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border); border-radius: 16px;
+            color: #fff; font-size: 0.95rem; outline: none; transition: 0.2s;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(176, 38, 255, 0.2); }
+
+        /* --- BOTÕES --- */
+        .btn {
+            width: 100%; padding: 18px; border: none; border-radius: 16px;
+            font-weight: 800; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-discord { background: #5865F2; color: #fff; }
+        .btn-discord:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3); }
+        
+        .btn-primary { background: var(--primary); color: #fff; margin-top: 10px; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(176, 38, 255, 0.4); }
+
+        /* --- PERFIL VIEW --- */
+        .pfp-ring {
+            width: 130px; height: 130px; border-radius: 50%; padding: 4px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            margin: 0 auto 20px;
+        }
+        .pfp-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; }
+
+        .bio-links { margin-top: 25px; display: flex; flex-direction: column; gap: 12px; }
+        .link-item {
+            padding: 16px; background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); border-radius: 18px;
+            color: #fff; text-decoration: none; font-weight: 600;
+            transition: 0.2s;
+        }
+        .link-item:hover { background: rgba(255,255,255,0.1); border-color: var(--secondary); transform: translateX(5px); }
+
+        /* --- STATUS BADGE --- */
+        #status-link {
+            margin-top: 20px; padding: 15px; border-radius: 16px;
+            background: rgba(0, 255, 204, 0.05); border: 1px solid rgba(0, 255, 204, 0.2);
+            font-size: 0.85rem; display: none;
+        }
+
         .hidden { display: none !important; }
-        
-        input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 12px; outline: none; }
-        input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(176, 38, 255, 0.3); }
-        
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-main { background: var(--main); color: white; }
-        .btn-discord { background: #5865F2; color: white; }
-        .btn-discord:hover { background: #4752c4; }
-
-        /* BIO VIEW */
-        #bio-view { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; background-size: cover; background-position: center; z-index: 1000; }
-        .glass { background: rgba(0,0,0,0.4); backdrop-filter: blur(25px); padding: 50px; border-radius: 40px; text-align: center; width: 380px; border: 1px solid rgba(255,255,255,0.1); transform-style: preserve-3d; }
-        .pfp { width: 125px; height: 125px; border-radius: 50%; border: 3px solid var(--main); margin-bottom: 20px; object-fit: cover; }
-        .link-btn { display: block; padding: 14px; background: rgba(255,255,255,0.05); margin: 12px 0; border-radius: 15px; color: white; text-decoration: none; border: 1px solid transparent; font-weight: 600; }
-        .link-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--main); transform: scale(1.03); }
-        
-        #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; display: none; }
     </style>
 </head>
 <body>
 
+    <div class="bg-gradient"></div>
     <video id="bg-video" autoplay muted loop playsinline></video>
+    <div class="mesh"></div>
 
-    <div id="login-ui" class="container">
-        <div class="panel" style="text-align: center;">
-            <h1 style="color: var(--main); font-weight: 800; margin-bottom: 5px;">OmniBio</h1>
-            <p style="color: #666; margin-bottom: 30px;">Crie sua bio profissional em segundos.</p>
-            <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
+    <div class="wrapper">
+        
+        <div id="login-ui" class="glass-panel">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🌌</div>
+            <h2>OmniBio Pro</h2>
+            <p class="subtitle">Sua identidade digital em alto nível.</p>
+            <button class="btn btn-discord" onclick="login()">
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" width="20" style="filter: invert(1);">
+                ENTRAR COM DISCORD
+            </button>
         </div>
-    </div>
 
-    <div id="admin-ui" class="container hidden">
-        <div class="panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin:0">Meu Painel</h2>
-                <button onclick="logout()" style="background:none; border:none; color:var(--main); cursor:pointer; font-weight:bold;">Sair</button>
+        <div id="admin-ui" class="glass-panel hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="font-weight: 800;">Dashboard</h3>
+                <button onclick="logout()" style="background:none; border:none; color:#ff4444; font-weight:700; cursor:pointer; font-size:0.8rem;">Desconectar</button>
             </div>
-            
-            <label style="font-size: 0.7rem; color: #555;">NICK DA URL (ex: luan)</label>
-            <input type="text" id="username" placeholder="luan7">
-            
-            <label style="font-size: 0.7rem; color: #555;">NOME NO PERFIL</label>
-            <input type="text" id="display_name" placeholder="Luan | Developer">
 
-            <label style="font-size: 0.7rem; color: #555;">FOTO E FUNDO (DO SEU PC)</label>
-            <input type="file" id="pfp-input" accept="image/*">
-            <input type="file" id="bg-input" accept="image/*,video/mp4">
+            <div class="input-group">
+                <label>Seu Nick Único</label>
+                <input type="text" id="username" placeholder="ex: luan7">
+            </div>
 
-            <label style="font-size: 0.7rem; color: #555;">MEUS LINKS (Nome,URL|Nome,URL)</label>
-            <textarea id="links" rows="3" placeholder="Discord,https://...|Steam,https://..."></textarea>
+            <div class="input-group">
+                <label>Nome no Perfil</label>
+                <input type="text" id="display_name" placeholder="Ex: Luan | Developer">
+            </div>
 
-            <button class="btn btn-main" onclick="saveBio()">SALVAR ALTERAÇÕES</button>
-            <div id="status-msg" style="margin-top:15px; text-align:center; font-size:0.8rem;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="input-group">
+                    <label>Foto Perfil</label>
+                    <input type="file" id="pfp-input" style="padding: 10px; font-size: 0.7rem;">
+                </div>
+                <div class="input-group">
+                    <label>Fundo (Img/Vid)</label>
+                    <input type="file" id="bg-input" style="padding: 10px; font-size: 0.7rem;">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Links (Nome,URL|Nome2,URL2)</label>
+                <textarea id="links" rows="2" placeholder="Steam,https://..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveBio()">ATUALIZAR PERFIL</button>
+            <div id="status-link"></div>
         </div>
-    </div>
 
-    <div id="bio-view">
-        <div class="glass" id="tilt-card">
-            <img id="bio-pfp" class="pfp" src="">
-            <h1 id="bio-name" style="margin: 0; font-weight: 800;"></h1>
-            <p id="bio-status" style="color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; margin-top: 5px;">ONLINE</p>
-            <div id="bio-links-container" style="margin-top: 25px;"></div>
+        <div id="bio-view" class="glass-panel hidden">
+            <div class="pfp-ring">
+                <img id="bio-pfp" class="pfp-img" src="">
+            </div>
+            <h1 id="bio-name" style="font-weight: 800; font-size: 2rem; letter-spacing: -1px;"></h1>
+            <div id="bio-status" style="font-size: 0.65rem; color: var(--secondary); letter-spacing: 3px; margin-top: 5px; font-weight: 800;">ONLINE</div>
+            
+            <div id="bio-links-container" class="bio-links"></div>
         </div>
+
     </div>
 
     <script>
@@ -85,49 +177,42 @@
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        async function login() {
-            await _supabase.auth.signInWithOAuth({ provider: 'discord' });
-        }
+        async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
+        async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
-        async function logout() {
-            await _supabase.auth.signOut();
-            window.location.reload();
-        }
-
-        // --- SISTEMA DE DETECÇÃO ---
         _supabase.auth.onAuthStateChange(async (event, session) => {
             const urlUser = new URLSearchParams(window.location.search).get('u');
-            if (urlUser) {
-                loadBio(urlUser);
-            } else if (session) {
-                showAdmin(session.user);
-            }
+            if (urlUser) loadBio(urlUser);
+            else if (session) showAdmin(session.user);
         });
 
         async function showAdmin(user) {
             document.getElementById('login-ui').classList.add('hidden');
             document.getElementById('admin-ui').classList.remove('hidden');
 
-            // Carrega o que já existe no banco
-            const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).single();
-            if (data) {
-                document.getElementById('username').value = data.username || "";
-                document.getElementById('display_name').value = data.display_name || "";
-                document.getElementById('links').value = data.links || "";
-                document.getElementById('status-msg').innerHTML = `Sua bio: <a href="?u=${data.username}" target="_blank" style="color:var(--accent)">clique aqui para ver</a>`;
+            const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+            if (data && data.username) {
+                document.getElementById('username').value = data.username;
+                document.getElementById('display_name').value = data.display_name;
+                document.getElementById('links').value = data.links;
+                
+                const link = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
+                const box = document.getElementById('status-link');
+                box.style.display = 'block';
+                box.innerHTML = `<span style="color:#888">Sua Bio:</span><br><a href="${link}" target="_blank" style="color:var(--secondary); text-decoration:none; font-weight:800;">${link}</a>`;
             }
         }
 
         async function saveBio() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const msg = document.getElementById('status-msg');
-            msg.innerText = "⚡ Sincronizando com a nuvem...";
+            const user = (await _supabase.auth.getUser()).data.user;
+            const btn = document.querySelector('.btn-primary');
+            const nick = document.getElementById('username').value.trim().toLowerCase();
+            
+            if(!nick) return alert("Defina um Nick!");
+            btn.innerText = "⏳ SALVANDO...";
 
             try {
-                let pfpUrl = null;
-                let bgUrl = null;
-
+                let pfpUrl = null, bgUrl = null;
                 const pfpFile = document.getElementById('pfp-input').files[0];
                 const bgFile = document.getElementById('bg-input').files[0];
 
@@ -136,69 +221,69 @@
                     await _supabase.storage.from('assets').upload(path, pfpFile);
                     pfpUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
-
                 if(bgFile) {
                     const path = `bg/${user.id}_${Date.now()}`;
                     await _supabase.storage.from('assets').upload(path, bgFile);
                     bgUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
 
-                const updateData = {
+                const payload = {
                     user_id: user.id,
-                    username: username,
+                    username: nick,
                     display_name: document.getElementById('display_name').value,
-                    links: document.getElementById('links').value,
+                    links: document.getElementById('links').value
                 };
+                if(pfpUrl) payload.pfp_url = pfpUrl;
+                if(bgUrl) payload.bg_url = bgUrl;
 
-                if(pfpUrl) updateData.pfp_url = pfpUrl;
-                if(bgUrl) updateData.bg_url = bgUrl;
-
-                const { error } = await _supabase.from('bios').upsert(updateData, { onConflict: 'user_id' });
+                const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
                 if(error) throw error;
-
-                msg.innerHTML = "✅ Bio atualizada com sucesso!";
-            } catch (e) {
-                msg.innerText = "❌ Erro: " + e.message;
-            }
+                
+                btn.innerText = "✅ SUCESSO!";
+                setTimeout(() => showAdmin(user), 2000);
+            } catch (e) { alert(e.message); btn.innerText = "ERRO!"; }
         }
 
         async function loadBio(nick) {
-            const { data } = await _supabase.from('bios').select('*').eq('username', nick).single();
-            if(!data) return alert("Bio não encontrada!");
+            const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
+            if(!data) return;
 
             document.getElementById('login-ui').classList.add('hidden');
             document.getElementById('admin-ui').classList.add('hidden');
-            const view = document.getElementById('bio-view');
-            view.style.display = 'flex';
+            const bioView = document.getElementById('bio-view');
+            bioView.classList.remove('hidden');
 
+            // Background
             if(data.bg_url) {
-                if(data.bg_url.endsWith('.mp4')) {
+                if(data.bg_url.toLowerCase().endsWith('.mp4')) {
                     const v = document.getElementById('bg-video');
                     v.src = data.bg_url; v.style.display = 'block';
                 } else {
-                    view.style.backgroundImage = `url(${data.bg_url})`;
+                    document.body.style.backgroundImage = `url(${data.bg_url})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
                 }
             }
 
             document.getElementById('bio-pfp').src = data.pfp_url || 'https://via.placeholder.com/150';
-            document.getElementById('bio-name').innerText = data.display_name.toUpperCase();
-            
+            document.getElementById('bio-name').innerText = data.display_name;
+
             const container = document.getElementById('bio-links-container');
+            container.innerHTML = "";
             data.links.split('|').forEach(l => {
                 const [n, u] = l.split(',');
                 if(n && u) {
-                    const a = document.createElement('a');
+                    const a = document.createElement('a'); a.className = 'link-item';
                     a.href = u; a.target = "_blank"; a.innerText = n;
-                    a.className = 'link-btn';
                     container.appendChild(a);
                 }
             });
 
-            // Efeito Tilt 3D
+            // Tilt Effect
             document.addEventListener('mousemove', e => {
-                let xAxis = (window.innerWidth / 2 - e.clientX) / 20;
-                let yAxis = (window.innerHeight / 2 - e.clientY) / 20;
-                document.getElementById('tilt-card').style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                let x = (window.innerWidth / 2 - e.clientX) / 20;
+                let y = (window.innerHeight / 2 - e.clientY) / 20;
+                bioView.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
             });
         }
     </script>
