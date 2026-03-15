@@ -56,7 +56,6 @@
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
         }
 
-        /* UPLOAD BOXES */
         .upload-box {
             display: flex;
             align-items: center;
@@ -72,14 +71,8 @@
         .upload-box:hover { background: rgba(255,255,255,0.06); }
         .upload-box span { font-size: 0.8rem; color: #888; font-weight: 500; }
         .upload-box .status-tag { 
-            font-size: 0.65rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            padding: 5px 12px; 
-            border-radius: 8px;
-            background: #fff;
-            color: #000;
-            letter-spacing: 0.5px;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; 
+            padding: 5px 12px; border-radius: 8px; background: #fff; color: #000;
         }
         .upload-box input { display: none; }
 
@@ -94,7 +87,6 @@
         }
         .link-btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
 
-        /* DISCORD PRESENCE */
         .discord-card { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin: 20px 0; display: flex; align-items: center; text-align: left; gap: 15px; }
         .dc-avatar { width: 48px; height: 48px; position: relative; }
         .dc-avatar img { width: 100%; height: 100%; border-radius: 50%; }
@@ -105,16 +97,14 @@
 
         .field { margin-bottom: 20px; text-align: left; }
         label { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.3); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        input[type="text"], textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; transition: 0.3s; }
-        input[type="text"]:focus { border-color: rgba(255,255,255,0.2); }
+        input[type="text"], textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; border-radius: 12px; outline: none; }
 
         .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; }
         .btn-primary { background: #fff; color: #000; }
         .btn-discord { background: #5865f2; color: #fff; }
 
-        #success-link { margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.75rem; display: none; word-break: break-all; }
+        #success-link { margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.75rem; display: none; }
         #success-link a { color: #fff; text-decoration: underline; }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -130,39 +120,24 @@
 
     <div class="wrapper" id="main-wrapper">
         <div id="login-ui" class="card">
-            <h1 style="margin-bottom: 30px; font-weight: 800; letter-spacing: -1px;">OmniBio</h1>
+            <h1 style="margin-bottom: 30px; font-weight: 800;">OmniBio</h1>
             <button class="btn btn-discord" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
         <div id="admin-ui" class="card hidden" style="max-height: 85vh; overflow-y: auto;">
-            <h2 style="margin-bottom: 25px; font-size: 1.2rem;">Configurações</h2>
+            <h2 style="margin-bottom: 25px; font-size: 1.2rem;">Editar Perfil</h2>
             
-            <div class="field"><label>Nick da URL</label><input type="text" id="username" placeholder="ex: luckz"></div>
-            <div class="field"><label>Nome de Exibição</label><input type="text" id="display_name" placeholder="Como você quer ser chamado"></div>
+            <div class="field"><label>Nick da URL (ex: luckz)</label><input type="text" id="username" placeholder="seu-nick"></div>
+            <div class="field"><label>Nome de Exibição</label><input type="text" id="display_name" placeholder="Ex: Luckzz"></div>
 
-            <label>Customização</label>
-            <label class="upload-box">
-                <span>Foto de Perfil</span>
-                <div class="status-tag" id="st-pfp">Adicionar</div>
-                <input type="file" id="pfp-input" accept="image/*" onchange="updateTag('pfp')">
-            </label>
+            <label>Mídias</label>
+            <label class="upload-box"><span>Foto de Perfil</span><div class="status-tag" id="st-pfp">Adicionar</div><input type="file" id="pfp-input" accept="image/*" onchange="updateTag('pfp')"></label>
+            <label class="upload-box"><span>Fundo</span><div class="status-tag" id="st-bg">Adicionar</div><input type="file" id="bg-input" accept="image/*,video/mp4" onchange="updateTag('bg')"></label>
+            <label class="upload-box"><span>Música</span><div class="status-tag" id="st-audio">Adicionar</div><input type="file" id="audio-input" accept="audio/*" onchange="updateTag('audio')"></label>
 
-            <label class="upload-box">
-                <span>Fundo (Vídeo/Foto)</span>
-                <div class="status-tag" id="st-bg">Adicionar</div>
-                <input type="file" id="bg-input" accept="image/*,video/mp4" onchange="updateTag('bg')">
-            </label>
-
-            <label class="upload-box">
-                <span>Música de Fundo</span>
-                <div class="status-tag" id="st-audio">Adicionar</div>
-                <input type="file" id="audio-input" accept="audio/*" onchange="updateTag('audio')">
-            </label>
-
-            <div class="field"><label>Links (Nome,Link|Nome,Link)</label><textarea id="links" rows="2" placeholder="Steam,https://...|Twitter,https://..."></textarea></div>
+            <div class="field"><label>Links (Nome,Link|Nome,Link)</label><textarea id="links" rows="2"></textarea></div>
             
-            <button class="btn btn-primary" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
-            
+            <button class="btn btn-primary" onclick="saveBio()" id="save-btn">SALVAR</button>
             <div id="success-link"></div>
         </div>
 
@@ -170,12 +145,10 @@
             <img id="bio-pfp" class="pfp-view" src="">
             <h1 id="bio-name"></h1>
             <p class="bio-subtitle"></p>
-            
             <div id="discord-presence" class="discord-card hidden">
                 <div class="dc-avatar"><img id="dc-pfp" src=""><div id="dc-status" class="status-dot"></div></div>
-                <div class="dc-info"><h3 id="dc-user">Carregando...</h3><p id="dc-activity">Sincronizando...</p></div>
+                <div class="dc-info"><h3 id="dc-user">...</h3><p id="dc-activity">...</p></div>
             </div>
-
             <div id="bio-links-container"></div>
         </div>
     </div>
@@ -193,9 +166,7 @@
             wrapper.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         }
 
-        function updateTag(type) {
-            document.getElementById(`st-${type}`).innerText = "Mudar";
-        }
+        function updateTag(type) { document.getElementById(`st-${type}`).innerText = "Mudar"; }
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
 
@@ -223,74 +194,67 @@
                 if(data.pfp_url) updateTag('pfp');
                 if(data.bg_url) updateTag('bg');
                 if(data.audio_url) updateTag('audio');
-
-                if(data.username) {
-                    const link = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                    const box = document.getElementById('success-link');
-                    box.style.display = "block";
-                    box.innerHTML = `Seu link: <a href="${link}" target="_blank">${link}</a>`;
-                }
+                if(data.username) displayLink(data.username);
             }
+        }
+
+        function displayLink(nick) {
+            const link = `${window.location.origin}${window.location.pathname}?u=${nick}`;
+            const box = document.getElementById('success-link');
+            box.style.display = "block";
+            box.innerHTML = `Link ativo: <a href="${link}" target="_blank">${link}</a>`;
         }
 
         async function saveBio() {
             const user = (await _supabase.auth.getUser()).data.user;
             const btn = document.getElementById('save-btn');
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            
+            if(!username) return alert("Defina um nick para a URL!");
+            
             btn.innerText = "SALVANDO...";
             btn.disabled = true;
 
             try {
                 const { data: currentData } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-                
-                let pfpUrl = currentData?.pfp_url;
-                let bgUrl = currentData?.bg_url;
-                let audioUrl = currentData?.audio_url;
+                let pfp = currentData?.pfp_url, bg = currentData?.bg_url, aud = currentData?.audio_url;
 
-                const pfpFile = document.getElementById('pfp-input').files[0];
-                const bgFile = document.getElementById('bg-input').files[0];
-                const audioFile = document.getElementById('audio-input').files[0];
+                const fPfp = document.getElementById('pfp-input').files[0];
+                const fBg = document.getElementById('bg-input').files[0];
+                const fAud = document.getElementById('audio-input').files[0];
 
-                if(pfpFile) {
-                    await _supabase.storage.from('assets').upload(`pfp/${user.id}`, pfpFile, {upsert: true});
-                    pfpUrl = _supabase.storage.from('assets').getPublicUrl(`pfp/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                if(fPfp) {
+                    await _supabase.storage.from('assets').upload(`pfp/${user.id}`, fPfp, {upsert: true});
+                    pfp = _supabase.storage.from('assets').getPublicUrl(`pfp/${user.id}`).data.publicUrl + "?t=" + Date.now();
                 }
-                if(bgFile) {
-                    await _supabase.storage.from('assets').upload(`bg/${user.id}`, bgFile, {upsert: true});
-                    bgUrl = _supabase.storage.from('assets').getPublicUrl(`bg/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                if(fBg) {
+                    await _supabase.storage.from('assets').upload(`bg/${user.id}`, fBg, {upsert: true});
+                    bg = _supabase.storage.from('assets').getPublicUrl(`bg/${user.id}`).data.publicUrl + "?t=" + Date.now();
                 }
-                if(audioFile) {
-                    await _supabase.storage.from('assets').upload(`audio/${user.id}`, audioFile, {upsert: true});
-                    audioUrl = _supabase.storage.from('assets').getPublicUrl(`audio/${user.id}`).data.publicUrl + "?t=" + Date.now();
+                if(fAud) {
+                    await _supabase.storage.from('assets').upload(`audio/${user.id}`, fAud, {upsert: true});
+                    aud = _supabase.storage.from('assets').getPublicUrl(`audio/${user.id}`).data.publicUrl + "?t=" + Date.now();
                 }
 
-                const username = document.getElementById('username').value.trim().toLowerCase();
+                // UPSERT com onConflict garantido
                 const { error } = await _supabase.from('bios').upsert({
                     user_id: user.id,
                     username: username,
                     display_name: document.getElementById('display_name').value,
                     discord_id: userDiscordId,
                     links: document.getElementById('links').value,
-                    pfp_url: pfpUrl,
-                    bg_url: bgUrl,
-                    audio_url: audioUrl,
+                    pfp_url: pfp, bg_url: bg, audio_url: aud,
                     show_discord: true
-                });
+                }, { onConflict: 'user_id' });
 
                 if(error) throw error;
 
-                btn.innerText = "SALVO!";
-                const link = `${window.location.origin}${window.location.pathname}?u=${username}`;
-                const box = document.getElementById('success-link');
-                box.style.display = "block";
-                box.innerHTML = `Sucesso! Link: <a href="${link}" target="_blank">${link}</a>`;
-                
-                setTimeout(() => { 
-                    btn.innerText = "SALVAR ALTERAÇÕES"; 
-                    btn.disabled = false;
-                }, 2000);
-
+                btn.innerText = "SALVO COM SUCESSO!";
+                displayLink(username);
+                setTimeout(() => { btn.innerText = "SALVAR"; btn.disabled = false; }, 2000);
             } catch (e) { 
-                alert("Erro ao salvar: " + e.message); 
+                console.error(e);
+                alert(e.code === "23505" ? "Este Nick já está em uso por outra pessoa!" : "Erro: " + e.message);
                 btn.innerText = "TENTAR NOVAMENTE";
                 btn.disabled = false;
             }
@@ -306,59 +270,53 @@
         function enterSite() {
             document.getElementById('enter-screen').style.opacity = '0';
             setTimeout(() => document.getElementById('enter-screen').classList.add('hidden'), 600);
-            
-            const data = loadedBioData;
+            const d = loadedBioData;
             document.getElementById('bio-view').classList.remove('hidden');
-            document.getElementById('bio-pfp').src = data.pfp_url || '';
-            document.getElementById('bio-name').innerText = data.display_name;
-            document.querySelector('.bio-subtitle').innerText = `@${data.username}`;
+            document.getElementById('bio-pfp').src = d.pfp_url || '';
+            document.getElementById('bio-name').innerText = d.display_name;
+            document.querySelector('.bio-subtitle').innerText = `@${d.username}`;
 
-            if(data.bg_url) {
-                if(data.bg_url.includes('.mp4')) {
+            if(d.bg_url) {
+                if(d.bg_url.includes('.mp4')) {
                     const v = document.getElementById('bg-video');
-                    v.src = data.bg_url; v.style.display = 'block'; v.play();
-                } else {
-                    document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
-                }
+                    v.src = d.bg_url; v.style.display = 'block'; v.play();
+                } else document.body.style.background = `url(${d.bg_url}) center/cover no-repeat fixed`;
+            }
+            if(d.audio_url) {
+                const a = document.getElementById('bg-audio');
+                a.src = d.audio_url; a.volume = 0.5; a.play();
             }
 
-            if(data.audio_url) {
-                const aud = document.getElementById('bg-audio');
-                aud.src = data.audio_url; aud.volume = 0.5; aud.play();
-            }
-
-            const container = document.getElementById('bio-links-container');
-            if(data.links) {
-                data.links.split('|').forEach(l => {
-                    const [name, url] = l.split(',');
-                    if(name && url) {
-                        const a = document.createElement('a');
-                        a.className = 'link-btn'; a.href = url.trim(); a.target = "_blank"; a.innerText = name.trim();
-                        container.appendChild(a);
+            const cont = document.getElementById('bio-links-container');
+            if(d.links) {
+                d.links.split('|').forEach(l => {
+                    const [n, u] = l.split(',');
+                    if(n && u) {
+                        const el = document.createElement('a');
+                        el.className = 'link-btn'; el.href = u.trim(); el.target = "_blank"; el.innerText = n.trim();
+                        cont.appendChild(el);
                     }
                 });
             }
-
-            if(data.discord_id) {
+            if(d.discord_id) {
                 document.getElementById('discord-presence').classList.remove('hidden');
-                fetchDiscord(data.discord_id);
-                setInterval(() => fetchDiscord(data.discord_id), 15000);
+                fetchDiscord(d.discord_id);
+                setInterval(() => fetchDiscord(d.discord_id), 15000);
             }
         }
 
         async function fetchDiscord(id) {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
-                if(data) {
-                    document.getElementById('dc-user').innerText = data.discord_user.global_name || data.discord_user.username;
-                    document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
-                    document.getElementById('dc-status').className = `status-dot ${data.discord_status}`;
-                    
-                    let activity = "Online";
-                    if(data.listening_to_spotify) activity = `Ouvindo ${data.spotify.track}`;
-                    else if(data.activities.length > 0) activity = data.activities[0].name;
-                    document.getElementById('dc-activity').innerText = activity;
+                const { data: d } = await res.json();
+                if(d) {
+                    document.getElementById('dc-user').innerText = d.discord_user.global_name || d.discord_user.username;
+                    document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${d.discord_user.id}/${d.discord_user.avatar}.png`;
+                    document.getElementById('dc-status').className = `status-dot ${d.discord_status}`;
+                    let act = "Online";
+                    if(d.listening_to_spotify) act = `Ouvindo ${d.spotify.track}`;
+                    else if(d.activities.length > 0) act = d.activities[0].name;
+                    document.getElementById('dc-activity').innerText = act;
                 }
             } catch(e) {}
         }
