@@ -1,59 +1,71 @@
-const SB_URL = "https://zpzdasukgdmfygajnjhn.supabase.co"
-const SB_KEY = "sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf"
+const SB_URL="https://zpzdasukgdmfygajnjhn.supabase.co"
+const SB_KEY="sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf"
 
-const client = window.supabase.createClient(SB_URL, SB_KEY)
+const client=window.supabase.createClient(SB_URL,SB_KEY)
 
-window.login = async function(){
+init()
 
- await client.auth.signInWithOAuth({
-  provider:"discord"
- })
+async function init(){
+
+const params=new URLSearchParams(location.search)
+
+const user=params.get("u")
+
+if(user){
+
+loadProfile(user)
 
 }
 
-window.logout = async function(){
+}
 
- await client.auth.signOut()
+window.login=async function(){
 
- location.reload()
+await client.auth.signInWithOAuth({
+provider:"discord"
+})
 
 }
 
 async function loadProfile(username){
 
- const {data} = await client
- .from("bios")
- .select("*")
- .eq("username",username)
- .maybeSingle()
+document.getElementById("home").classList.add("hidden")
+document.getElementById("profile").classList.remove("hidden")
 
- if(!data) return
+const {data}=await client
+.from("bios")
+.select("*")
+.eq("username",username)
+.maybeSingle()
 
- document.getElementById("display").innerText = data.display_name
- document.getElementById("username").innerText = "@"+data.username
- document.getElementById("bio").innerText = data.bio_text
+if(!data)return
 
- document.getElementById("avatar").src =
- data.pfp_url ||
- "https://ui-avatars.com/api/?name="+username
+display.innerText=data.display_name||username
+username.innerText="@"+data.username
+bio.innerText=data.bio_text
 
- const socials = document.getElementById("socials")
+avatar.src=data.pfp_url||
+"https://ui-avatars.com/api/?name="+username
 
- if(data.instagram)
- socials.innerHTML += `<a href="${data.instagram}" target="_blank"><i class="fab fa-instagram"></i></a>`
+views.innerText="👁 "+data.views+" visualizações"
 
- if(data.tiktok)
- socials.innerHTML += `<a href="${data.tiktok}" target="_blank"><i class="fab fa-tiktok"></i></a>`
+const socials=document.getElementById("socials")
 
- if(data.twitter)
- socials.innerHTML += `<a href="${data.twitter}" target="_blank"><i class="fab fa-x-twitter"></i></a>`
+if(data.instagram)
+socials.innerHTML+=`<a href="${data.instagram}" target="_blank"><i class="fab fa-instagram"></i></a>`
 
- if(data.youtube)
- socials.innerHTML += `<a href="${data.youtube}" target="_blank"><i class="fab fa-youtube"></i></a>`
+if(data.tiktok)
+socials.innerHTML+=`<a href="${data.tiktok}" target="_blank"><i class="fab fa-tiktok"></i></a>`
 
- if(data.facebook)
- socials.innerHTML += `<a href="${data.facebook}" target="_blank"><i class="fab fa-facebook"></i></a>`
+if(data.twitter)
+socials.innerHTML+=`<a href="${data.twitter}" target="_blank"><i class="fab fa-x-twitter"></i></a>`
 
- await client.rpc("increment_views",{target_username:username})
+if(data.youtube)
+socials.innerHTML+=`<a href="${data.youtube}" target="_blank"><i class="fab fa-youtube"></i></a>`
+
+if(data.facebook)
+socials.innerHTML+=`<a href="${data.facebook}" target="_blank"><i class="fab fa-facebook"></i></a>`
+
+await client.rpc("increment_views",{target_username:username})
 
 }
