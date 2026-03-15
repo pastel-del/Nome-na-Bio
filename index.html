@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>OmniBio</title>
 
@@ -16,13 +15,14 @@
 
 <body>
 
+<canvas id="bg"></canvas>
+
 <div class="center">
 
 <h1 class="logo">OmniBio</h1>
+<p>Seu perfil interativo</p>
 
-<p>Crie seu perfil digital</p>
-
-<button class="btn" onclick="loginDiscord()">
+<button onclick="loginDiscord()" class="btn">
 Entrar com Discord
 </button>
 
@@ -30,6 +30,7 @@ Entrar com Discord
 
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/particles.js"></script>
 
 </body>
 </html>
