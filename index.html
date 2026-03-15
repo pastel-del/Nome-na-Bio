@@ -3,1592 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Elite Identity System</title>
+    <title>OmniBio | Advanced Identity</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
     <style>
-        /* ========================================
-           SISTEMA DE DESIGN - OMNIBIO V3
-           ESTILO: ULTRA-GLASSMORPISM & NEON NOIR
-           ========================================
+        /* SISTEMA DE DESIGN "NOCTURNE" 
+           FOCO: TEXTURAS, SOMBRAS E PROFUNDIDADE
         */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=JetBrains+Mono:wght@400&display=swap');
 
         :root {
-            --bg-main: #020202;
+            --bg-deep: #030303;
             --accent: #ff8c00;
-            --accent-glow: rgba(255, 140, 0, 0.4);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --danger: #ff4d4d;
-            --success: #00ff88;
-            --card-blur: 30px;
+            --accent-rgb: 255, 140, 0;
+            --glass: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* --- BACKGROUND LAYER --- */
-        #bg-canvas { position: fixed; inset: 0; z-index: -3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: none; }
         
-        #bg-video { 
-            position: fixed; inset: 0; width: 100%; height: 100%; 
-            z-index: -2; object-fit: cover; filter: brightness(0.3) blur(2px); 
-            display: none; transition: opacity 1s ease;
-        }
-
-        .overlay { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
-            z-index: -1; pointer-events: none;
-        }
-
-        /* --- SCROLLBAR CUSTOM --- */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-
-        /* --- COMPONENTES BASE --- */
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-            z-index: 10;
+        body { 
+            background-color: var(--bg-deep); 
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
             perspective: 1000px;
         }
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--card-blur));
-            -webkit-backdrop-filter: blur(var(--card-blur));
+        /* --- BACKGROUND LAYER (CINEMATIC) --- */
+        #bg-video { 
+            position: fixed; inset: 0; width: 100%; height: 100%; 
+            z-index: -5; object-fit: cover; filter: brightness(0.25) saturate(1.2); 
+            display: none; 
+        }
+
+        .grain-overlay {
+            position: fixed; inset: 0; z-index: -4; opacity: 0.03; pointer-events: none;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        }
+
+        .vignette {
+            position: fixed; inset: 0; z-index: -3;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #cursor-dot {
+            width: 8px; height: 8px; background: var(--accent);
+            position: fixed; border-radius: 50%; z-index: 10000; pointer-events: none;
+            transition: transform 0.1s; transform: translate(-50%, -50%);
+        }
+        #cursor-outline {
+            width: 40px; height: 40px; border: 1px solid var(--accent);
+            position: fixed; border-radius: 50%; z-index: 9999; pointer-events: none;
+            transition: all 0.2s ease-out; transform: translate(-50%, -50%);
+            opacity: 0.5;
+        }
+
+        /* --- GLASS CARD DESIGN --- */
+        .container { width: 100%; max-width: 460px; padding: 25px; z-index: 10; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             border: 1px solid var(--glass-border);
-            border-radius: 35px;
-            padding: 50px 35px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-radius: 40px;
+            padding: 55px 40px;
+            text-align: center;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.05);
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease, border 0.3s ease;
         }
 
-        /* --- TELA DE ENTRADA (GATEKEEPER) --- */
-        #enter-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: opacity 0.8s ease, visibility 0.8s ease;
+        /* Scanline Effect */
+        .card::before {
+            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(255,140,0,0.03), transparent);
+            animation: scan 8s linear infinite; pointer-events: none;
         }
 
-        .enter-btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 0.8em;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
+        @keyframes scan { 0% { top: -100%; } 100% { top: 100%; } }
+
+        /* --- PROFILE ELEMENTS --- */
+        .pfp-wrapper { position: relative; width: 130px; height: 130px; margin: 0 auto 25px; }
+        .pfp-img { 
+            width: 100%; height: 100%; border-radius: 50%; 
+            border: 2px solid var(--glass-border); object-fit: cover;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        
+        .name-glitch {
+            font-size: 2.4rem; font-weight: 800; letter-spacing: -1px;
+            background: linear-gradient(to bottom, #fff 40%, #888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
 
-        /* --- VISUALIZAÇÃO DO PERFIL --- */
-        .profile-pfp {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 3px solid var(--glass-border);
-            margin: 0 auto 20px;
-            object-fit: cover;
-            display: block;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        .bio-description {
+            color: var(--text-muted); font-size: 1rem; line-height: 1.6;
+            font-weight: 400; margin-bottom: 35px;
         }
 
-        .display-name {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+        /* --- DISCORD WIDGET (PREMIUM) --- */
+        .discord-btn {
+            background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 18px; display: flex; align-items: center; gap: 15px;
+            text-decoration: none; color: inherit; transition: var(--transition); margin: 25px 0;
+        }
+        .discord-btn:hover {
+            background: rgba(255, 255, 255, 0.05); transform: translateY(-5px) scale(1.02);
+            border-color: rgba(var(--accent-rgb), 0.5);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+        .dc-pfp-container { position: relative; width: 50px; height: 50px; }
+        .dc-pfp-img { width: 100%; height: 100%; border-radius: 14px; }
+        .dc-status-dot { 
+            position: absolute; bottom: -3px; right: -3px; width: 16px; height: 16px; 
+            border-radius: 50%; border: 3px solid #080808; 
         }
 
-        .bio-text {
-            color: var(--text-dim);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-weight: 400;
+        /* --- SOCIAL GRID --- */
+        .social-row { display: flex; justify-content: center; gap: 30px; margin-top: 30px; }
+        .social-item { 
+            font-size: 1.8rem; color: #fff; opacity: 0.35; transition: var(--transition); 
+        }
+        .social-item:hover { 
+            opacity: 1; color: var(--accent); transform: scale(1.2) translateY(-3px); 
+            text-shadow: 0 0 20px var(--accent);
         }
 
-        /* --- DISCORD WIDGET (ELITE VERSION) --- */
-        .discord-widget {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            padding: 18px;
-            margin: 25px auto;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        /* --- ADMIN INTERFACE (ELEGANT) --- */
+        .admin-scroll { max-height: 70vh; overflow-y: auto; padding-right: 10px; text-align: left; }
+        .admin-scroll::-webkit-scrollbar { width: 3px; }
+        .admin-scroll::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
 
-        .discord-widget:hover {
-            transform: translateY(-5px);
-            background: rgba(88, 101, 242, 0.1);
-            border-color: #5865f2;
+        .field-label {
+            font-size: 0.65rem; color: var(--accent); font-weight: 800;
+            text-transform: uppercase; letter-spacing: 2px; margin: 20px 0 8px; display: block;
         }
-
-        .dc-avatar-container { position: relative; }
-        .dc-avatar { width: 52px; height: 52px; border-radius: 14px; }
-        .dc-status-indicator {
-            position: absolute; bottom: -3px; right: -3px;
-            width: 16px; height: 16px;
-            border-radius: 50%; border: 3px solid #0a0a0a;
-        }
-
-        /* --- SOCIAL ICONS --- */
-        .social-grid {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .social-link {
-            font-size: 1.8rem;
-            color: #fff;
-            opacity: 0.4;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .social-link:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: scale(1.2);
-            text-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        /* --- ADMIN INTERFACE (TABBED) --- */
-        .admin-header { margin-bottom: 25px; text-align: left; }
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: #555;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .tab-btn.active { color: #fff; border-color: var(--accent); background: rgba(255,140,0,0.1); }
-
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { font-size: 0.65rem; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
         
         input[type="text"], textarea {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 14px;
-            color: #fff;
-            outline: none;
-            transition: 0.3s;
-            cursor: text;
+            width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 16px; color: #fff; font-size: 0.9rem;
+            transition: var(--transition); outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.8); }
+
+        .btn-sync {
+            width: 100%; padding: 20px; border-radius: 18px; border: none;
+            font-weight: 800; font-size: 0.9rem; cursor: pointer; margin-top: 25px;
+            background: #fff; color: #000; position: relative; overflow: hidden;
+            transition: var(--transition);
+        }
+        .btn-sync:hover { transform: scale(0.98); box-shadow: 0 0 30px rgba(255,255,255,0.2); }
+
+        /* Shine Effect on Button */
+        .btn-sync::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+            transform: skewX(-25deg); transition: 0.75s;
+        }
+        .btn-sync:hover::after { left: 150%; }
+
+        /* Views Counter */
+        .view-count-wrap {
+            position: absolute; bottom: 25px; left: 40px;
+            font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;
         }
 
-        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(255,140,0,0.1); }
+        .hidden { display: none !important; }
+        #enter-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .gate-text { font-family: 'JetBrains Mono'; font-size: 0.7rem; letter-spacing: 1em; color: #333; animation: breathe 3s infinite; }
 
-        .btn-action {
-            width: 100%;
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            background: #fff;
-            color: #000;
-            margin-top: 10px;
-        }
-
-        .btn-action:hover { transform: scale(0.98); opacity: 0.9; }
-
-        .view-count-footer {
-            position: absolute; bottom: 20px; left: 30px;
-            font-size: 0.65rem; color: rgba(255,255,255,0.2);
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        /* Animações */
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        @keyframes breathe { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <div class="grain-overlay"></div>
+    <div class="vignette"></div>
+    
     <video id="bg-video" loop playsinline muted></video>
     <audio id="bg-audio" loop></audio>
-    <div class="overlay"></div>
 
-    <div id="enter-screen" class="hidden" onclick="revealProfile()">
-        <div class="enter-btn">Connection Established. Click to Reveal.</div>
+    <div id="enter-gate" class="hidden" onclick="revealUI()">
+        <div class="gate-text">ACCESS CORE</div>
     </div>
 
     <div class="container animate__animated animate__fadeIn">
         
-        <div id="login-ui" class="glass-card hidden">
-            <h1 class="display-name" style="font-size: 1.5rem;">Access Denied</h1>
-            <p class="bio-text">Please authenticate with Discord to manage your Identity.</p>
-            <button class="btn-action" style="background: #5865f2; color: #fff;" onclick="handleLogin()">
-                <i class="fa-brands fa-discord"></i> AUTHENTICATE
+        <div id="login-screen" class="card hidden">
+            <h1 class="name-glitch" style="font-size: 1.5rem;">Access Denied</h1>
+            <p class="bio-description">Please authenticate to manage your cloud identity.</p>
+            <button class="btn-sync" style="background:#5865f2; color:#fff;" onclick="doLogin()">
+                <i class="fa-brands fa-discord"></i> DISCORD LOGIN
             </button>
         </div>
 
-        <div id="admin-ui" class="glass-card hidden">
-            <div class="admin-header">
-                <h2 style="font-size: 1.1rem; letter-spacing: 1px;">IDENTITY CORE</h2>
-                <p style="font-size: 0.7rem; color: #555;">UID: <span id="admin-uid">---</span></p>
+        <div id="admin-screen" class="card hidden">
+            <div class="admin-scroll">
+                <h2 style="font-size: 1.1rem; letter-spacing: 2px;">SETTINGS</h2>
+                
+                <label class="field-label">Public Identifier</label>
+                <input type="text" id="in-user" placeholder="ex: pastel">
+                
+                <label class="field-label">Display Name</label>
+                <input type="text" id="in-display" placeholder="Seu Nome">
+                
+                <label class="field-label">Personal Mantra</label>
+                <textarea id="in-bio" rows="3" placeholder="Sua frase..."></textarea>
+                
+                <label class="field-label">Social Grid (icon,url | icon,url)</label>
+                <textarea id="in-links" placeholder="instagram,url | github,url"></textarea>
+
+                <div style="margin-top: 25px; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px;">
+                    <input type="checkbox" id="in-show-dc" style="accent-color: var(--accent); width:20px; height:20px;">
+                    <span style="font-size: 0.8rem; font-weight: 600;">Broadcast Discord Status</span>
+                </div>
+
+                <label class="field-label">Assets (Avatar / BG / Audio)</label>
+                <div style="display: grid; gap: 10px;">
+                    <input type="file" id="f-pfp" style="font-size: 0.7rem;">
+                    <input type="file" id="f-bg" style="font-size: 0.7rem;">
+                    <input type="file" id="f-aud" style="font-size: 0.7rem;">
+                </div>
+
+                <button class="btn-sync" id="save-btn" onclick="commitChanges()">SYNC IDENTITY</button>
+                <p id="msg-log" style="font-size: 0.7rem; text-align: center; margin-top: 15px;"></p>
+                <button onclick="doLogout()" style="background:none; border:none; color:var(--text-muted); width:100%; margin-top:25px; font-size:0.6rem; letter-spacing:2px; cursor:pointer;">TERMINATE SESSION</button>
             </div>
-
-            <div class="admin-tabs">
-                <div class="tab-btn active" onclick="switchTab('general')">PROFILE</div>
-                <div class="tab-btn" onclick="switchTab('media')">MEDIA</div>
-                <div class="tab-btn" onclick="switchTab('social')">SOCIAL</div>
-            </div>
-
-            <form id="bio-form" onsubmit="return false;">
-                <div id="tab-general">
-                    <div class="input-group">
-                        <label>Identity URL Nick</label>
-                        <input type="text" id="username" placeholder="ex: pastel">
-                    </div>
-                    <div class="input-group">
-                        <label>Public Name</label>
-                        <input type="text" id="display_name" placeholder="Como te chamam?">
-                    </div>
-                    <div class="input-group">
-                        <label>Personal Quote</label>
-                        <textarea id="bio_text" rows="3" placeholder="Sua frase de impacto..."></textarea>
-                    </div>
-                </div>
-
-                <div id="tab-media" class="hidden">
-                    <div class="input-group"><label>Profile Image</label><input type="file" id="f-pfp"></div>
-                    <div class="input-group"><label>Background (IMG/MP4)</label><input type="file" id="f-bg"></div>
-                    <div class="input-group"><label>Ambience Audio (MP3)</label><input type="file" id="f-audio"></div>
-                </div>
-
-                <div id="tab-social" class="hidden">
-                    <div class="input-group">
-                        <label>Social Links</label>
-                        <textarea id="links_input" placeholder="formato: icon,link | icon,link"></textarea>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius:15px;">
-                        <input type="checkbox" id="show_discord" style="width:18px; height:18px;">
-                        <span style="font-size:0.75rem; font-weight:700;">BROADCAST DISCORD STATUS</span>
-                    </div>
-                </div>
-
-                <button class="btn-action" id="save-btn" onclick="processSave()">
-                    SYNC IDENTITY
-                </button>
-                <div id="status-log" style="font-size: 0.6rem; margin-top:10px; text-align:center;"></div>
-            </form>
-            
-            <button onclick="handleLogout()" style="background:none; border:none; color:var(--danger); font-size:0.6rem; cursor:pointer; width:100%; margin-top:20px; font-weight:800; letter-spacing:1px;">TERMINATE SESSION</button>
         </div>
 
-        <div id="bio-view" class="glass-card hidden">
-            <img id="view-pfp" class="profile-pfp animate__animated animate__zoomIn" src="">
-            <h1 id="view-name" class="display-name"></h1>
-            <p id="view-frase" class="bio-text"></p>
+        <div id="public-screen" class="card hidden">
+            <div class="pfp-wrapper">
+                <img id="v-pfp" class="pfp-img animate__animated animate__zoomIn" src="">
+            </div>
+            <h1 id="v-name" class="name-glitch"></h1>
+            <p id="v-bio" class="bio-description"></p>
 
-            <a id="dc-widget" class="discord-widget hidden" target="_blank">
-                <div class="dc-avatar-container">
-                    <img id="dc-img" class="dc-avatar">
-                    <div id="dc-status" class="dc-status-indicator"></div>
+            <a id="v-dc" class="discord-btn hidden" target="_blank">
+                <div class="dc-pfp-container">
+                    <img id="v-dc-img" class="dc-pfp-img">
+                    <div id="v-dc-dot" class="dc-status-dot"></div>
                 </div>
-                <div>
-                    <h3 id="dc-username" style="font-size:0.9rem; color:#fff;">---</h3>
-                    <p id="dc-activity" style="font-size:0.7rem; color:var(--text-dim);"></p>
+                <div style="text-align: left;">
+                    <p id="v-dc-name" style="font-size: 0.9rem; font-weight: 800;"></p>
+                    <p id="v-dc-status" style="font-size: 0.75rem; color: var(--text-muted);"></p>
                 </div>
             </a>
 
-            <div id="social-grid" class="social-grid"></div>
-
-            <div class="view-count-footer">
-                <i class="fa-regular fa-eye"></i> <span id="view-count">0</span>
+            <div id="v-socials" class="social-row"></div>
+            
+            <div class="view-count-wrap">
+                <i class="fa-regular fa-eye"></i> <span id="v-views">0</span>
             </div>
         </div>
 
     </div>
 
     <script>
-        /* ========================================
-           LOGICA DE NUCLEO - OMNIBIO ENGINE
-           ========================================
-        */
-        const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
-        const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
-        const _supa = supabase.createClient(SB_URL, SB_KEY);
-        let bioRecord = null;
+        /* --- CORE LOGIC --- */
+        const SUPA_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
+        const SUPA_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
+        const client = supabase.createClient(SUPA_URL, SUPA_KEY);
+        let currentProfile = null;
 
-        // INICIALIZAÇÃO
-        async function boot() {
+        // Cursor Logic
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
+        window.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
+            outline.style.left = e.clientX + 'px'; outline.style.top = e.clientY + 'px';
+        });
+
+        async function init() {
             const urlParams = new URLSearchParams(window.location.search);
             const userRef = urlParams.get('u');
 
             if (userRef) {
-                const { data, error } = await _supa.from('bios').select('*').eq('username', userRef).maybeSingle();
+                const { data } = await client.from('bios').select('*').eq('username', userRef).maybeSingle();
                 if (data) {
-                    bioRecord = data;
-                    document.getElementById('enter-screen').classList.remove('hidden');
-                    _supa.rpc('increment_views', { target_username: userRef });
+                    currentProfile = data;
+                    document.getElementById('enter-gate').classList.remove('hidden');
+                    client.rpc('increment_views', { target_username: userRef });
                 }
             } else {
-                const { data: { session } } = await _supa.auth.getSession();
+                const { data: { session } } = await client.auth.getSession();
                 if (session) renderAdmin(session.user);
-                else document.getElementById('login-ui').classList.remove('hidden');
+                else document.getElementById('login-screen').classList.remove('hidden');
             }
-            initParticles();
         }
 
-        // AUTH HANDLERS
-        async function handleLogin() { await _supa.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function handleLogout() { await _supa.auth.signOut(); window.location.reload(); }
+        async function doLogin() { await client.auth.signInWithOAuth({ provider: 'discord' }); }
+        async function doLogout() { await client.auth.signOut(); window.location.reload(); }
 
-        // ADMIN RENDER
         async function renderAdmin(user) {
-            document.getElementById('admin-ui').classList.remove('hidden');
-            document.getElementById('admin-uid').innerText = user.id.slice(0, 18) + "...";
-            
-            const { data } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+            document.getElementById('admin-screen').classList.remove('hidden');
+            const { data } = await client.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if (data) {
-                document.getElementById('username').value = data.username || "";
-                document.getElementById('display_name').value = data.display_name || "";
-                document.getElementById('bio_text').value = data.bio_text || "";
-                document.getElementById('links_input').value = data.links || "";
-                document.getElementById('show_discord').checked = data.show_discord !== false;
+                document.getElementById('in-user').value = data.username || "";
+                document.getElementById('in-display').value = data.display_name || "";
+                document.getElementById('in-bio').value = data.bio_text || "";
+                document.getElementById('in-links').value = data.links || "";
+                document.getElementById('in-show-dc').checked = data.show_discord !== false;
             }
         }
 
-        // TAB SYSTEM
-        function switchTab(tab) {
-            ['general', 'media', 'social'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // SAVE ENGINE
-        async function processSave() {
+        async function commitChanges() {
             const btn = document.getElementById('save-btn');
-            const log = document.getElementById('status-log');
-            btn.innerText = "UPLOADING ASSETS..."; btn.disabled = true;
+            const log = document.getElementById('msg-log');
+            btn.innerText = "UPLOADING..."; btn.disabled = true;
 
             try {
-                const { data: { user } } = await _supa.auth.getUser();
-                const { data: curr } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+                const { data: { user } } = await client.auth.getUser();
+                const { data: curr } = await client.from('bios').select('*').eq('user_id', user.id).maybeSingle();
 
-                const uploadFile = async (inputId, folder) => {
-                    const file = document.getElementById(inputId).files[0];
+                const upload = async (elId, folder) => {
+                    const file = document.getElementById(elId).files[0];
                     if (!file) return null;
                     const path = `${folder}/${user.id}`;
-                    await _supa.storage.from('assets').upload(path, file, { upsert: true });
-                    return _supa.storage.from('assets').getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
+                    await client.storage.from('assets').upload(path, file, { upsert: true });
+                    return client.storage.from('assets').getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
                 };
 
-                const pfp = await uploadFile('f-pfp', 'pfp');
-                const bg = await uploadFile('f-bg', 'bg');
-                const aud = await uploadFile('f-audio', 'audio');
+                const pfp = await upload('f-pfp', 'pfp');
+                const bg = await upload('f-bg', 'bg');
+                const aud = await upload('f-aud', 'audio');
 
-                const { error } = await _supa.from('bios').upsert({
+                const payload = {
                     user_id: user.id,
-                    username: document.getElementById('username').value.trim().toLowerCase(),
-                    display_name: document.getElementById('display_name').value,
-                    bio_text: document.getElementById('bio_text').value,
-                    links: document.getElementById('links_input').value,
-                    show_discord: document.getElementById('show_discord').checked,
+                    username: document.getElementById('in-user').value.trim().toLowerCase(),
+                    display_name: document.getElementById('in-display').value,
+                    bio_text: document.getElementById('in-bio').value,
+                    links: document.getElementById('in-links').value,
+                    show_discord: document.getElementById('in-show-dc').checked,
                     discord_id: user.identities[0].id,
                     pfp_url: pfp || curr?.pfp_url,
                     bg_url: bg || curr?.bg_url,
                     audio_url: aud || curr?.audio_url
-                });
-
-                if (error) throw error;
-                log.style.color = "var(--success)"; log.innerText = "IDENTITY SYNCHRONIZED.";
-                setTimeout(() => location.reload(), 1200);
-
-            } catch (err) {
-                console.error(err);
-                log.style.color = "var(--danger)"; log.innerText = "SYNC FAILED. CHECK CONSOLE.";
-                btn.innerText = "RETRY SYNC"; btn.disabled = false;
-            }
-        }
-
-        // PUBLIC REVEAL
-        function revealProfile() {
-            const screen = document.getElementById('enter-screen');
-            screen.style.opacity = '0';
-            setTimeout(() => {
-                screen.style.visibility = 'hidden';
-                document.getElementById('bio-view').classList.remove('hidden');
-                
-                const d = bioRecord;
-                document.getElementById('view-name').innerText = d.display_name;
-                document.getElementById('view-frase').innerText = d.bio_text;
-                document.getElementById('view-pfp').src = d.pfp_url;
-                document.getElementById('view-count').innerText = d.views || 0;
-
-                // Media Handler
-                if (d.bg_url) {
-                    if (d.bg_url.toLowerCase().includes('.mp4')) {
-                        const v = document.getElementById('bg-video'); v.src = d.bg_url; v.style.display = 'block'; v.play();
-                    } else {
-                        document.body.style.backgroundImage = `url(${d.bg_url})`;
-                        document.body.style.backgroundSize = 'cover';
-                    }
-                }
-                if (d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); a.volume = 0.4; }
-
-                // Links
-                if (d.links) {
-                    const grid = document.getElementById('social-grid');
-                    d.links.split('|').forEach(raw => {
-                        const [icon, url] = raw.split(',');
-                        if (icon && url) {
-                            const link = document.createElement('a');
-                            link.href = url.trim(); link.target = "_blank"; link.className = "social-link";
-                            let iconClass = `fa-brands fa-${icon.trim()}`;
-                            if(icon.trim() === 'link') iconClass = 'fa-solid fa-link';
-                            link.innerHTML = `<i class="${iconClass}"></i>`;
-                            grid.appendChild(link);
-                        }
-                    });
-                }
-
-                // Discord
-                if (d.discord_id && d.show_discord) fetchDiscord(d.discord_id);
-            }, 800);
-        }
-
-        async function fetchDiscord(id) {
-            const widget = document.getElementById('dc-widget');
-            try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
-                if (data) {
-                    widget.classList.remove('hidden');
-                    widget.href = `https://discord.com/users/${id}`;
-                    document.getElementById('dc-username').innerText = data.discord_user.global_name || data.discord_user.username;
-                    document.getElementById('dc-img').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                    const s = data.discord_status;
-                    document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                    document.getElementById('dc-activity').innerText = data.activities[0]?.name || "Online";
-                }
-            } catch (e) { console.error("Discord API Error"); }
-        }
-
-        // CANVAS PARTICLES
-        function initParticles() {
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const parts = [];
-            for(let i=0; i<60; i++) parts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, v: Math.random()*0.5 });
-            function draw() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255,255,255,0.1)";
-                parts.forEach(p => {
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
-                    p.y -= p.v; if(p.y < 0) p.y = canvas.height;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-
-        boot();
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Elite Identity System</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <style>
-        /* ========================================
-           SISTEMA DE DESIGN - OMNIBIO V3
-           ESTILO: ULTRA-GLASSMORPISM & NEON NOIR
-           ========================================
-        */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
-
-        :root {
-            --bg-main: #020202;
-            --accent: #ff8c00;
-            --accent-glow: rgba(255, 140, 0, 0.4);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --danger: #ff4d4d;
-            --success: #00ff88;
-            --card-blur: 30px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* --- BACKGROUND LAYER --- */
-        #bg-canvas { position: fixed; inset: 0; z-index: -3; }
-        
-        #bg-video { 
-            position: fixed; inset: 0; width: 100%; height: 100%; 
-            z-index: -2; object-fit: cover; filter: brightness(0.3) blur(2px); 
-            display: none; transition: opacity 1s ease;
-        }
-
-        .overlay { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
-            z-index: -1; pointer-events: none;
-        }
-
-        /* --- SCROLLBAR CUSTOM --- */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-
-        /* --- COMPONENTES BASE --- */
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-            z-index: 10;
-            perspective: 1000px;
-        }
-
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--card-blur));
-            -webkit-backdrop-filter: blur(var(--card-blur));
-            border: 1px solid var(--glass-border);
-            border-radius: 35px;
-            padding: 50px 35px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, border 0.3s ease;
-        }
-
-        /* --- TELA DE ENTRADA (GATEKEEPER) --- */
-        #enter-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        .enter-btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 0.8em;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
-        }
-
-        /* --- VISUALIZAÇÃO DO PERFIL --- */
-        .profile-pfp {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 3px solid var(--glass-border);
-            margin: 0 auto 20px;
-            object-fit: cover;
-            display: block;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        .display-name {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .bio-text {
-            color: var(--text-dim);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-weight: 400;
-        }
-
-        /* --- DISCORD WIDGET (ELITE VERSION) --- */
-        .discord-widget {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            padding: 18px;
-            margin: 25px auto;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .discord-widget:hover {
-            transform: translateY(-5px);
-            background: rgba(88, 101, 242, 0.1);
-            border-color: #5865f2;
-        }
-
-        .dc-avatar-container { position: relative; }
-        .dc-avatar { width: 52px; height: 52px; border-radius: 14px; }
-        .dc-status-indicator {
-            position: absolute; bottom: -3px; right: -3px;
-            width: 16px; height: 16px;
-            border-radius: 50%; border: 3px solid #0a0a0a;
-        }
-
-        /* --- SOCIAL ICONS --- */
-        .social-grid {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .social-link {
-            font-size: 1.8rem;
-            color: #fff;
-            opacity: 0.4;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .social-link:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: scale(1.2);
-            text-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        /* --- ADMIN INTERFACE (TABBED) --- */
-        .admin-header { margin-bottom: 25px; text-align: left; }
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: #555;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .tab-btn.active { color: #fff; border-color: var(--accent); background: rgba(255,140,0,0.1); }
-
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { font-size: 0.65rem; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
-        
-        input[type="text"], textarea {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 14px;
-            color: #fff;
-            outline: none;
-            transition: 0.3s;
-            cursor: text;
-        }
-
-        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(255,140,0,0.1); }
-
-        .btn-action {
-            width: 100%;
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            background: #fff;
-            color: #000;
-            margin-top: 10px;
-        }
-
-        .btn-action:hover { transform: scale(0.98); opacity: 0.9; }
-
-        .view-count-footer {
-            position: absolute; bottom: 20px; left: 30px;
-            font-size: 0.65rem; color: rgba(255,255,255,0.2);
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        /* Animações */
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-
-    </style>
-</head>
-<body>
-
-    <canvas id="bg-canvas"></canvas>
-    <video id="bg-video" loop playsinline muted></video>
-    <audio id="bg-audio" loop></audio>
-    <div class="overlay"></div>
-
-    <div id="enter-screen" class="hidden" onclick="revealProfile()">
-        <div class="enter-btn">Connection Established. Click to Reveal.</div>
-    </div>
-
-    <div class="container animate__animated animate__fadeIn">
-        
-        <div id="login-ui" class="glass-card hidden">
-            <h1 class="display-name" style="font-size: 1.5rem;">Access Denied</h1>
-            <p class="bio-text">Please authenticate with Discord to manage your Identity.</p>
-            <button class="btn-action" style="background: #5865f2; color: #fff;" onclick="handleLogin()">
-                <i class="fa-brands fa-discord"></i> AUTHENTICATE
-            </button>
-        </div>
-
-        <div id="admin-ui" class="glass-card hidden">
-            <div class="admin-header">
-                <h2 style="font-size: 1.1rem; letter-spacing: 1px;">IDENTITY CORE</h2>
-                <p style="font-size: 0.7rem; color: #555;">UID: <span id="admin-uid">---</span></p>
-            </div>
-
-            <div class="admin-tabs">
-                <div class="tab-btn active" onclick="switchTab('general')">PROFILE</div>
-                <div class="tab-btn" onclick="switchTab('media')">MEDIA</div>
-                <div class="tab-btn" onclick="switchTab('social')">SOCIAL</div>
-            </div>
-
-            <form id="bio-form" onsubmit="return false;">
-                <div id="tab-general">
-                    <div class="input-group">
-                        <label>Identity URL Nick</label>
-                        <input type="text" id="username" placeholder="ex: pastel">
-                    </div>
-                    <div class="input-group">
-                        <label>Public Name</label>
-                        <input type="text" id="display_name" placeholder="Como te chamam?">
-                    </div>
-                    <div class="input-group">
-                        <label>Personal Quote</label>
-                        <textarea id="bio_text" rows="3" placeholder="Sua frase de impacto..."></textarea>
-                    </div>
-                </div>
-
-                <div id="tab-media" class="hidden">
-                    <div class="input-group"><label>Profile Image</label><input type="file" id="f-pfp"></div>
-                    <div class="input-group"><label>Background (IMG/MP4)</label><input type="file" id="f-bg"></div>
-                    <div class="input-group"><label>Ambience Audio (MP3)</label><input type="file" id="f-audio"></div>
-                </div>
-
-                <div id="tab-social" class="hidden">
-                    <div class="input-group">
-                        <label>Social Links</label>
-                        <textarea id="links_input" placeholder="formato: icon,link | icon,link"></textarea>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius:15px;">
-                        <input type="checkbox" id="show_discord" style="width:18px; height:18px;">
-                        <span style="font-size:0.75rem; font-weight:700;">BROADCAST DISCORD STATUS</span>
-                    </div>
-                </div>
-
-                <button class="btn-action" id="save-btn" onclick="processSave()">
-                    SYNC IDENTITY
-                </button>
-                <div id="status-log" style="font-size: 0.6rem; margin-top:10px; text-align:center;"></div>
-            </form>
-            
-            <button onclick="handleLogout()" style="background:none; border:none; color:var(--danger); font-size:0.6rem; cursor:pointer; width:100%; margin-top:20px; font-weight:800; letter-spacing:1px;">TERMINATE SESSION</button>
-        </div>
-
-        <div id="bio-view" class="glass-card hidden">
-            <img id="view-pfp" class="profile-pfp animate__animated animate__zoomIn" src="">
-            <h1 id="view-name" class="display-name"></h1>
-            <p id="view-frase" class="bio-text"></p>
-
-            <a id="dc-widget" class="discord-widget hidden" target="_blank">
-                <div class="dc-avatar-container">
-                    <img id="dc-img" class="dc-avatar">
-                    <div id="dc-status" class="dc-status-indicator"></div>
-                </div>
-                <div>
-                    <h3 id="dc-username" style="font-size:0.9rem; color:#fff;">---</h3>
-                    <p id="dc-activity" style="font-size:0.7rem; color:var(--text-dim);"></p>
-                </div>
-            </a>
-
-            <div id="social-grid" class="social-grid"></div>
-
-            <div class="view-count-footer">
-                <i class="fa-regular fa-eye"></i> <span id="view-count">0</span>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        /* ========================================
-           LOGICA DE NUCLEO - OMNIBIO ENGINE
-           ========================================
-        */
-        const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
-        const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
-        const _supa = supabase.createClient(SB_URL, SB_KEY);
-        let bioRecord = null;
-
-        // INICIALIZAÇÃO
-        async function boot() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const userRef = urlParams.get('u');
-
-            if (userRef) {
-                const { data, error } = await _supa.from('bios').select('*').eq('username', userRef).maybeSingle();
-                if (data) {
-                    bioRecord = data;
-                    document.getElementById('enter-screen').classList.remove('hidden');
-                    _supa.rpc('increment_views', { target_username: userRef });
-                }
-            } else {
-                const { data: { session } } = await _supa.auth.getSession();
-                if (session) renderAdmin(session.user);
-                else document.getElementById('login-ui').classList.remove('hidden');
-            }
-            initParticles();
-        }
-
-        // AUTH HANDLERS
-        async function handleLogin() { await _supa.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function handleLogout() { await _supa.auth.signOut(); window.location.reload(); }
-
-        // ADMIN RENDER
-        async function renderAdmin(user) {
-            document.getElementById('admin-ui').classList.remove('hidden');
-            document.getElementById('admin-uid').innerText = user.id.slice(0, 18) + "...";
-            
-            const { data } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-            if (data) {
-                document.getElementById('username').value = data.username || "";
-                document.getElementById('display_name').value = data.display_name || "";
-                document.getElementById('bio_text').value = data.bio_text || "";
-                document.getElementById('links_input').value = data.links || "";
-                document.getElementById('show_discord').checked = data.show_discord !== false;
-            }
-        }
-
-        // TAB SYSTEM
-        function switchTab(tab) {
-            ['general', 'media', 'social'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // SAVE ENGINE
-        async function processSave() {
-            const btn = document.getElementById('save-btn');
-            const log = document.getElementById('status-log');
-            btn.innerText = "UPLOADING ASSETS..."; btn.disabled = true;
-
-            try {
-                const { data: { user } } = await _supa.auth.getUser();
-                const { data: curr } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-
-                const uploadFile = async (inputId, folder) => {
-                    const file = document.getElementById(inputId).files[0];
-                    if (!file) return null;
-                    const path = `${folder}/${user.id}`;
-                    await _supa.storage.from('assets').upload(path, file, { upsert: true });
-                    return _supa.storage.from('assets').getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
                 };
 
-                const pfp = await uploadFile('f-pfp', 'pfp');
-                const bg = await uploadFile('f-bg', 'bg');
-                const aud = await uploadFile('f-audio', 'audio');
-
-                const { error } = await _supa.from('bios').upsert({
-                    user_id: user.id,
-                    username: document.getElementById('username').value.trim().toLowerCase(),
-                    display_name: document.getElementById('display_name').value,
-                    bio_text: document.getElementById('bio_text').value,
-                    links: document.getElementById('links_input').value,
-                    show_discord: document.getElementById('show_discord').checked,
-                    discord_id: user.identities[0].id,
-                    pfp_url: pfp || curr?.pfp_url,
-                    bg_url: bg || curr?.bg_url,
-                    audio_url: aud || curr?.audio_url
-                });
-
+                const { error } = await client.from('bios').upsert(payload);
                 if (error) throw error;
-                log.style.color = "var(--success)"; log.innerText = "IDENTITY SYNCHRONIZED.";
+                log.innerText = "IDENTITY SYNCHRONIZED."; log.style.color = "var(--accent)";
                 setTimeout(() => location.reload(), 1200);
-
-            } catch (err) {
-                console.error(err);
-                log.style.color = "var(--danger)"; log.innerText = "SYNC FAILED. CHECK CONSOLE.";
-                btn.innerText = "RETRY SYNC"; btn.disabled = false;
+            } catch (e) {
+                log.innerText = "SYNC ERROR."; btn.disabled = false;
             }
         }
 
-        // PUBLIC REVEAL
-        function revealProfile() {
-            const screen = document.getElementById('enter-screen');
-            screen.style.opacity = '0';
+        function revealUI() {
+            const gate = document.getElementById('enter-gate');
+            gate.style.opacity = '0';
             setTimeout(() => {
-                screen.style.visibility = 'hidden';
-                document.getElementById('bio-view').classList.remove('hidden');
-                
-                const d = bioRecord;
-                document.getElementById('view-name').innerText = d.display_name;
-                document.getElementById('view-frase').innerText = d.bio_text;
-                document.getElementById('view-pfp').src = d.pfp_url;
-                document.getElementById('view-count').innerText = d.views || 0;
+                gate.classList.add('hidden');
+                document.getElementById('public-screen').classList.remove('hidden');
+                const d = currentProfile;
+                if(!d) return;
 
-                // Media Handler
+                document.getElementById('v-name').innerText = d.display_name;
+                document.getElementById('v-bio').innerText = d.bio_text;
+                document.getElementById('v-pfp').src = d.pfp_url;
+                document.getElementById('v-views').innerText = d.views || 0;
+
                 if (d.bg_url) {
-                    if (d.bg_url.toLowerCase().includes('.mp4')) {
+                    if (d.bg_url.includes('.mp4')) {
                         const v = document.getElementById('bg-video'); v.src = d.bg_url; v.style.display = 'block'; v.play();
-                    } else {
-                        document.body.style.backgroundImage = `url(${d.bg_url})`;
-                        document.body.style.backgroundSize = 'cover';
-                    }
+                    } else document.body.style.backgroundImage = `url(${d.bg_url})`;
+                    document.body.style.backgroundSize = 'cover';
                 }
-                if (d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); a.volume = 0.4; }
+                if (d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); a.volume = 0.3; }
 
-                // Links
                 if (d.links) {
-                    const grid = document.getElementById('social-grid');
-                    d.links.split('|').forEach(raw => {
-                        const [icon, url] = raw.split(',');
+                    const grid = document.getElementById('v-socials');
+                    d.links.split('|').forEach(l => {
+                        const [icon, url] = l.split(',');
                         if (icon && url) {
-                            const link = document.createElement('a');
-                            link.href = url.trim(); link.target = "_blank"; link.className = "social-link";
-                            let iconClass = `fa-brands fa-${icon.trim()}`;
-                            if(icon.trim() === 'link') iconClass = 'fa-solid fa-link';
-                            link.innerHTML = `<i class="${iconClass}"></i>`;
-                            grid.appendChild(link);
+                            const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank"; a.className = "social-item";
+                            let icClass = `fa-brands fa-${icon.trim().toLowerCase()}`;
+                            if(icon.trim().toLowerCase() === 'link') icClass = 'fa-solid fa-link';
+                            a.innerHTML = `<i class="${icClass}"></i>`; grid.appendChild(a);
                         }
                     });
                 }
-
-                // Discord
-                if (d.discord_id && d.show_discord) fetchDiscord(d.discord_id);
-            }, 800);
+                if (d.discord_id && d.show_discord !== false) fetchStatus(d.discord_id);
+            }, 600);
         }
 
-        async function fetchDiscord(id) {
-            const widget = document.getElementById('dc-widget');
+        async function fetchStatus(id) {
             try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
+                const r = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+                const { data } = await r.json();
                 if (data) {
-                    widget.classList.remove('hidden');
-                    widget.href = `https://discord.com/users/${id}`;
-                    document.getElementById('dc-username').innerText = data.discord_user.global_name || data.discord_user.username;
-                    document.getElementById('dc-img').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
+                    document.getElementById('v-dc').classList.remove('hidden');
+                    document.getElementById('v-dc-name').innerText = data.discord_user.global_name || data.discord_user.username;
+                    document.getElementById('v-dc-img').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
                     const s = data.discord_status;
-                    document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                    document.getElementById('dc-activity').innerText = data.activities[0]?.name || "Online";
+                    document.getElementById('v-dc-dot').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
+                    document.getElementById('v-dc-status').innerText = data.activities[0]?.name || "Online";
                 }
-            } catch (e) { console.error("Discord API Error"); }
+            } catch(e) {}
         }
 
-        // CANVAS PARTICLES
-        function initParticles() {
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const parts = [];
-            for(let i=0; i<60; i++) parts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, v: Math.random()*0.5 });
-            function draw() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255,255,255,0.1)";
-                parts.forEach(p => {
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
-                    p.y -= p.v; if(p.y < 0) p.y = canvas.height;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-
-        boot();
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Elite Identity System</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <style>
-        /* ========================================
-           SISTEMA DE DESIGN - OMNIBIO V3
-           ESTILO: ULTRA-GLASSMORPISM & NEON NOIR
-           ========================================
-        */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
-
-        :root {
-            --bg-main: #020202;
-            --accent: #ff8c00;
-            --accent-glow: rgba(255, 140, 0, 0.4);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --danger: #ff4d4d;
-            --success: #00ff88;
-            --card-blur: 30px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* --- BACKGROUND LAYER --- */
-        #bg-canvas { position: fixed; inset: 0; z-index: -3; }
-        
-        #bg-video { 
-            position: fixed; inset: 0; width: 100%; height: 100%; 
-            z-index: -2; object-fit: cover; filter: brightness(0.3) blur(2px); 
-            display: none; transition: opacity 1s ease;
-        }
-
-        .overlay { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
-            z-index: -1; pointer-events: none;
-        }
-
-        /* --- SCROLLBAR CUSTOM --- */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-
-        /* --- COMPONENTES BASE --- */
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-            z-index: 10;
-            perspective: 1000px;
-        }
-
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--card-blur));
-            -webkit-backdrop-filter: blur(var(--card-blur));
-            border: 1px solid var(--glass-border);
-            border-radius: 35px;
-            padding: 50px 35px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, border 0.3s ease;
-        }
-
-        /* --- TELA DE ENTRADA (GATEKEEPER) --- */
-        #enter-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        .enter-btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 0.8em;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
-        }
-
-        /* --- VISUALIZAÇÃO DO PERFIL --- */
-        .profile-pfp {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 3px solid var(--glass-border);
-            margin: 0 auto 20px;
-            object-fit: cover;
-            display: block;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        .display-name {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .bio-text {
-            color: var(--text-dim);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-weight: 400;
-        }
-
-        /* --- DISCORD WIDGET (ELITE VERSION) --- */
-        .discord-widget {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            padding: 18px;
-            margin: 25px auto;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .discord-widget:hover {
-            transform: translateY(-5px);
-            background: rgba(88, 101, 242, 0.1);
-            border-color: #5865f2;
-        }
-
-        .dc-avatar-container { position: relative; }
-        .dc-avatar { width: 52px; height: 52px; border-radius: 14px; }
-        .dc-status-indicator {
-            position: absolute; bottom: -3px; right: -3px;
-            width: 16px; height: 16px;
-            border-radius: 50%; border: 3px solid #0a0a0a;
-        }
-
-        /* --- SOCIAL ICONS --- */
-        .social-grid {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .social-link {
-            font-size: 1.8rem;
-            color: #fff;
-            opacity: 0.4;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .social-link:hover {
-            opacity: 1;
-            color: var(--accent);
-            transform: scale(1.2);
-            text-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        /* --- ADMIN INTERFACE (TABBED) --- */
-        .admin-header { margin-bottom: 25px; text-align: left; }
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: #555;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .tab-btn.active { color: #fff; border-color: var(--accent); background: rgba(255,140,0,0.1); }
-
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { font-size: 0.65rem; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
-        
-        input[type="text"], textarea {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 14px;
-            color: #fff;
-            outline: none;
-            transition: 0.3s;
-            cursor: text;
-        }
-
-        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(255,140,0,0.1); }
-
-        .btn-action {
-            width: 100%;
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            background: #fff;
-            color: #000;
-            margin-top: 10px;
-        }
-
-        .btn-action:hover { transform: scale(0.98); opacity: 0.9; }
-
-        .view-count-footer {
-            position: absolute; bottom: 20px; left: 30px;
-            font-size: 0.65rem; color: rgba(255,255,255,0.2);
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        /* Animações */
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-
-    </style>
-</head>
-<body>
-
-    <canvas id="bg-canvas"></canvas>
-    <video id="bg-video" loop playsinline muted></video>
-    <audio id="bg-audio" loop></audio>
-    <div class="overlay"></div>
-
-    <div id="enter-screen" class="hidden" onclick="revealProfile()">
-        <div class="enter-btn">Connection Established. Click to Reveal.</div>
-    </div>
-
-    <div class="container animate__animated animate__fadeIn">
-        
-        <div id="login-ui" class="glass-card hidden">
-            <h1 class="display-name" style="font-size: 1.5rem;">Access Denied</h1>
-            <p class="bio-text">Please authenticate with Discord to manage your Identity.</p>
-            <button class="btn-action" style="background: #5865f2; color: #fff;" onclick="handleLogin()">
-                <i class="fa-brands fa-discord"></i> AUTHENTICATE
-            </button>
-        </div>
-
-        <div id="admin-ui" class="glass-card hidden">
-            <div class="admin-header">
-                <h2 style="font-size: 1.1rem; letter-spacing: 1px;">IDENTITY CORE</h2>
-                <p style="font-size: 0.7rem; color: #555;">UID: <span id="admin-uid">---</span></p>
-            </div>
-
-            <div class="admin-tabs">
-                <div class="tab-btn active" onclick="switchTab('general')">PROFILE</div>
-                <div class="tab-btn" onclick="switchTab('media')">MEDIA</div>
-                <div class="tab-btn" onclick="switchTab('social')">SOCIAL</div>
-            </div>
-
-            <form id="bio-form" onsubmit="return false;">
-                <div id="tab-general">
-                    <div class="input-group">
-                        <label>Identity URL Nick</label>
-                        <input type="text" id="username" placeholder="ex: pastel">
-                    </div>
-                    <div class="input-group">
-                        <label>Public Name</label>
-                        <input type="text" id="display_name" placeholder="Como te chamam?">
-                    </div>
-                    <div class="input-group">
-                        <label>Personal Quote</label>
-                        <textarea id="bio_text" rows="3" placeholder="Sua frase de impacto..."></textarea>
-                    </div>
-                </div>
-
-                <div id="tab-media" class="hidden">
-                    <div class="input-group"><label>Profile Image</label><input type="file" id="f-pfp"></div>
-                    <div class="input-group"><label>Background (IMG/MP4)</label><input type="file" id="f-bg"></div>
-                    <div class="input-group"><label>Ambience Audio (MP3)</label><input type="file" id="f-audio"></div>
-                </div>
-
-                <div id="tab-social" class="hidden">
-                    <div class="input-group">
-                        <label>Social Links</label>
-                        <textarea id="links_input" placeholder="formato: icon,link | icon,link"></textarea>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius:15px;">
-                        <input type="checkbox" id="show_discord" style="width:18px; height:18px;">
-                        <span style="font-size:0.75rem; font-weight:700;">BROADCAST DISCORD STATUS</span>
-                    </div>
-                </div>
-
-                <button class="btn-action" id="save-btn" onclick="processSave()">
-                    SYNC IDENTITY
-                </button>
-                <div id="status-log" style="font-size: 0.6rem; margin-top:10px; text-align:center;"></div>
-            </form>
-            
-            <button onclick="handleLogout()" style="background:none; border:none; color:var(--danger); font-size:0.6rem; cursor:pointer; width:100%; margin-top:20px; font-weight:800; letter-spacing:1px;">TERMINATE SESSION</button>
-        </div>
-
-        <div id="bio-view" class="glass-card hidden">
-            <img id="view-pfp" class="profile-pfp animate__animated animate__zoomIn" src="">
-            <h1 id="view-name" class="display-name"></h1>
-            <p id="view-frase" class="bio-text"></p>
-
-            <a id="dc-widget" class="discord-widget hidden" target="_blank">
-                <div class="dc-avatar-container">
-                    <img id="dc-img" class="dc-avatar">
-                    <div id="dc-status" class="dc-status-indicator"></div>
-                </div>
-                <div>
-                    <h3 id="dc-username" style="font-size:0.9rem; color:#fff;">---</h3>
-                    <p id="dc-activity" style="font-size:0.7rem; color:var(--text-dim);"></p>
-                </div>
-            </a>
-
-            <div id="social-grid" class="social-grid"></div>
-
-            <div class="view-count-footer">
-                <i class="fa-regular fa-eye"></i> <span id="view-count">0</span>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        /* ========================================
-           LOGICA DE NUCLEO - OMNIBIO ENGINE
-           ========================================
-        */
-        const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
-        const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
-        const _supa = supabase.createClient(SB_URL, SB_KEY);
-        let bioRecord = null;
-
-        // INICIALIZAÇÃO
-        async function boot() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const userRef = urlParams.get('u');
-
-            if (userRef) {
-                const { data, error } = await _supa.from('bios').select('*').eq('username', userRef).maybeSingle();
-                if (data) {
-                    bioRecord = data;
-                    document.getElementById('enter-screen').classList.remove('hidden');
-                    _supa.rpc('increment_views', { target_username: userRef });
-                }
-            } else {
-                const { data: { session } } = await _supa.auth.getSession();
-                if (session) renderAdmin(session.user);
-                else document.getElementById('login-ui').classList.remove('hidden');
-            }
-            initParticles();
-        }
-
-        // AUTH HANDLERS
-        async function handleLogin() { await _supa.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function handleLogout() { await _supa.auth.signOut(); window.location.reload(); }
-
-        // ADMIN RENDER
-        async function renderAdmin(user) {
-            document.getElementById('admin-ui').classList.remove('hidden');
-            document.getElementById('admin-uid').innerText = user.id.slice(0, 18) + "...";
-            
-            const { data } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-            if (data) {
-                document.getElementById('username').value = data.username || "";
-                document.getElementById('display_name').value = data.display_name || "";
-                document.getElementById('bio_text').value = data.bio_text || "";
-                document.getElementById('links_input').value = data.links || "";
-                document.getElementById('show_discord').checked = data.show_discord !== false;
-            }
-        }
-
-        // TAB SYSTEM
-        function switchTab(tab) {
-            ['general', 'media', 'social'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // SAVE ENGINE
-        async function processSave() {
-            const btn = document.getElementById('save-btn');
-            const log = document.getElementById('status-log');
-            btn.innerText = "UPLOADING ASSETS..."; btn.disabled = true;
-
-            try {
-                const { data: { user } } = await _supa.auth.getUser();
-                const { data: curr } = await _supa.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-
-                const uploadFile = async (inputId, folder) => {
-                    const file = document.getElementById(inputId).files[0];
-                    if (!file) return null;
-                    const path = `${folder}/${user.id}`;
-                    await _supa.storage.from('assets').upload(path, file, { upsert: true });
-                    return _supa.storage.from('assets').getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
-                };
-
-                const pfp = await uploadFile('f-pfp', 'pfp');
-                const bg = await uploadFile('f-bg', 'bg');
-                const aud = await uploadFile('f-audio', 'audio');
-
-                const { error } = await _supa.from('bios').upsert({
-                    user_id: user.id,
-                    username: document.getElementById('username').value.trim().toLowerCase(),
-                    display_name: document.getElementById('display_name').value,
-                    bio_text: document.getElementById('bio_text').value,
-                    links: document.getElementById('links_input').value,
-                    show_discord: document.getElementById('show_discord').checked,
-                    discord_id: user.identities[0].id,
-                    pfp_url: pfp || curr?.pfp_url,
-                    bg_url: bg || curr?.bg_url,
-                    audio_url: aud || curr?.audio_url
-                });
-
-                if (error) throw error;
-                log.style.color = "var(--success)"; log.innerText = "IDENTITY SYNCHRONIZED.";
-                setTimeout(() => location.reload(), 1200);
-
-            } catch (err) {
-                console.error(err);
-                log.style.color = "var(--danger)"; log.innerText = "SYNC FAILED. CHECK CONSOLE.";
-                btn.innerText = "RETRY SYNC"; btn.disabled = false;
-            }
-        }
-
-        // PUBLIC REVEAL
-        function revealProfile() {
-            const screen = document.getElementById('enter-screen');
-            screen.style.opacity = '0';
-            setTimeout(() => {
-                screen.style.visibility = 'hidden';
-                document.getElementById('bio-view').classList.remove('hidden');
-                
-                const d = bioRecord;
-                document.getElementById('view-name').innerText = d.display_name;
-                document.getElementById('view-frase').innerText = d.bio_text;
-                document.getElementById('view-pfp').src = d.pfp_url;
-                document.getElementById('view-count').innerText = d.views || 0;
-
-                // Media Handler
-                if (d.bg_url) {
-                    if (d.bg_url.toLowerCase().includes('.mp4')) {
-                        const v = document.getElementById('bg-video'); v.src = d.bg_url; v.style.display = 'block'; v.play();
-                    } else {
-                        document.body.style.backgroundImage = `url(${d.bg_url})`;
-                        document.body.style.backgroundSize = 'cover';
-                    }
-                }
-                if (d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); a.volume = 0.4; }
-
-                // Links
-                if (d.links) {
-                    const grid = document.getElementById('social-grid');
-                    d.links.split('|').forEach(raw => {
-                        const [icon, url] = raw.split(',');
-                        if (icon && url) {
-                            const link = document.createElement('a');
-                            link.href = url.trim(); link.target = "_blank"; link.className = "social-link";
-                            let iconClass = `fa-brands fa-${icon.trim()}`;
-                            if(icon.trim() === 'link') iconClass = 'fa-solid fa-link';
-                            link.innerHTML = `<i class="${iconClass}"></i>`;
-                            grid.appendChild(link);
-                        }
-                    });
-                }
-
-                // Discord
-                if (d.discord_id && d.show_discord) fetchDiscord(d.discord_id);
-            }, 800);
-        }
-
-        async function fetchDiscord(id) {
-            const widget = document.getElementById('dc-widget');
-            try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
-                if (data) {
-                    widget.classList.remove('hidden');
-                    widget.href = `https://discord.com/users/${id}`;
-                    document.getElementById('dc-username').innerText = data.discord_user.global_name || data.discord_user.username;
-                    document.getElementById('dc-img').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                    const s = data.discord_status;
-                    document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                    document.getElementById('dc-activity').innerText = data.activities[0]?.name || "Online";
-                }
-            } catch (e) { console.error("Discord API Error"); }
-        }
-
-        // CANVAS PARTICLES
-        function initParticles() {
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const parts = [];
-            for(let i=0; i<60; i++) parts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, v: Math.random()*0.5 });
-            function draw() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255,255,255,0.1)";
-                parts.forEach(p => {
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
-                    p.y -= p.v; if(p.y < 0) p.y = canvas.height;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-
-        boot();
+        init();
     </script>
 </body>
 </html>
