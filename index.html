@@ -7,216 +7,104 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Fonte que simula a San Francisco da Apple */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
             --bg: #000000;
-            --apple-gray: #1d1d1f;
             --glass: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.15);
             --accent: #ffffff;
-            --text-secondary: #86868b;
+            --text-secondary: #a1a1a6;
         }
 
         * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Inter', -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
         body { 
-            background: var(--bg); 
-            color: #fff; 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
+            background: var(--bg); color: #fff; 
+            min-height: 100vh; display: flex; 
+            align-items: center; justify-content: center; 
+            overflow-x: hidden;
         }
 
         #bg-video { 
-            position: fixed; 
-            inset: 0; 
-            width: 100%; 
-            height: 100%; 
-            z-index: -2; 
-            object-fit: cover; 
-            filter: brightness(0.5); 
+            position: fixed; inset: 0; width: 100%; height: 100%; 
+            z-index: -2; object-fit: cover; filter: brightness(0.4); 
             display: none; 
         }
 
-        .overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%); 
-            z-index: -1; 
-        }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: -1; }
 
-        .wrapper { 
-            width: 100%; 
-            max-width: 420px; 
-            padding: 24px; 
-            z-index: 10; 
-            animation: fadeIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+        .wrapper { width: 100%; max-width: 440px; padding: 20px; z-index: 10; }
 
-        /* Card com efeito Frosted Glass da Apple */
         .card { 
             background: var(--glass); 
-            backdrop-filter: blur(30px) saturate(180%); 
+            backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
             border: 1px solid var(--border); 
-            border-radius: 32px; 
-            padding: 48px 32px; 
+            border-radius: 28px; 
+            padding: 40px 24px; 
             text-align: center; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4); 
-            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .pfp-view { 
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%; 
-            margin-bottom: 20px; 
-            object-fit: cover;
-            border: 0.5px solid var(--border);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        /* Estilo Admin - Inputs Visíveis */
+        .admin-scroll { max-height: 75vh; overflow-y: auto; padding-right: 8px; text-align: left; }
+        .admin-scroll::-webkit-scrollbar { width: 4px; }
+        .admin-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        label { 
+            font-size: 11px; font-weight: 600; color: var(--text-secondary); 
+            margin: 15px 0 6px 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .display-name { 
-            font-size: 1.6rem; 
-            font-weight: 600; 
-            letter-spacing: -0.02em;
-            color: var(--accent); 
-            margin-bottom: 8px; 
-        }
-
-        .bio-text-view { 
-            font-size: 0.95rem; 
-            color: var(--text-secondary); 
-            margin-bottom: 30px; 
-            line-height: 1.4;
-            font-weight: 400;
-        }
-
-        /* Discord Card Clean */
-        .discord-card { 
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 20px; 
-            padding: 16px; 
-            margin: 24px auto; 
-            display: flex; 
-            align-items: center; 
-            gap: 16px; 
-            text-align: left; 
-            border: 1px solid var(--border); 
-            text-decoration: none; 
-            color: inherit; 
-            transition: transform 0.3s ease, background 0.3s ease;
-        }
-        
-        .discord-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: scale(1.02);
-        }
-
-        .dc-img { position: relative; width: 44px; height: 44px; }
-        .dc-img img { width: 100%; height: 100%; border-radius: 10px; }
-        
-        .status-dot { 
-            position: absolute; 
-            bottom: -3px; 
-            right: -3px; 
-            width: 14px; 
-            height: 14px; 
-            border-radius: 50%; 
-            border: 3px solid #1a1a1a; 
-        }
-
-        .social-links { 
-            display: flex; 
-            justify-content: center; 
-            gap: 24px; 
-            margin-top: 20px; 
-        }
-
-        .social-icon { 
-            color: #fff; 
-            font-size: 1.4rem; 
-            opacity: 0.5; 
-            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
-        }
-        
-        .social-icon:hover { opacity: 1; transform: translateY(-3px); }
-
-        .views-badge { 
-            position: absolute; 
-            bottom: 20px; 
-            left: 0;
-            right: 0;
-            margin: auto;
-            width: max-content;
-            font-size: 0.65rem; 
-            color: var(--text-secondary); 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* Form Estilizado */
         input, textarea { 
-            width: 100%; 
-            padding: 14px; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid var(--border); 
-            color: #fff; 
-            border-radius: 12px; 
-            margin-bottom: 12px; 
-            outline: none; 
-            font-size: 0.9rem;
+            width: 100%; padding: 14px; background: rgba(255,255,255,0.06); 
+            border: 1px solid var(--border); color: #fff; border-radius: 14px; 
+            outline: none; transition: 0.3s; font-size: 14px;
         }
+
+        input:focus { border-color: #fff; background: rgba(255,255,255,0.1); }
+
+        input[type="file"] { font-size: 12px; padding: 10px; cursor: pointer; }
 
         .btn { 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 20px; 
-            border: none; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s ease;
+            width: 100%; padding: 16px; border-radius: 16px; border: none; 
+            font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 20px;
         }
 
-        .btn-save { 
-            background: #fff; 
-            color: #000; 
-            margin-top: 10px;
+        .btn-save { background: #fff; color: #000; }
+        .btn-save:hover { transform: scale(1.02); opacity: 0.9; }
+
+        /* Link Gerado Box */
+        .link-box {
+            margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05);
+            border-radius: 14px; border: 1px dashed var(--border);
+            display: none; text-align: center;
         }
-        
-        .btn-save:hover { opacity: 0.85; transform: scale(0.98); }
+        .link-box span { font-size: 13px; color: var(--text-secondary); word-break: break-all; }
+        .copy-btn { color: #0071e3; cursor: pointer; font-weight: 600; margin-left: 10px; text-decoration: none; }
+
+        /* Bio View */
+        .pfp-view { width: 110px; height: 110px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; border: 2px solid var(--border); }
+        .display-name { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
+        .bio-text-view { color: var(--text-secondary); margin-bottom: 25px; line-height: 1.5; }
+
+        .discord-card { 
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            border-radius: 18px; padding: 15px; display: flex; align-items: center; 
+            gap: 15px; text-align: left; text-decoration: none; color: inherit; margin: 20px 0;
+        }
+
+        .social-links { display: flex; justify-content: center; gap: 20px; }
+        .social-icon { color: #fff; font-size: 1.5rem; opacity: 0.6; transition: 0.3s; }
+        .social-icon:hover { opacity: 1; transform: translateY(-2px); }
 
         .hidden { display: none !important; }
-
-        #enter-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: #000; 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -224,33 +112,49 @@
     <audio id="bg-audio" loop></audio>
     <div class="overlay"></div>
 
-    <div id="enter-screen" onclick="revealBio()">
-        <h1 style="font-size: 0.75rem; font-weight: 400; letter-spacing: 0.5em; color: var(--text-secondary); animation: pulse 2s infinite;">ENTER EXPERIENCE</h1>
+    <div id="enter-screen" class="hidden" onclick="revealBio()">
+        <h1 style="font-size: 12px; letter-spacing: 5px; color: #666;">CLICK TO ENTER</h1>
     </div>
 
     <div class="wrapper">
         <div id="login-ui" class="card hidden">
-            <h1 style="margin-bottom: 30px; font-weight: 700;">OmniBio</h1>
-            <button class="btn" style="background: #5865f2; color: white;" onclick="login()">Connect Discord</button>
+            <h1 style="margin-bottom: 25px;">OmniBio</h1>
+            <button class="btn" style="background: #5865f2; color: white;" onclick="login()">ENTRAR COM DISCORD</button>
         </div>
 
         <div id="admin-ui" class="card hidden">
-            <div style="max-height: 70vh; overflow-y: auto; text-align: left; padding-right: 5px;">
-                <h2 style="margin-bottom: 24px; text-align: center; font-weight: 600;">Editor</h2>
-                <label style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px; display: block; padding-left: 5px;">URL HANDLE</label>
-                <input type="text" id="username" placeholder="seu-nome">
+            <div class="admin-scroll">
+                <h2 style="margin-bottom: 20px; text-align: center;">Configurações</h2>
                 
-                <label style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px; display: block; padding-left: 5px;">NAME</label>
-                <input type="text" id="display_name">
+                <label>User na URL (ex: joao)</label>
+                <input type="text" id="username" placeholder="Seu nome de usuário">
                 
-                <label style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px; display: block; padding-left: 5px;">BIOGRAPHY</label>
-                <textarea id="bio_text" rows="3"></textarea>
+                <label>Nome no Perfil</label>
+                <input type="text" id="display_name" placeholder="Como quer ser chamado">
                 
-                <label style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px; display: block; padding-left: 5px;">SOCIALS (icon,url)</label>
-                <textarea id="links_input" placeholder="github,https://..."></textarea>
+                <label>Biografia</label>
+                <textarea id="bio_text" rows="2" placeholder="Sua frase..."></textarea>
                 
-                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SAVE CHANGES</button>
-                <div id="status-msg" style="text-align:center; font-size:0.7rem; margin-top:15px;"></div>
+                <label>Social Links (icon,link | icon,link)</label>
+                <input type="text" id="links_input" placeholder="instagram,http://... | github,http://...">
+
+                <label>Avatar (PFP)</label>
+                <input type="file" id="pfp-f">
+                
+                <label>Fundo (Imagem ou MP4)</label>
+                <input type="file" id="bg-f">
+
+                <label>Música de Fundo</label>
+                <input type="file" id="audio-f">
+
+                <button class="btn btn-save" onclick="saveBio()" id="save-btn">SALVAR ALTERAÇÕES</button>
+                
+                <div id="link-container" class="link-box">
+                    <span>Seu link: <b id="generated-url"></b></span>
+                    <a href="javascript:void(0)" class="copy-btn" onclick="copyLink()">COPIAR</a>
+                </div>
+                
+                <div id="status-msg" style="text-align:center; font-size:12px; margin-top:15px;"></div>
             </div>
         </div>
 
@@ -260,23 +164,21 @@
             <p id="view-frase" class="bio-text-view"></p>
             
             <a id="dc-link" class="discord-card hidden" target="_blank">
-                <div class="dc-img">
-                    <img id="dc-pfp">
-                    <div id="dc-status" class="status-dot"></div>
+                <div style="position:relative; width:48px; height:48px;">
+                    <img id="dc-pfp" style="width:100%; border-radius:12px;">
+                    <div id="dc-status" style="position:absolute; bottom:-2px; right:-2px; width:14px; height:14px; border-radius:50%; border:3px solid #111;"></div>
                 </div>
                 <div>
-                    <h3 id="dc-user" style="font-size:0.9rem; font-weight: 500;"></h3>
-                    <p id="dc-activity" style="font-size:0.75rem; color: var(--text-secondary);"></p>
+                    <h3 id="dc-user" style="font-size:14px;"></h3>
+                    <p id="dc-activity" style="font-size:12px; color:#888;">Online</p>
                 </div>
             </a>
 
             <div id="social-icons" class="social-links"></div>
-            <div class="views-badge"><i class="fa-regular fa-eye"></i> <span id="view-count">0</span></div>
         </div>
     </div>
 
     <script>
-        // ... (Mantive sua lógica de script, apenas garantindo as chamadas de classe corretas)
         const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -286,11 +188,7 @@
             const u = new URLSearchParams(window.location.search).get('u');
             if (u) {
                 const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
-                if (data) { 
-                    bioData = data; 
-                    document.getElementById('enter-screen').classList.remove('hidden'); 
-                    await _supabase.rpc('increment_views', { target_username: u }); 
-                }
+                if (data) { bioData = data; document.getElementById('enter-screen').classList.remove('hidden'); }
             } else {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session) loadAdmin(session.user);
@@ -300,54 +198,6 @@
 
         async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
 
-        function revealBio() {
-            document.getElementById('enter-screen').classList.add('hidden');
-            const bioView = document.getElementById('bio-view');
-            bioView.classList.remove('hidden');
-            
-            const d = bioData;
-            document.getElementById('view-name').innerText = d.display_name;
-            document.getElementById('view-frase').innerText = d.bio_text || "";
-            document.getElementById('view-pfp').src = d.pfp_url || "https://ui-avatars.com/api/?name=" + d.display_name;
-            document.getElementById('view-count').innerText = d.views || 0;
-
-            if(d.bg_url) {
-                if(d.bg_url.includes('.mp4')) {
-                    const v = document.getElementById('bg-video'); v.src = d.bg_url; v.style.display = 'block'; v.play();
-                } else document.body.style.background = `url(${d.bg_url}) center/cover no-repeat fixed`;
-            }
-            if(d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); }
-            
-            if(d.links) {
-                const s = document.getElementById('social-icons');
-                s.innerHTML = '';
-                d.links.split('|').forEach(l => {
-                    const [icon, url] = l.split(',');
-                    if(icon && url) {
-                        const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank"; a.className = "social-icon";
-                        let ic = `fa-brands fa-${icon.trim().toLowerCase()}`;
-                        if(icon.trim().toLowerCase() === 'link') ic = 'fa-solid fa-link';
-                        a.innerHTML = `<i class="${ic}"></i>`; s.appendChild(a);
-                    }
-                });
-            }
-
-            if(d.discord_id && d.show_discord !== false) {
-                const dcLink = document.getElementById('dc-link');
-                dcLink.classList.remove('hidden');
-                dcLink.href = `https://discord.com/users/${d.discord_id}`;
-                fetch(`https://api.lanyard.rest/v1/users/${d.discord_id}`).then(r => r.json()).then(({data}) => {
-                    if(data) {
-                        document.getElementById('dc-user').innerText = data.discord_user.global_name || data.discord_user.username;
-                        document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
-                        const s = data.discord_status;
-                        document.getElementById('dc-status').style.background = s==='online'?'#23a559':s==='dnd'?'#f23f43':s==='idle'?'#f0b232':'#80848e';
-                        document.getElementById('dc-activity').innerText = data.activities[0]?.name || "Online";
-                    }
-                });
-            }
-        }
-
         async function loadAdmin(user) {
             document.getElementById('admin-ui').classList.remove('hidden');
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
@@ -356,10 +206,95 @@
                 document.getElementById('display_name').value = data.display_name || "";
                 document.getElementById('bio_text').value = data.bio_text || "";
                 document.getElementById('links_input').value = data.links || "";
+                showLink(data.username);
             }
         }
-        
-        // Mantive sua função saveBio() conforme original para não quebrar a lógica do Supabase
+
+        function showLink(user) {
+            if(!user) return;
+            const url = window.location.origin + window.location.pathname + "?u=" + user;
+            document.getElementById('link-container').style.display = 'block';
+            document.getElementById('generated-url').innerText = url;
+        }
+
+        function copyLink() {
+            const url = document.getElementById('generated-url').innerText;
+            navigator.clipboard.writeText(url);
+            alert("Link copiado!");
+        }
+
+        async function saveBio() {
+            const btn = document.getElementById('save-btn');
+            const msg = document.getElementById('status-msg');
+            btn.innerText = "SALVANDO..."; btn.disabled = true;
+
+            try {
+                const { data: { user } } = await _supabase.auth.getUser();
+                const { data: curr } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+
+                const uploadAsset = async (elId, folder) => {
+                    const file = document.getElementById(elId).files[0];
+                    if(!file) return null;
+                    const path = `${folder}/${user.id}_${Date.now()}`;
+                    await _supabase.storage.from('assets').upload(path, file, {upsert:true});
+                    return _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
+                };
+
+                const pfp = await uploadAsset('pfp-f', 'pfp');
+                const bg = await uploadAsset('bg-f', 'bg');
+                const aud = await uploadAsset('audio-f', 'audio');
+
+                const username = document.getElementById('username').value.trim().toLowerCase();
+                const payload = {
+                    user_id: user.id,
+                    username: username,
+                    display_name: document.getElementById('display_name').value,
+                    bio_text: document.getElementById('bio_text').value,
+                    links: document.getElementById('links_input').value,
+                    pfp_url: pfp || curr?.pfp_url,
+                    bg_url: bg || curr?.bg_url,
+                    audio_url: aud || curr?.audio_url,
+                    discord_id: user.identities[0].id
+                };
+
+                const { error } = await _supabase.from('bios').upsert(payload);
+                if(error) throw error;
+                
+                msg.style.color = "#4cd964"; msg.innerText = "Perfil atualizado!";
+                showLink(username);
+                setTimeout(() => { btn.innerText = "SALVAR ALTERAÇÕES"; btn.disabled = false; }, 2000);
+            } catch (err) {
+                msg.style.color = "#ff3b30"; msg.innerText = "Erro ao salvar.";
+                btn.disabled = false;
+            }
+        }
+
+        function revealBio() {
+            document.getElementById('enter-screen').classList.add('hidden');
+            document.getElementById('bio-view').classList.remove('hidden');
+            const d = bioData;
+            document.getElementById('view-name').innerText = d.display_name;
+            document.getElementById('view-frase').innerText = d.bio_text || "";
+            document.getElementById('view-pfp').src = d.pfp_url || "https://ui-avatars.com/api/?name=" + d.display_name;
+            
+            if(d.bg_url) {
+                if(d.bg_url.toLowerCase().endsWith('.mp4')) {
+                    const v = document.getElementById('bg-video'); v.src = d.bg_url; v.style.display = 'block'; v.play();
+                } else document.body.style.background = `url(${d.bg_url}) center/cover no-repeat fixed`;
+            }
+            if(d.audio_url) { const a = document.getElementById('bg-audio'); a.src = d.audio_url; a.play(); }
+            
+            if(d.links) {
+                const s = document.getElementById('social-icons');
+                d.links.split('|').forEach(l => {
+                    const [icon, url] = l.split(',');
+                    if(icon && url) {
+                        const a = document.createElement('a'); a.href = url.trim(); a.target = "_blank"; a.className = "social-icon";
+                        a.innerHTML = `<i class="fa-brands fa-${icon.trim().toLowerCase()}"></i>`; s.appendChild(a);
+                    }
+                });
+            }
+        }
         init();
     </script>
 </body>
