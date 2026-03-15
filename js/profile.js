@@ -1,31 +1,21 @@
-loadProfile()
-
 async function loadProfile(){
 
 const params=new URLSearchParams(location.search)
 
-const user=params.get("u")
-
-if(!user)return
+const u=params.get("u")
 
 const {data}=await window.supabaseClient
 .from("bios")
 .select("*")
-.eq("username",user)
+.eq("username",u)
 .single()
 
-if(!data)return
-
-display.innerText=data.display_name
+name.innerText=data.display_name
 
 bio.innerText=data.bio_text
 
-if(data.instagram)
-socials.innerHTML+=
-`<a href="${data.instagram}">Instagram</a>`
-
-if(data.tiktok)
-socials.innerHTML+=
-`<a href="${data.tiktok}">TikTok</a>`
+music_player.src=data.music
 
 }
+
+loadProfile()
