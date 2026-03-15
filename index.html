@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio Cloud | Superior Experience</title>
+    <title>OmniBio Cloud | zpzdasukgdmfygajnjhn</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
@@ -15,112 +15,29 @@
         }
 
         * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        body, html { 
-            margin: 0; padding: 0; 
-            background: var(--bg); 
-            color: white; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* --- BACKGROUND DINÂMICO --- */
-        #bg-container {
-            position: fixed; inset: 0;
-            z-index: -2;
-            background-size: cover;
-            background-position: center;
-            transition: 1s ease-in-out;
-        }
-
-        #bg-video-element {
-            position: fixed; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            display: none;
-            z-index: -2;
-        }
-
-        .overlay {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle, transparent, rgba(0,0,0,0.9));
-            z-index: -1;
-        }
+        /* --- BACKGROUNDS --- */
+        #bg-container { position: fixed; inset: 0; z-index: -2; background-size: cover; background-position: center; transition: 1s; }
+        #bg-video-element { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: -2; }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle, transparent, rgba(0,0,0,0.9)); z-index: -1; }
 
         /* --- PAINEL ADMIN --- */
-        .admin-wrapper {
-            display: flex; justify-content: center; align-items: center; padding: 40px 20px;
-        }
-
-        .panel {
-            background: rgba(15, 15, 15, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 35px;
-            border-radius: 24px;
-            border: 1px solid #222;
-            width: 100%; max-width: 450px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
+        .admin-wrapper { display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+        .panel { background: rgba(15, 15, 15, 0.9); backdrop-filter: blur(15px); padding: 35px; border-radius: 24px; border: 1px solid #222; width: 100%; max-width: 450px; }
         h2 { color: var(--main); margin-top: 0; font-weight: 800; }
-        label { display: block; font-size: 0.75rem; color: #777; margin: 15px 0 5px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        input, textarea {
-            width: 100%; padding: 12px; background: #000;
-            border: 1px solid #333; color: white; border-radius: 10px;
-            outline: none; transition: 0.3s;
-        }
-
-        input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(176, 38, 255, 0.2); }
-
-        .btn {
-            width: 100%; padding: 16px; background: var(--main);
-            border: none; color: white; font-weight: 800;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
-            margin-top: 20px; text-transform: uppercase;
-        }
-
+        label { display: block; font-size: 0.75rem; color: #777; margin: 15px 0 5px; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; outline: none; }
+        .btn { width: 100%; padding: 16px; background: var(--main); border: none; color: white; font-weight: 800; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(176, 38, 255, 0.4); }
 
         /* --- BIO VIEW --- */
-        #bio-view {
-            display: none; position: fixed; inset: 0;
-            justify-content: center; align-items: center; z-index: 100;
-            perspective: 1000px;
-        }
-
-        .glass-card {
-            background: rgba(10, 10, 10, 0.4);
-            backdrop-filter: blur(25px) saturate(150%);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 50px; border-radius: 35px;
-            text-align: center; width: 380px;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease;
-        }
-
-        .pfp {
-            width: 130px; height: 130px; border-radius: 50%;
-            border: 3px solid var(--main); margin-bottom: 20px;
-            object-fit: cover; box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
-        }
-
-        .link-btn {
-            display: block; padding: 14px; margin: 12px 0;
-            background: rgba(255,255,255,0.03);
-            border-radius: 14px; color: white; text-decoration: none;
-            font-weight: 600; border: 1px solid rgba(255,255,255,0.08);
-            transition: 0.3s;
-        }
-
-        .link-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--accent);
-            transform: scale(1.02);
-        }
-
-        #status-msg { font-size: 0.85rem; margin-top: 15px; color: var(--accent); word-break: break-all; }
+        #bio-view { display: none; position: fixed; inset: 0; justify-content: center; align-items: center; z-index: 100; perspective: 1000px; }
+        .glass-card { background: rgba(10, 10, 10, 0.45); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); padding: 50px; border-radius: 35px; text-align: center; width: 380px; transform-style: preserve-3d; }
+        .pfp { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--main); margin-bottom: 20px; object-fit: cover; }
+        .link-btn { display: block; padding: 14px; margin: 12px 0; background: rgba(255,255,255,0.03); border-radius: 14px; color: white; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; }
+        .link-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        #status-msg { font-size: 0.85rem; margin-top: 15px; color: var(--accent); text-align: center; }
     </style>
 </head>
 <body>
@@ -133,22 +50,16 @@
         <div class="panel">
             <h2>OmniBio Builder</h2>
             <input type="text" id="username" placeholder="Seu Nick Único (ex: luan7)">
-            
             <label>Nome de Exibição</label>
             <input type="text" id="display_name" placeholder="Ex: Luan | EB">
-            
-            <label>ID do Discord (Lanyard)</label>
-            <input type="text" id="discord_id" placeholder="Ex: 450123456789">
-            
-            <label>Sua Foto (do PC)</label>
+            <label>ID do Discord</label>
+            <input type="text" id="discord_id" placeholder="ID numérico">
+            <label>Foto de Perfil (PC)</label>
             <input type="file" id="pfp-input" accept="image/*">
-            
             <label>Fundo (Imagem ou Vídeo MP4)</label>
             <input type="file" id="bg-input" accept="image/*,video/mp4">
-            
-            <label>Links (Nome,URL | Nome2,URL2)</label>
-            <textarea id="links" rows="3" placeholder="Instagram,https://...|Discord,https://..."></textarea>
-            
+            <label>Links (Nome,URL|Nome2,URL2)</label>
+            <textarea id="links" rows="3" placeholder="Insta,url|Steam,url"></textarea>
             <button class="btn" onclick="saveToCloud()">Publicar Bio</button>
             <div id="status-msg"></div>
         </div>
@@ -157,49 +68,43 @@
     <div id="bio-view">
         <div class="glass-card" id="tilt-card">
             <img id="bio-pfp" class="pfp" src="">
-            <h1 id="bio-name" style="margin: 0; font-weight: 800; letter-spacing: -1px; font-size: 2rem;"></h1>
+            <h1 id="bio-name" style="margin: 0; font-weight: 800; font-size: 2rem;"></h1>
             <p id="bio-status" style="color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; margin-top: 5px;">CARREGANDO STATUS...</p>
             <div id="bio-links-container" style="margin-top: 30px;"></div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO CONECTADA ---
-        const SB_URL = 'https://pastel.supabase.co';
+        // --- CONFIGURAÇÃO CORRIGIDA ---
+        const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- SALVAR NO CLOUD ---
         async function saveToCloud() {
             const user = document.getElementById('username').value.trim().toLowerCase();
             const msg = document.getElementById('status-msg');
             const pfpFile = document.getElementById('pfp-input').files[0];
             const bgFile = document.getElementById('bg-input').files[0];
 
-            if(!user) return alert("Por favor, escolha um Nick!");
-            msg.innerText = "⚡ Enviando arquivos para a nuvem...";
+            if(!user) return alert("Digite um Nick!");
+            msg.innerText = "⚡ Enviando para nuvem...";
 
             try {
                 let pfpUrl = "";
                 let bgUrl = "";
 
-                // Upload PFP
                 if(pfpFile) {
-                    const ext = pfpFile.name.split('.').pop();
-                    const path = `pfp/${user}_${Date.now()}.${ext}`;
-                    await _supabase.storage.from('assets').upload(path, pfpFile);
+                    const path = `pfp/${user}_${Date.now()}`;
+                    await _supabase.storage.from('assets').upload(path, pfpFile, {upsert: true});
                     pfpUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
 
-                // Upload BG
                 if(bgFile) {
-                    const ext = bgFile.name.split('.').pop();
-                    const path = `bg/${user}_${Date.now()}.${ext}`;
-                    await _supabase.storage.from('assets').upload(path, bgFile);
+                    const path = `bg/${user}_${Date.now()}`;
+                    await _supabase.storage.from('assets').upload(path, bgFile, {upsert: true});
                     bgUrl = _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl;
                 }
 
-                // Salvar informações no Banco
                 const { error } = await _supabase.from('bios').upsert({
                     username: user,
                     display_name: document.getElementById('display_name').value,
@@ -210,75 +115,64 @@
                 });
 
                 if(error) throw error;
-                msg.innerHTML = `✅ Bio criada! Link:<br><b>${window.location.origin}${window.location.pathname}?u=${user}</b>`;
-
+                msg.innerHTML = `✅ Sucesso! Seu link:<br><b>${window.location.origin}${window.location.pathname}?u=${user}</b>`;
             } catch (err) {
                 msg.innerText = "❌ Erro: " + err.message;
+                console.error(err);
             }
         }
 
-        // --- CARREGAR BIO ---
         async function loadBio(username) {
-            const { data, error } = await _supabase.from('bios').select('*').eq('username', username).single();
-            
+            const { data } = await _supabase.from('bios').select('*').eq('username', username).single();
             if(data) {
                 document.getElementById('admin-ui').style.display = 'none';
                 const view = document.getElementById('bio-view');
                 view.style.display = 'flex';
 
-                // Configurar Background (Vídeo ou Imagem)
-                if(data.bg_url && data.bg_url.endsWith('.mp4')) {
-                    const vid = document.getElementById('bg-video-element');
-                    vid.src = data.bg_url;
-                    vid.style.display = 'block';
-                } else {
-                    document.getElementById('bg-container').style.backgroundImage = `url(${data.bg_url})`;
+                if(data.bg_url && data.bg_url.includes('bg/')) {
+                    if(data.bg_url.toLowerCase().includes('.mp4')) {
+                        const v = document.getElementById('bg-video-element');
+                        v.src = data.bg_url; v.style.display = 'block';
+                    } else {
+                        document.getElementById('bg-container').style.backgroundImage = `url(${data.bg_url})`;
+                    }
                 }
                 
                 document.getElementById('bio-pfp').src = data.pfp_url || 'https://via.placeholder.com/150';
                 document.getElementById('bio-name').innerText = data.display_name.toUpperCase();
                 
-                // Renderizar Links
                 const container = document.getElementById('bio-links-container');
                 if(data.links) {
                     data.links.split('|').forEach(l => {
-                        const [name, url] = l.split(',');
-                        if(name && url) {
+                        const [n, u] = l.split(',');
+                        if(n && u) {
                             const a = document.createElement('a');
-                            a.className = 'link-btn';
-                            a.href = url; a.target = "_blank"; a.innerText = name;
+                            a.className = 'link-btn'; a.href = u; a.target = "_blank"; a.innerText = n;
                             container.appendChild(a);
                         }
                     });
                 }
 
-                // Efeito Tilt 3D
-                const card = document.getElementById('tilt-card');
                 document.addEventListener('mousemove', e => {
                     let xAxis = (window.innerWidth / 2 - e.clientX) / 25;
                     let yAxis = (window.innerHeight / 2 - e.clientY) / 25;
-                    card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                    document.getElementById('tilt-card').style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
                 });
 
-                // Status Discord (Lanyard)
-                if(data.discord_id) {
-                    updateStatus(data.discord_id);
-                    setInterval(() => updateStatus(data.discord_id), 10000);
-                }
+                if(data.discord_id) updateDiscordStatus(data.discord_id);
             }
         }
 
-        async function updateStatus(id) {
+        async function updateDiscordStatus(id) {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
                 const { data } = await res.json();
-                const statusEl = document.getElementById('bio-status');
-                statusEl.innerText = data.discord_status.toUpperCase() + (data.activities[0] ? ` | JOGANDO: ${data.activities[0].name}` : "");
-                statusEl.style.color = data.discord_status === 'online' ? '#43b581' : '#f04747';
+                const el = document.getElementById('bio-status');
+                el.innerText = data.discord_status.toUpperCase() + (data.activities[0] ? ` | JOGANDO: ${data.activities[0].name}` : "");
+                el.style.color = data.discord_status === 'online' ? '#43b581' : '#f04747';
             } catch(e) {}
         }
 
-        // Lógica de URL
         const u = new URLSearchParams(window.location.search).get('u');
         if(u) loadBio(u);
     </script>
