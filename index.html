@@ -3,175 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Bio | 2026</title>
+    <title>Elite Dynamic Bio</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;600;800&display=swap');
+
         :root {
-            --primary-glow: #b026ff;
-            --secondary-glow: #00ffcc;
-            --bg-dark: #050505;
+            --glow: #b026ff;
+            --accent: #00ffcc;
         }
 
-        body {
-            background: var(--bg-dark);
-            color: white;
+        body, html {
+            margin: 0; padding: 0;
+            background: #000;
+            color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             overflow: hidden;
+            cursor: none; /* Vamos usar o cursor customizado */
         }
 
-        /* Fundo com Vídeo e Overlay de Granulado */
+        /* Cursor Customizado */
+        #cursor {
+            width: 8px; height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 15px #fff, 0 0 30px var(--glow);
+            transition: transform 0.1s;
+        }
+
+        /* Background Dinâmico */
         #bg-video {
             position: fixed;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            z-index: -2;
-            transform: translate(-50%, -50%);
-            filter: brightness(0.4) blur(3px);
+            inset: 0;
+            width: 100%; height: 100%;
             object-fit: cover;
+            filter: brightness(0.3) contrast(1.2);
+            z-index: -2;
         }
 
-        .grain-overlay {
+        .overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.05;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(0,0,0,0.7), transparent);
             z-index: -1;
+        }
+
+        /* Visualizador de Áudio */
+        #visualizer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: 0;
+            opacity: 0.6;
             pointer-events: none;
         }
 
-        /* Tela de Entrada Profissional */
-        #entry-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
+        /* Card com Efeito Tilt 3D */
+        .container {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            cursor: pointer;
-            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100vh;
+            perspective: 1000px;
         }
 
-        .entry-text {
-            font-size: 0.8rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: #555;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        /* Card Principal */
         .card {
-            background: rgba(10, 10, 10, 0.55);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 40px;
-            width: 380px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            width: 400px;
             text-align: center;
-            transform: scale(0.9);
-            opacity: 0;
-            transition: 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
 
-        .card.active { transform: scale(1); opacity: 1; }
-
-        /* Avatar com Anel de Status */
-        .avatar-wrapper {
+        /* Avatar e Status */
+        .avatar-area {
             position: relative;
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 20px;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 25px;
+            transform: translateZ(50px);
         }
 
-        .profile-img {
-            width: 100%;
-            height: 100%;
+        .pfp {
+            width: 100%; height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255,255,255,0.1);
+            border: 3px solid var(--glow);
+            padding: 5px;
         }
 
-        .status-badge {
+        .status-dot {
             position: absolute;
-            bottom: 5px; right: 5px;
-            width: 20px; height: 20px;
+            bottom: 10px; right: 10px;
+            width: 25px; height: 25px;
             border-radius: 50%;
-            border: 3px solid #0a0a0a;
-            background: #747f8d;
+            border: 4px solid #111;
+            background: #444;
         }
 
-        /* Tipografia */
-        .username {
-            font-size: 1.8rem;
+        /* Badges Customizadas (Diferencial) */
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            transform: translateZ(30px);
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
             font-weight: 800;
-            margin: 0;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-bio {
-            font-size: 0.9rem;
-            color: #888;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        /* Atividade do Discord (Spotify / Game) */
-        .presence-box {
-            background: rgba(255,255,255,0.03);
-            border-radius: 16px;
-            padding: 12px;
-            margin: 20px 0;
-            display: none;
-            text-align: left;
+            text-transform: uppercase;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .presence-box small { color: var(--secondary-glow); font-weight: bold; font-size: 0.65rem; text-transform: uppercase; }
-        .presence-box p { margin: 4px 0 0; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Player de Música Info */
+        .music-info {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
 
-        /* Botões Estilizados */
-        .links-container { display: flex; flex-direction: column; gap: 12px; }
-
+        /* Links */
         .btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #eee;
+            display: block;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
             text-decoration: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
             font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+            transform: translateZ(20px);
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary-glow);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px var(--primary-glow);
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
         }
 
-        /* Status Colors */
+        /* Click to Enter Overlay */
+        #entry {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
         .online { background: #43b581 !important; box-shadow: 0 0 15px #43b581; }
         .dnd { background: #f04747 !important; }
         .idle { background: #faa61a !important; }
@@ -180,118 +182,148 @@
 </head>
 <body>
 
-    <div id="entry-overlay" onclick="startBio()">
-        <span class="entry-text">Click to initialize</span>
+    <div id="cursor"></div>
+
+    <div id="entry" onclick="init()">
+        <span style="letter-spacing: 10px; color: #555;">[ UNLOCK EXPERIENCE ]</span>
     </div>
 
     <video autoplay muted loop id="bg-video">
-        <source id="video-src" src="" type="video/mp4">
+        <source id="vid-src" src="" type="video/mp4">
     </video>
-    <div class="grain-overlay"></div>
+    <div class="overlay"></div>
+    <canvas id="visualizer"></canvas>
 
-    <audio id="bg-audio" loop>
-        <source id="audio-src" src="" type="audio/mpeg">
-    </audio>
+    <div class="container">
+        <div class="card" id="tilt-card">
+            <div class="avatar-area">
+                <img id="user-pfp" src="https://via.placeholder.com/150" class="pfp">
+                <div id="status" class="status-dot"></div>
+            </div>
 
-    <div class="card" id="main-card">
-        <div class="avatar-wrapper">
-            <img id="user-pfp" src="https://via.placeholder.com/150" class="profile-img">
-            <div id="status-dot" class="status-badge"></div>
+            <div class="badges" id="badges-container">
+                </div>
+
+            <h1 id="user-name" style="margin:0; font-family: 'Syncopate'; font-size: 1.5rem;">USER</h1>
+            <p id="user-bio" style="color: #888; margin-bottom: 20px;"></p>
+
+            <div class="music-info">
+                <span id="track-name">Playlist Active</span>
+            </div>
+
+            <div id="links-area"></div>
         </div>
-
-        <h2 id="user-name" class="username">Loading...</h2>
-        <p id="user-bio" class="user-bio"></p>
-
-        <div id="presence" class="presence-box">
-            <small id="presence-type">Listening to</small>
-            <p id="presence-name">Nothing</p>
-        </div>
-
-        <div class="links-container" id="links"></div>
     </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
+        const discordID = params.get('id');
         
-        // Configuração via URL
-        const config = {
-            id: params.get('id'),
-            nome: params.get('nome') || "Unknown",
-            bio: params.get('bio') || "No status set.",
-            pfp: params.get('pfp'),
-            bg: params.get('bg'), // Link MP4
-            music: params.get('music'), // Link MP3
-            links: params.get('links') // Formato: Nome,url|Nome2,url2
-        };
+        // Playlist Infinita (Coloque links de MP3 diretos separados por vírgula)
+        const playlist = params.get('songs') ? params.get('songs').split(',') : [
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+        ];
+        let currentTrack = 0;
+        const audio = new Audio();
 
-        function startBio() {
-            document.getElementById('entry-overlay').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('entry-overlay').style.display = 'none';
-                document.getElementById('main-card').classList.add('active');
-                
-                const audio = document.getElementById('bg-audio');
-                if(config.music) {
-                    document.getElementById('audio-src').src = config.music;
-                    audio.load();
-                    audio.volume = 0.4;
-                    audio.play();
-                }
-            }, 1000);
+        // Cursor
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Efeito Tilt 3D
+        const card = document.getElementById('tilt-card');
+        document.addEventListener('mousemove', e => {
+            let xAxis = (window.innerWidth / 2 - e.clientX) / 25;
+            let yAxis = (window.innerHeight / 2 - e.clientY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        function init() {
+            document.getElementById('entry').style.display = 'none';
+            playNext();
+            setupVisualizer();
+            updateDiscord();
+            setInterval(updateDiscord, 10000);
         }
 
-        // Setup Inicial
-        document.getElementById('user-name').innerText = config.nome;
-        document.getElementById('user-bio').innerText = config.bio;
-        if(config.pfp) document.getElementById('user-pfp').src = config.pfp;
-        if(config.bg) document.getElementById('video-src').src = config.bg;
+        function playNext() {
+            audio.src = playlist[currentTrack];
+            audio.play();
+            document.getElementById('track-name').innerText = `Playing Track #${currentTrack + 1}`;
+            audio.onended = () => {
+                currentTrack = (currentTrack + 1) % playlist.length;
+                playNext();
+            };
+        }
 
-        // Gerar Links
-        if(config.links) {
-            const container = document.getElementById('links');
-            config.links.split('|').forEach(l => {
-                const [name, url] = l.split(',');
-                const a = document.createElement('a');
-                a.className = 'btn';
-                a.href = url;
-                a.target = "_blank";
-                a.innerText = name;
-                container.appendChild(a);
+        // Visualizador de Áudio (API de Áudio do Web Browser)
+        function setupVisualizer() {
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioCtx.createAnalyser();
+            const source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                requestAnimationFrame(draw);
+                canvas.width = window.innerWidth;
+                canvas.height = 150;
+                analyser.getByteFrequencyData(dataArray);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let x = 0;
+                for(let i = 0; i < bufferLength; i++) {
+                    let barHeight = dataArray[i] / 2;
+                    ctx.fillStyle = `rgba(176, 38, 255, ${barHeight/100})`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    x += barWidth + 1;
+                }
+            }
+            draw();
+        }
+
+        // Lanyard API
+        async function updateDiscord() {
+            if(!discordID) return;
+            const res = await fetch(`https://api.lanyard.rest/v1/users/${discordID}`);
+            const { data } = await res.json();
+            
+            document.getElementById('status').className = `status-dot ${data.discord_status}`;
+            document.getElementById('user-name').innerText = data.discord_user.username.toUpperCase();
+            document.getElementById('user-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
+        }
+
+        // Configuração via URL
+        if(params.get('nome')) document.getElementById('user-name').innerText = params.get('nome').toUpperCase();
+        if(params.get('bio')) document.getElementById('user-bio').innerText = params.get('bio');
+        if(params.get('vid')) document.getElementById('vid-src').src = params.get('vid');
+        
+        // Badges
+        if(params.get('badges')) {
+            params.get('badges').split(',').forEach(b => {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.innerText = b;
+                document.getElementById('badges-container').appendChild(span);
             });
         }
-
-        // Lanyard API (Discord Status)
-        if(config.id) {
-            async function updateDiscord() {
-                try {
-                    const res = await fetch(`https://api.lanyard.rest/v1/users/${config.id}`);
-                    const { data } = await res.json();
-                    
-                    const dot = document.getElementById('status-dot');
-                    dot.className = `status-badge ${data.discord_status}`;
-
-                    const presence = document.getElementById('presence');
-                    const pName = document.getElementById('presence-name');
-                    const pType = document.getElementById('presence-type');
-
-                    if(data.listening_to_spotify) {
-                        presence.style.display = 'block';
-                        pType.innerText = "Listening to Spotify";
-                        pName.innerText = `${data.spotify.song} - ${data.spotify.artist}`;
-                    } else if(data.activities.length > 0) {
-                        const game = data.activities.find(x => x.type === 0);
-                        if(game) {
-                            presence.style.display = 'block';
-                            pType.innerText = "Playing";
-                            pName.innerText = game.name;
-                        }
-                    } else {
-                        presence.style.display = 'none';
-                    }
-                } catch(e) { console.error("Lanyard Error"); }
-            }
-            setInterval(updateDiscord, 10000);
-            updateDiscord();
+        
+        // Links
+        if(params.get('links')) {
+            params.get('links').split('|').forEach(l => {
+                const [n, u] = l.split(',');
+                const a = document.createElement('a');
+                a.className = 'btn'; a.href = u; a.innerText = n; a.target = "_blank";
+                document.getElementById('links-area').appendChild(a);
+            });
         }
     </script>
 </body>
