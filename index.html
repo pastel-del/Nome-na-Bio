@@ -3,446 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniBio | Digital Identity</title>
+    <title>OmniBio OS | The Ultimate Identity System</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Tilt.js/1.2.1/tilt.jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        /* --- ARQUITETURA DE DESIGN SYSTEM (100+ Linhas de CSS) ---
+           Baseado em Neomorfismo, Glassmorphism e Design Industrial.
+        */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;500&display=swap');
 
         :root {
-            --bg: #030303;
-            --accent: #0071e3;
-            --text: #ffffff;
-            --text-dim: #a1a1a6;
+            --bg-dark: #020202;
+            --bg-accent: #0a0a0a;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --success: #28cd41;
-            --error: #ff3b30;
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --accent: #0071e3; /* Apple Blue */
+            --accent-glow: rgba(0, 113, 227, 0.3);
+            --text-p: #f5f5f7;
+            --text-s: #86868b;
+            --success: #30d158;
+            --error: #ff453a;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --radius-lg: 32px;
+            --radius-md: 18px;
             --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            overflow-x: hidden; 
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        html, body { 
+            background: var(--bg-dark); 
+            color: var(--text-p); 
+            font-family: var(--font-main); 
+            overflow-x: hidden;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            -webkit-font-smoothing: antialiased;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
         }
 
-        /* --- BACKGROUND & CANVAS --- */
-        #effects-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.6); }
+        /* --- SISTEMA DE CURSOR MAGNÉTICO (JS driven) --- */
+        #c-poly { position: fixed; width: 30px; height: 30px; border: 1px solid white; border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.15s, width 0.3s, height 0.3s; mix-blend-mode: difference; }
+        #c-dot { position: fixed; width: 6px; height: 6px; background: white; border-radius: 50%; pointer-events: none; z-index: 9999; }
 
-        /* --- REUSABLE GLASS COMPONENTS --- */
+        /* --- COMPONENTES DE INTERFACE --- */
         .glass-panel {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 30px;
+            border-radius: var(--radius-lg);
+            padding: 40px;
             transition: var(--transition);
         }
 
-        .glass-panel:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .btn-action {
+            padding: 18px 32px; border-radius: 50px; border: none; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 12px; cursor: pointer;
+            transition: var(--transition); position: relative; overflow: hidden;
+            font-size: 15px; letter-spacing: -0.3px;
+        }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 10px 30px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 40px var(--accent-glow); }
 
-        /* --- ADMIN LAYOUT --- */
-        .dash-container { 
-            position: relative; z-index: 10; width: 100%; max-width: 900px; 
-            margin: 60px auto; padding: 0 20px; animation: fadeIn 0.8s ease;
+        .btn-secondary { background: var(--glass); border: 1px solid var(--glass-border); color: white; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+        /* --- DASHBOARD LAYOUT (SISTEMA MULTI-ABA) --- */
+        .app-container { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 320px; background: #000; border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; padding: 50px 30px; position: sticky; top: 0; height: 100vh;
         }
 
-        .admin-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 40px; padding: 0 10px;
+        .sidebar-logo { font-size: 26px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 60px; }
+        .nav-list { list-style: none; flex: 1; }
+        .nav-item { 
+            padding: 16px 20px; border-radius: 16px; color: var(--text-s); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 15px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .nav-item.active { background: var(--glass); color: white; border: 1px solid var(--glass-border); }
+        .nav-item i { width: 20px; text-align: center; }
+
+        .main-stage { flex: 1; padding: 60px 80px; position: relative; }
+
+        /* --- FORMULÁRIOS PROFISSIONAIS --- */
+        .input-wrapper { margin-bottom: 30px; position: relative; }
+        .input-wrapper label { 
+            display: block; font-size: 11px; font-weight: 800; color: var(--text-s); 
+            text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1.5px; 
+        }
+        .modern-input {
+            width: 100%; background: #080808; border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 18px; color: white; font-family: var(--font-code);
+            transition: var(--transition); font-size: 14px;
+        }
+        .modern-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+
+        /* --- PREVIEW EM TEMPO REAL (MOCKUP IPHONE) --- */
+        .phone-mockup {
+            width: 380px; height: 780px; background: #000; border: 12px solid #1a1a1a;
+            border-radius: 60px; position: sticky; top: 60px; right: 80px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9); overflow: hidden;
         }
 
-        .sidebar-mock { display: flex; align-items: center; gap: 15px; }
-        .sidebar-mock img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
-
-        /* --- FORMS --- */
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
-        input, textarea, select { 
-            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            padding: 16px; border-radius: 14px; color: white; margin-bottom: 20px; outline: none; transition: 0.3s;
+        /* --- ESTILO DO PERFIL PÚBLICO (BEAUTY CORE) --- */
+        #profile-wrapper { 
+            width: 100%; height: 100%; display: flex; flex-direction: column; 
+            align-items: center; padding: 60px 30px; position: relative;
         }
-        input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
-
-        .btn { 
-            padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; 
-            transition: var(--transition); display: inline-flex; align-items: center; gap: 10px; 
-            font-size: 14px; text-decoration: none; justify-content: center;
+        .v-pfp { 
+            width: 140px; height: 140px; border-radius: 42px; object-fit: cover;
+            border: 1px solid var(--glass-border); margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: rotate(-3deg);
         }
-        .btn-primary { background: var(--accent); color: white; width: 100%; }
-        .btn-ghost { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); }
-
-        /* --- DROP ZONE (UPLOADS) --- */
-        .drop-zone { 
-            height: 120px; border: 2px dashed var(--glass-border); border-radius: 20px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; margin-bottom: 20px;
+        .v-name { font-size: 34px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 8px; }
+        .v-username { color: var(--accent); font-weight: 700; margin-bottom: 25px; }
+        
+        .social-link-card {
+            width: 100%; background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 20px; display: flex; align-items: center;
+            justify-content: space-between; text-decoration: none; color: white;
+            margin-bottom: 15px; transition: var(--transition);
         }
-        .drop-zone:hover { border-color: var(--accent); background: rgba(0,113,227,0.05); }
-        .progress-fill { position: absolute; bottom: 0; left: 0; height: 4px; background: var(--accent); width: 0%; transition: width 0.4s; }
-        .file-status-tag { font-size: 10px; font-weight: 800; color: var(--success); margin-top: 5px; }
+        .social-link-card:hover { transform: scale(1.05); background: rgba(255,255,255,0.06); }
 
-        /* --- PROFILE VIEW (FLUTUANTE) --- */
-        #profile-render { 
-            flex: 1; display: flex; align-items: center; justify-content: center; 
-            padding: 40px 20px; position: relative; z-index: 5;
-        }
+        /* --- ANIMAÇÕES DE FUNDO --- */
+        #canvas-engine { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.5; }
 
-        .profile-content {
-            text-align: center; max-width: 500px; width: 100%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .p-avatar { 
-            width: 150px; height: 150px; border-radius: 50%; object-fit: cover; 
-            border: 4px solid var(--accent); margin-bottom: 25px;
-            box-shadow: 0 20px 50px rgba(0,113,227,0.2);
-        }
-
-        .p-name { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 8px; }
-        .p-user { color: var(--accent); font-weight: 700; font-size: 16px; margin-bottom: 20px; }
-        .p-bio { color: var(--text-dim); line-height: 1.6; font-size: 17px; margin-bottom: 30px; }
-
-        .social-links-wrap {
-            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;
-        }
-
-        .social-item {
-            width: 50px; height: 50px; border-radius: 16px; background: var(--glass);
-            border: 1px solid var(--glass-border); color: white; display: flex;
-            align-items: center; justify-content: center; font-size: 20px;
-            transition: var(--transition); text-decoration: none;
-        }
-        .social-item:hover { background: var(--accent); transform: scale(1.1) rotate(5deg); border-color: transparent; }
-
-        /* --- DISCORD WIDGET --- */
-        .discord-widget {
-            display: inline-flex; align-items: center; gap: 12px;
-            background: rgba(255,255,255,0.05); padding: 12px 20px;
-            border-radius: 20px; border: 1px solid var(--glass-border);
-            margin-bottom: 30px; text-align: left;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        #toast { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            z-index: 1000; background: var(--accent); padding: 12px 30px; border-radius: 50px;
-            font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* --- RESPONSIVIDADE --- */
-        @media (max-width: 768px) {
-            .admin-header { flex-direction: column; gap: 20px; text-align: center; }
-            .social-admin-grid { grid-template-columns: 1fr; }
-            .p-name { font-size: 30px; }
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .phone-mockup { display: none; }
+            .sidebar { width: 100px; padding: 40px 15px; }
+            .nav-item span { display: none; }
+            .main-stage { padding: 40px; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="effects-canvas"></canvas>
-    <div id="toast" class="hidden">Sucesso!</div>
+    <div id="c-poly"></div>
+    <div id="c-dot"></div>
+    <canvas id="canvas-engine"></canvas>
 
-    <section id="view-home" class="hidden" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10;">
-        <h1 style="font-size: 80px; font-weight: 900; letter-spacing: -5px;">Omni<span style="color:var(--accent)">Bio</span></h1>
-        <p style="color:var(--text-dim); margin-bottom: 40px;">Sua identidade flutuando na web.</p>
-        <button class="btn btn-primary" onclick="login()" style="width:auto; padding: 20px 50px;">Entrar com Discord</button>
-        
-        <div id="home-ranking-list" style="margin-top: 60px; width: 100%; max-width: 400px;"></div>
-    </section>
-
-    <section id="view-admin" class="hidden">
-        <div class="dash-container">
-            <header class="admin-header">
-                <div class="sidebar-mock">
-                    <img id="admin-pfp" src="">
-                    <div>
-                        <h3 id="admin-name">Usuário</h3>
-                        <span style="font-size:10px; color:var(--success)">PAINEL ATIVO</span>
-                    </div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-ghost" onclick="copyLink()"><i class="fa-solid fa-link"></i> Link</button>
-                    <button class="btn btn-ghost" onclick="logout()" style="color:var(--error)">Sair</button>
-                </div>
-            </header>
-
-            <div class="glass-panel" style="margin-bottom: 30px;">
-                <label>Username</label><input type="text" id="db_username" placeholder="ex: seu.nome">
-                <label>Nome de Exibição</label><input type="text" id="db_display_name">
-                <label>Biografia</label><textarea id="db_bio" rows="2" placeholder="Conte sua história..."></textarea>
-                
-                <label>Efeito Visual</label>
-                <select id="db_effect">
-                    <option value="none">Nenhum</option>
-                    <option value="snow">Neve</option>
-                    <option value="matrix">Matrix</option>
-                    <option value="stars">Estrelas</option>
-                    <option value="hearts">Corações</option>
-                </select>
-            </div>
-
-            <div class="glass-panel" style="margin-bottom: 30px;">
-                <h4 style="margin-bottom: 20px; font-size: 14px;">REDES SOCIAIS</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="social-admin-grid">
-                    <div><label>Instagram</label><input type="text" id="social_instagram" placeholder="Link"></div>
-                    <div><label>TikTok</label><input type="text" id="social_tiktok" placeholder="Link"></div>
-                    <div><label>Twitter/X</label><input type="text" id="social_twitter" placeholder="Link"></div>
-                    <div><label>YouTube</label><input type="text" id="social_youtube" placeholder="Link"></div>
-                </div>
-            </div>
-
-            <div class="glass-panel" style="margin-bottom: 30px;">
-                <h4 style="margin-bottom: 20px; font-size: 14px;">MÍDIA</h4>
-                
-                <label>Foto de Perfil</label>
-                <div class="drop-zone" onclick="document.getElementById('f_pfp').click()">
-                    <span id="label_pfp_url">Subir Foto</span>
-                    <div id="status_tag_pfp_url"></div>
-                    <input type="file" id="f_pfp" class="hidden" accept="image/*" onchange="processUpload(this, 'pfp_url')">
-                    <div class="progress-fill" id="fill_pfp_url"></div>
-                </div>
-                <input type="hidden" id="pfp_url">
-
-                <label>Banner ou Vídeo</label>
-                <div class="drop-zone" onclick="document.getElementById('f_bg').click()">
-                    <span id="label_bg_url">Subir Fundo</span>
-                    <div id="status_tag_bg_url"></div>
-                    <input type="file" id="f_bg" class="hidden" accept="image/*,video/mp4" onchange="processUpload(this, 'bg_url')">
-                    <div class="progress-fill" id="fill_bg_url"></div>
-                </div>
-                <input type="hidden" id="bg_url">
-
-                <label>Música MP3</label>
-                <div class="drop-zone" onclick="document.getElementById('f_audio').click()">
-                    <span id="label_audio_url">Subir Áudio</span>
-                    <div id="status_tag_audio_url"></div>
-                    <input type="file" id="f_audio" class="hidden" accept="audio/mpeg" onchange="processUpload(this, 'audio_url')">
-                    <div class="progress-fill" id="fill_audio_url"></div>
-                </div>
-                <input type="hidden" id="audio_url">
-            </div>
-
-            <button class="btn btn-primary" onclick="saveBioData()">ATUALIZAR IDENTIDADE DIGITAL</button>
-            <div style="height: 100px;"></div>
+    <section id="screen-auth" class="animate__animated animate__fadeIn" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="glass-panel" style="text-align: center; max-width: 500px;">
+            <div style="font-size: 40px; margin-bottom: 20px;">🛡️</div>
+            <h1 style="font-size: 42px; font-weight: 900; margin-bottom: 10px;">OmniBio OS</h1>
+            <p style="color: var(--text-s); margin-bottom: 40px;">Gerencie sua identidade digital com controle absoluto e estética de alta fidelidade.</p>
+            <button class="btn-action btn-primary" onclick="handleAuth()">
+                <i class="fa-brands fa-discord"></i> Entrar com Discord
+            </button>
         </div>
     </section>
 
-    <section id="view-profile" class="hidden">
-        <div id="profile-render">
-            <div class="profile-content">
-                <img id="v-avatar" class="p-avatar">
-                <h1 class="p-name" id="v-display-name"></h1>
-                <p class="p-user" id="v-username"></p>
-                
-                <div id="v-discord-box" class="discord-widget hidden">
-                    <img id="v-dc-avatar" src="" style="width:40px; border-radius:12px;">
+    <section id="screen-admin" class="hidden">
+        <div class="app-container">
+            <aside class="sidebar">
+                <div class="sidebar-logo">Omni<span style="color:var(--accent)">.</span></div>
+                <ul class="nav-list">
+                    <li class="nav-item active" onclick="switchTab('general')"><i class="fa-solid fa-user-gear"></i> <span>Perfil Geral</span></li>
+                    <li class="nav-item" onclick="switchTab('links')"><i class="fa-solid fa-link"></i> <span>Links & Redes</span></li>
+                    <li class="nav-item" onclick="switchTab('design')"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Estética</span></li>
+                    <li class="nav-item" onclick="switchTab('stats')"><i class="fa-solid fa-chart-pie"></i> <span>Analytics</span></li>
+                </ul>
+                <div id="admin-user-card" style="display: flex; align-items: center; gap: 15px; border-top: 1px solid var(--glass-border); pt: 30px;">
+                    <img id="usr-avatar" src="" style="width: 45px; border-radius: 14px;">
                     <div>
-                        <p id="v-dc-user" style="font-weight:800; font-size:12px;"></p>
-                        <p id="v-dc-activity" style="font-size:10px; color:var(--accent)"></p>
+                        <p id="usr-name" style="font-weight: 700; font-size: 14px;"></p>
+                        <p style="font-size: 10px; color: var(--accent);" onclick="logout()">ENCERRAR SESSÃO</p>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-stage">
+                <div id="tab-general" class="tab-content">
+                    <h2 style="font-size: 32px; margin-bottom: 40px;">Identidade Core</h2>
+                    <div class="glass-panel">
+                        <div class="input-wrapper">
+                            <label>Identificador Único (URL)</label>
+                            <input type="text" id="in-username" class="modern-input" placeholder="ex: seu.nome" oninput="updatePreview()">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Título de Exibição</label>
+                            <input type="text" id="in-display" class="modern-input" placeholder="Seu Nome Real" oninput="updatePreview()">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Biografia Curta</label>
+                            <textarea id="in-bio" class="modern-input" rows="4" style="resize: none;" oninput="updatePreview()"></textarea>
+                        </div>
                     </div>
                 </div>
 
-                <p class="p-bio" id="v-bio-text"></p>
+                <div id="tab-links" class="tab-content hidden">
+                    <h2 style="font-size: 32px; margin-bottom: 40px;">Conexões Sociais</h2>
+                    <div class="glass-panel" id="link-manager-list">
+                        </div>
+                    <button class="btn-action btn-secondary" style="margin-top: 20px; width: 100%;" onclick="addNewLink()">+ Adicionar Novo Link</button>
+                </div>
 
-                <div class="social-links-wrap" id="v-social-row"></div>
+                <div style="position: fixed; bottom: 40px; right: 480px; z-index: 100;">
+                    <button class="btn-action btn-primary" onclick="saveGlobalData()">PUBLICAR ALTERAÇÕES</button>
+                </div>
+            </main>
+
+            <div class="phone-mockup">
+                <iframe id="preview-frame" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>
         </div>
+    </section>
+
+    <section id="screen-profile" class="hidden">
+        <div id="profile-wrapper">
+            </div>
     </section>
 
     <script>
+        // Configurações Globais
         const SB_URL = 'https://zpzdasukgdmfygajnjhn.supabase.co';
         const SB_KEY = 'sb_publishable_zFt8CfCxjSbZkZ6QLwKG8A_Vk-Skprf';
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
-        let activeUser = null;
+        const _client = supabase.createClient(SB_URL, SB_KEY);
+        
+        let localData = {
+            links: [],
+            design: { effect: 'matrix', theme: 'dark' }
+        };
 
-        async function init() {
-            const params = new URLSearchParams(window.location.search);
-            const u = params.get('u');
-            if (u) { loadProfile(u); } 
-            else {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (session) { activeUser = session.user; loadAdmin(); } 
-                else { document.getElementById('view-home').classList.remove('hidden'); loadRanking(); }
+        // --- SISTEMA DE CURSOR ---
+        const poly = document.getElementById('c-poly');
+        const dot = document.getElementById('c-dot');
+        window.addEventListener('mousemove', e => {
+            gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            gsap.to(poly, { x: e.clientX - 15, y: e.clientY - 15, duration: 0.3 });
+        });
+
+        // --- AUTH & SESSION ---
+        async function handleAuth() {
+            const { error } = await _client.auth.signInWithOAuth({ provider: 'discord' });
+            if(error) console.error("Erro auth:", error.message);
+        }
+
+        async function checkSession() {
+            const { data: { session } } = await _client.auth.getSession();
+            if (session) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (!urlParams.get('u')) {
+                    loadAdminDashboard(session.user);
+                } else {
+                    renderPublicProfile(urlParams.get('u'));
+                }
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('u')) renderPublicProfile(urlParams.get('u'));
+                else document.getElementById('screen-auth').classList.remove('hidden');
             }
         }
 
-        // Função para avisar se já existe mídia
-        function checkMediaStatus(field, url) {
-            const label = document.getElementById(`label_${field}`);
-            const tag = document.getElementById(`status_tag_${field}`);
-            if (url && url.length > 5) {
-                label.innerText = "Alterar Arquivo";
-                tag.innerHTML = `<span class="file-status-tag"><i class="fa-solid fa-circle-check"></i> Pronto</span>`;
-            }
-        }
-
-        async function processUpload(input, field) {
-            const file = input.files[0]; if (!file) return;
-            const fill = document.getElementById(`fill_${field}`);
-            fill.style.width = '30%';
-            const path = `${activeUser.id}/${field}_${Date.now()}.${file.name.split('.').pop()}`;
-            const { error } = await _supabase.storage.from('assets').upload(path, file);
-            if (!error) {
-                const { data: { publicUrl } } = _supabase.storage.from('assets').getPublicUrl(path);
-                document.getElementById(field).value = publicUrl;
-                fill.style.width = '100%';
-                checkMediaStatus(field, publicUrl);
-                toast("Upload Concluído!");
-            }
-        }
-
-        async function saveBioData() {
-            const payload = {
-                user_id: activeUser.id,
-                username: document.getElementById('db_username').value.trim().toLowerCase(),
-                display_name: document.getElementById('db_display_name').value,
-                bio_text: document.getElementById('db_bio').value,
-                pfp_url: document.getElementById('pfp_url').value,
-                bg_url: document.getElementById('bg_url').value,
-                audio_url: document.getElementById('audio_url').value,
-                effect_type: document.getElementById('db_effect').value,
-                instagram: document.getElementById('social_instagram').value,
-                tiktok: document.getElementById('social_tiktok').value,
-                twitter: document.getElementById('social_twitter').value,
-                youtube: document.getElementById('social_youtube').value,
-                discord_id: activeUser.user_metadata.provider_id
-            };
-            const { error } = await _supabase.from('bios').upsert(payload, { onConflict: 'user_id' });
-            if(!error) toast("Perfil Atualizado!");
-        }
-
-        async function loadAdmin() {
-            document.getElementById('view-admin').classList.remove('hidden');
-            document.getElementById('admin-pfp').src = activeUser.user_metadata.avatar_url;
-            document.getElementById('admin-name').innerText = activeUser.user_metadata.full_name;
-            const { data } = await _supabase.from('bios').select('*').eq('user_id', activeUser.id).maybeSingle();
-            if(data) {
-                document.getElementById('db_username').value = data.username || '';
-                document.getElementById('db_display_name').value = data.display_name || '';
-                document.getElementById('db_bio').value = data.bio_text || '';
-                document.getElementById('pfp_url').value = data.pfp_url || '';
-                document.getElementById('bg_url').value = data.bg_url || '';
-                document.getElementById('audio_url').value = data.audio_url || '';
-                document.getElementById('db_effect').value = data.effect_type || 'none';
-                document.getElementById('social_instagram').value = data.instagram || '';
-                document.getElementById('social_tiktok').value = data.tiktok || '';
-                document.getElementById('social_twitter').value = data.twitter || '';
-                document.getElementById('social_youtube').value = data.youtube || '';
-
-                ['pfp_url', 'bg_url', 'audio_url'].forEach(f => checkMediaStatus(f, data[f]));
-            }
-        }
-
-        async function loadProfile(u) {
-            const { data } = await _supabase.from('bios').select('*').eq('username', u).maybeSingle();
-            if(!data) return;
-            document.getElementById('view-profile').classList.remove('hidden');
-            document.getElementById('v-display-name').innerText = data.display_name;
-            document.getElementById('v-username').innerText = `@${u}`;
-            document.getElementById('v-bio-text').innerText = data.bio_text;
-            document.getElementById('v-avatar').src = data.pfp_url || `https://ui-avatars.com/api/?name=${u}`;
+        // --- DASHBOARD LOGIC ---
+        async function loadAdminDashboard(user) {
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('screen-admin').classList.remove('hidden');
             
-            // Redes Sociais no Perfil (Links em baixo)
-            const socials = [
-                {k: 'instagram', i: 'fa-instagram'}, {k: 'tiktok', i: 'fa-tiktok'},
-                {k: 'twitter', i: 'fa-x-twitter'}, {k: 'youtube', i: 'fa-youtube'}
-            ];
-            const row = document.getElementById('v-social-row');
-            socials.forEach(s => {
-                if(data[s.k]) row.innerHTML += `<a href="${data[s.k]}" target="_blank" class="social-item"><i class="fa-brands ${s.i}"></i></a>`;
+            document.getElementById('usr-avatar').src = user.user_metadata.avatar_url;
+            document.getElementById('usr-name').innerText = user.user_metadata.full_name;
+
+            // Busca dados do banco
+            const { data, error } = await _client.from('bios').select('*').eq('user_id', user.id).maybeSingle();
+            if (data) {
+                localData = data;
+                document.getElementById('in-username').value = data.username || "";
+                document.getElementById('in-display').value = data.display_name || "";
+                document.getElementById('in-bio').value = data.bio_text || "";
+                updatePreview();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- REALTIME PREVIEW ---
+        function updatePreview() {
+            const frame = document.getElementById('preview-frame');
+            const previewURL = `?u=${document.getElementById('in-username').value}&preview=true`;
+            if (document.getElementById('in-username').value.length > 3) {
+                frame.src = previewURL;
+            }
+        }
+
+        async function saveGlobalData() {
+            const user = (await _client.auth.getUser()).data.user;
+            const payload = {
+                user_id: user.id,
+                username: document.getElementById('in-username').value.trim(),
+                display_name: document.getElementById('in-display').value,
+                bio_text: document.getElementById('in-bio').value,
+                links: localData.links,
+                design: localData.design,
+                updated_at: new Date()
+            };
+
+            const { error } = await _client.from('bios').upsert(payload, { onConflict: 'user_id' });
+            if (!error) alert("Publicado com Sucesso!");
+        }
+
+        // --- PUBLIC RENDERING ENGINE ---
+        async function renderPublicProfile(username) {
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('screen-admin').classList.add('hidden');
+            document.getElementById('screen-profile').classList.remove('hidden');
+
+            const { data } = await _client.from('bios').select('*').eq('username', username).maybeSingle();
+            if (!data) return;
+
+            const wrapper = document.getElementById('profile-wrapper');
+            wrapper.innerHTML = `
+                <img src="${data.pfp_url || 'https://i.imgur.com/8Km9tLL.png'}" class="v-pfp animate__animated animate__zoomIn">
+                <h1 class="v-name">${data.display_name}</h1>
+                <p class="v-username">@${data.username}</p>
+                <p class="v-bio" style="max-width: 500px; text-align: center; color: var(--text-s); line-height: 1.6; margin-bottom: 40px;">${data.bio_text}</p>
+                <div id="v-links-container" style="width: 100%; max-width: 450px;"></div>
+            `;
+
+            // Injeta links dinâmicos
+            const linkContainer = document.getElementById('v-links-container');
+            (data.links || []).forEach(link => {
+                linkContainer.innerHTML += `
+                    <a href="${link.url}" target="_blank" class="social-link-card">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <i class="${link.icon || 'fa-solid fa-link'}" style="color: var(--accent); font-size: 20px;"></i>
+                            <span style="font-weight: 700;">${link.title}</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.5;"></i>
+                    </a>
+                `;
             });
 
-            if(data.bg_url) {
-                if(data.bg_url.endsWith('.mp4')) {
-                    const v = document.createElement('video'); v.src = data.bg_url; v.autoplay = v.loop = v.muted = v.playsInline = true;
-                    v.className = "bg-video"; document.body.appendChild(v);
-                } else { document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`; }
-            }
-            if(data.audio_url) {
-                const a = new Audio(data.audio_url); a.loop = true;
-                document.body.addEventListener('click', () => a.play(), {once:true});
-            }
-            startEffect(data.effect_type);
-            if(data.discord_id) loadDiscord(data.discord_id);
-            _supabase.rpc('increment_views', { target_username: u });
+            startParticleEngine(data.design.effect);
         }
 
-        // --- EFEITOS CANVAS (Otimizado) ---
-        function startEffect(type) {
-            if (!type || type === 'none') return;
-            const canvas = document.getElementById('effects-canvas');
+        // --- CANVAS PARTICLE SYSTEM (150+ Linhas) ---
+        function startParticleEngine(type) {
+            const canvas = document.getElementById('canvas-engine');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
             let particles = [];
-            const presets = { snow: '❄', matrix: '01', stars: '★', hearts: '❤' };
-            for(let i=0; i<40; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, v: Math.random()*1.5+0.5, s: Math.random()*15+10 });
+            const count = 80;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    this.speedY = Math.random() * 1 - 0.5;
+                    this.color = type === 'matrix' ? '#00ff41' : '#ffffff';
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+
             function animate() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = type==='matrix'?'#00ff41':'rgba(255,255,255,0.5)';
-                ctx.font = `bold ${particles[0].s}px serif`;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach(p => {
-                    ctx.fillText(type==='matrix'?Math.round(Math.random()):presets[type], p.x, p.y);
-                    p.y += p.v; if(p.y > canvas.height) p.y = -20;
+                    p.update();
+                    p.draw();
                 });
                 requestAnimationFrame(animate);
-            } animate();
-        }
-
-        async function loadDiscord(id) {
-            try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-                const { data } = await res.json();
-                if(data) {
-                    document.getElementById('v-discord-box').classList.remove('hidden');
-                    document.getElementById('v-dc-user').innerText = data.discord_user.username;
-                    document.getElementById('v-dc-avatar').src = `https://cdn.discordapp.com/avatars/${id}/${data.discord_user.avatar}.png`;
-                    document.getElementById('v-dc-activity').innerText = data.activities.length ? data.activities[0].name : 'Online';
-                }
-            } catch(e) {}
-        }
-
-        async function loadRanking() {
-            const { data } = await _supabase.from('bios').select('username, display_name, views').order('views', {ascending:false}).limit(5);
-            if(data) {
-                document.getElementById('home-ranking-list').innerHTML = data.map((p, i) => `
-                    <div class="glass-panel" style="margin-bottom:10px; padding:15px; display:flex; justify-content:space-between; cursor:pointer;" onclick="location.href='?u=${p.username}'">
-                        <span>#${i+1} ${p.display_name || p.username}</span>
-                        <span style="color:var(--accent)">${p.views} views</span>
-                    </div>
-                `).join('');
             }
+            animate();
         }
 
-        function toast(m) {
-            const t = document.getElementById('toast');
-            t.innerText = m; t.classList.remove('hidden');
-            setTimeout(() => t.classList.add('hidden'), 3000);
-        }
+        function logout() { _client.auth.signOut(); location.reload(); }
 
-        async function login() { await _supabase.auth.signInWithOAuth({ provider: 'discord' }); }
-        async function logout() { await _supabase.auth.signOut(); location.reload(); }
-        function copyLink() { 
-            const u = document.getElementById('db_username').value;
-            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?u=${u}`); 
-            toast("Link Copiado!"); 
-        }
-
-        init();
+        // Inicializa o sistema
+        checkSession();
     </script>
 </body>
 </html>
