@@ -1,22 +1,13 @@
-async function loginDiscord() {
+async function loginDiscord(){
 
-  await window.supabaseClient.auth.signInWithOAuth({
-    provider: "discord",
-    options: {
-      redirectTo: window.location.origin + "/Nome-na-Bio/dashboard.html"
-    }
-  });
+await window.supabaseClient.auth.signInWithOAuth({
 
+provider:"discord",
+
+options:{
+redirectTo:window.location.origin+"/Nome-na-Bio/dashboard.html"
 }
 
-checkLogin();
-
-async function checkLogin() {
-
-  const { data } = await window.supabaseClient.auth.getSession();
-
-  if (data.session) {
-    window.location.href = "dashboard.html";
-  }
+})
 
 }
