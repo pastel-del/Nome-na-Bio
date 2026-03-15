@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html>
 <head>
 
 <meta charset="UTF-8">
-<title>Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -14,13 +12,23 @@
 
 <body>
 
-<h1>Dashboard</h1>
+<div class="dashboard">
 
-<div class="card">
+<h1>Editor de Perfil</h1>
+
+<div class="editor">
+
+<div class="form">
 
 <input id="display_name" placeholder="Nome">
 
 <textarea id="bio_text" placeholder="Sua bio"></textarea>
+
+<input id="avatar" type="file">
+
+<input id="banner" type="file">
+
+<input id="music" placeholder="Link da música">
 
 <input id="instagram" placeholder="Instagram">
 
@@ -31,6 +39,24 @@
 <input id="youtube" placeholder="YouTube">
 
 <button onclick="saveProfile()">Salvar</button>
+
+</div>
+
+<div class="preview">
+
+<div class="banner" id="preview_banner"></div>
+
+<img id="preview_avatar">
+
+<h2 id="preview_name">Seu nome</h2>
+
+<p id="preview_bio">Sua bio</p>
+
+<div id="preview_links"></div>
+
+</div>
+
+</div>
 
 </div>
 
