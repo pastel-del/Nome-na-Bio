@@ -1,28 +1,22 @@
-async function loginDiscord(){
+async function loginDiscord() {
 
-await window.supabaseClient.auth.signInWithOAuth({
-
-provider:"discord",
-
-options:{
-redirectTo: window.location.origin + "/Nome-na-Bio/dashboard.html"
-}
-
-})
+  await window.supabaseClient.auth.signInWithOAuth({
+    provider: "discord",
+    options: {
+      redirectTo: window.location.origin + "/Nome-na-Bio/dashboard.html"
+    }
+  });
 
 }
 
-checkLogin()
+checkLogin();
 
-async function checkLogin(){
+async function checkLogin() {
 
-const {data} =
-await window.supabaseClient.auth.getSession()
+  const { data } = await window.supabaseClient.auth.getSession();
 
-if(data.session){
-
-location.href="dashboard.html"
-
-}
+  if (data.session) {
+    window.location.href = "dashboard.html";
+  }
 
 }
