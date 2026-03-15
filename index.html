@@ -9,78 +9,73 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
-        :root { --accent: #b026ff; --bg: #050505; --card-bg: rgba(15, 15, 15, 0.6); }
+        :root { --accent: #b026ff; --bg: #050505; --card-bg: rgba(15, 15, 15, 0.7); --success: #00ffcc; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
 
         /* FUNDO DINÂMICO */
         #bg-video { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; display: none; }
-        .overlay { position: fixed; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%); z-index: -1; backdrop-filter: blur(5px); }
+        .overlay { position: fixed; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.9) 100%); z-index: -1; backdrop-filter: blur(8px); }
 
         /* TELA DE ENTRADA */
         #enter-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.8s ease; }
-        #enter-screen h1 { font-size: 1rem; letter-spacing: 8px; font-weight: 300; color: #fff; animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        #enter-screen h1 { font-size: 0.9rem; letter-spacing: 10px; font-weight: 300; color: #fff; animation: blink 2.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
 
-        /* CONTAINER PRINCIPAL */
-        .wrapper { width: 100%; max-width: 440px; padding: 25px; z-index: 10; animation: fadeIn 1s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* CONTAINER */
+        .wrapper { width: 100%; max-width: 440px; padding: 25px; z-index: 10; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { 
-            background: var(--card-bg); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 35px; padding: 40px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            background: var(--card-bg); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 40px; padding: 40px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
 
-        /* PERFIL PÚBLICO */
-        .pfp-view { width: 120px; height: 120px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); margin-bottom: 20px; object-fit: cover; transition: 0.5s; }
-        .pfp-view:hover { transform: scale(1.05); border-color: var(--accent); }
-        
-        .bio-title { font-size: 2rem; font-weight: 800; margin-bottom: 5px; letter-spacing: -1px; }
-
-        /* STATUS DISCORD */
-        .discord-status-card { 
-            background: rgba(0,0,0,0.4); border-radius: 20px; padding: 15px; margin-bottom: 25px; 
-            display: flex; align-items: center; gap: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.05);
+        /* STATUS DE MÍDIA NO PAINEL */
+        .media-indicator {
+            display: flex; align-items: center; gap: 8px; font-size: 0.6rem; font-weight: 800;
+            padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.3); width: fit-content; margin-bottom: 8px;
         }
-        .dc-img-cont { width: 50px; height: 50px; position: relative; }
-        .dc-img-cont img { width: 100%; height: 100%; border-radius: 12px; }
-        .status-dot { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #111; }
-        .online { background: #23a559; box-shadow: 0 0 10px #23a559; }
-        .dnd { background: #f23f43; }
-        
-        /* BOTÕES DE LINKS */
-        .link-item { 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 18px; color: #fff; text-decoration: none; font-weight: 600; 
-            margin-bottom: 12px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .link-item:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); transform: scale(1.02); }
-        .link-item i { font-size: 1.2rem; width: 20px; }
+        .status-tag { width: 6px; height: 6px; border-radius: 50%; }
+        .status-on { background: var(--success); box-shadow: 0 0 8px var(--success); color: var(--success); }
+        .status-off { background: #ff4b4b; color: #ff4b4b; }
 
         /* ADMIN PANEL */
-        .admin-header { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; color: var(--accent); }
-        .field { margin-bottom: 18px; text-align: left; }
-        label { font-size: 0.65rem; font-weight: 800; color: #555; text-transform: uppercase; margin-left: 5px; display: block; margin-bottom: 6px; }
+        .admin-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; color: var(--accent); font-size: 1.1rem; }
+        .field { margin-bottom: 20px; text-align: left; }
+        label { font-size: 0.7rem; font-weight: 700; color: #777; text-transform: uppercase; margin-left: 5px; display: block; margin-bottom: 8px; }
         
         input, textarea { 
-            width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid #222; 
-            border-radius: 15px; color: #fff; outline: none; transition: 0.3s;
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.4); border: 1px solid #222; 
+            border-radius: 18px; color: #fff; outline: none; transition: 0.3s; font-size: 0.9rem;
         }
-        input:focus { border-color: var(--accent); background: rgba(0,0,0,0.5); }
+        input:focus { border-color: var(--accent); }
 
-        .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .btn-upload { 
-            background: #111; border: 1px solid #222; padding: 12px; border-radius: 12px; 
-            color: #888; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-align: center;
+        .upload-area { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; border: 1px dashed #333; border-radius: 20px; background: rgba(255,255,255,0.02);
+            cursor: pointer; transition: 0.3s; margin-top: 5px;
         }
+        .upload-area:hover { border-color: var(--accent); background: rgba(176, 38, 255, 0.05); }
+        .upload-area i { font-size: 1.2rem; margin-bottom: 8px; color: #555; }
+        .upload-area span { font-size: 0.7rem; font-weight: 600; color: #888; }
 
-        .btn-save { background: #fff; color: #000; padding: 18px; border-radius: 18px; border: none; width: 100%; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-save:hover { box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .btn-save { background: #fff; color: #000; padding: 20px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-save:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
 
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.8rem; font-weight: 600; }
-        
+        /* PERFIL PÚBLICO */
+        .pfp-view { width: 120px; height: 120px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); margin-bottom: 20px; object-fit: cover; }
+        .bio-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 25px; letter-spacing: -1px; }
+
+        .link-item { 
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; color: #fff; text-decoration: none; font-weight: 600; 
+            margin-bottom: 12px; transition: 0.3s; font-size: 0.95rem;
+        }
+        .link-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); transform: translateY(-3px); }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -91,66 +86,69 @@
     <div class="overlay"></div>
 
     <div id="enter-screen" class="hidden" onclick="enterSite()">
-        <h1>CLICK TO CONNECT</h1>
+        <h1>CLICK TO ENTER</h1>
     </div>
 
     <div class="wrapper">
         
         <div id="login-ui" class="card">
-            <h1 style="font-size: 2.2rem; margin-bottom: 30px;">Omni<span style="color:var(--accent)">Bio</span></h1>
+            <h1 style="margin-bottom: 30px;">Omni<span style="color:var(--accent)">Bio</span></h1>
             <button class="btn-save" style="background:#5865f2; color:#fff;" onclick="login()">
-                <i class="fab fa-discord"></i> LOGIN COM DISCORD
+                <i class="fab fa-discord"></i> ENTRAR COM DISCORD
             </button>
         </div>
 
-        <div id="admin-ui" class="card hidden">
-            <div class="admin-header"><i class="fas fa-sliders"></i> <strong>CUSTOMIZAR</strong></div>
+        <div id="admin-ui" class="card hidden" style="max-height: 90vh; overflow-y: auto;">
+            <div class="admin-header"><i class="fas fa-magic"></i> PAINEL DE EDIÇÃO</div>
             
-            <div class="field"><label>Nick na URL</label><input type="text" id="username"></div>
-            <div class="field"><label>Nome no Perfil</label><input type="text" id="display_name"></div>
+            <div class="field"><label>Apelido na URL</label><input type="text" id="username" placeholder="ex: luan7"></div>
+            <div class="field"><label>Nome no Perfil</label><input type="text" id="display_name" placeholder="Seu nome"></div>
 
-            <div class="toggle-row">
-                <span>Status do Discord</span>
-                <input type="checkbox" id="toggle-discord" checked>
-            </div>
-
-            <div class="media-grid">
-                <div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div class="field">
                     <label>Avatar</label>
-                    <div class="btn-upload" onclick="document.getElementById('pfp-input').click()">UPLOAD</div>
-                    <input type="file" id="pfp-input" class="hidden" onchange="this.previousElementSibling.innerText='OK!'">
+                    <div id="stat-pfp" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
+                    <div class="upload-area" onclick="document.getElementById('pfp-input').click()">
+                        <i class="fas fa-user-circle"></i><span>MUDAR</span>
+                    </div>
+                    <input type="file" id="pfp-input" class="hidden">
                 </div>
-                <div>
+                <div class="field">
                     <label>Fundo</label>
-                    <div class="btn-upload" onclick="document.getElementById('bg-input').click()">UPLOAD</div>
-                    <input type="file" id="bg-input" class="hidden" onchange="this.previousElementSibling.innerText='OK!'">
+                    <div id="stat-bg" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
+                    <div class="upload-area" onclick="document.getElementById('bg-input').click()">
+                        <i class="fas fa-image"></i><span>MUDAR</span>
+                    </div>
+                    <input type="file" id="bg-input" class="hidden">
                 </div>
             </div>
 
             <div class="field">
-                <label>Música</label>
-                <div class="btn-upload" onclick="document.getElementById('audio-input').click()">UPLOAD MP3</div>
-                <input type="file" id="audio-input" class="hidden" onchange="this.previousElementSibling.innerText='OK!'">
+                <label>Música de Fundo</label>
+                <div id="stat-audio" class="media-indicator"><div class="status-tag status-off"></div> NENHUM</div>
+                <div class="upload-area" onclick="document.getElementById('audio-input').click()">
+                    <i class="fas fa-music"></i><span>ESCOLHER MP3</span>
+                </div>
+                <input type="file" id="audio-input" class="hidden">
             </div>
 
             <div class="field"><label>Links (Nome,URL|Nome,URL)</label><textarea id="links" rows="2"></textarea></div>
             
-            <button class="btn-save" onclick="saveBio()" id="save-btn">ATUALIZAR PERFIL</button>
-            <div id="link-preview" style="margin-top:20px; font-size:0.7rem;"></div>
+            <button class="btn-save" onclick="saveBio()" id="save-btn">SALVAR TUDO</button>
         </div>
 
         <div id="bio-view" class="card hidden">
             <img id="bio-pfp" class="pfp-view" src="">
             <h1 id="bio-name" class="bio-title"></h1>
             
-            <div id="discord-presence" class="discord-status-card hidden">
-                <div class="dc-img-cont">
-                    <img id="dc-pfp" src="">
-                    <div id="dc-status" class="status-dot offline"></div>
+            <div id="discord-presence" class="hidden" style="background: rgba(0,0,0,0.4); border-radius: 25px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="position: relative; width: 50px; height: 50px;">
+                    <img id="dc-pfp" style="width: 100%; height: 100%; border-radius: 15px;">
+                    <div id="dc-status" style="position: absolute; bottom: -3px; right: -3px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #111;"></div>
                 </div>
                 <div>
-                    <h4 id="dc-user" style="font-size:0.85rem"></h4>
-                    <p id="dc-activity" style="font-size:0.7rem; color:#888"></p>
+                    <h4 id="dc-user" style="font-size:0.85rem; font-weight: 800;"></h4>
+                    <p id="dc-activity" style="font-size:0.7rem; color:#aaa; font-weight: 600;"></p>
                 </div>
             </div>
 
@@ -182,60 +180,65 @@
 
         async function showAdmin(user) {
             document.getElementById('login-ui').classList.add('hidden');
-            const admin = document.getElementById('admin-ui');
-            admin.classList.remove('hidden');
+            document.getElementById('admin-ui').classList.remove('hidden');
 
             const { data } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
             if (data) {
                 document.getElementById('username').value = data.username || "";
                 document.getElementById('display_name').value = data.display_name || "";
                 document.getElementById('links').value = data.links || "";
-                document.getElementById('toggle-discord').checked = data.show_discord !== false;
                 
-                const final = `${window.location.origin}${window.location.pathname}?u=${data.username}`;
-                document.getElementById('link-preview').innerHTML = `Seu link: <a href="${final}" style="color:var(--accent); text-decoration:none">${final}</a>`;
+                // ATUALIZA STATUS DAS MÍDIAS
+                updateMediaStatus('stat-pfp', data.pfp_url);
+                updateMediaStatus('stat-bg', data.bg_url);
+                updateMediaStatus('stat-audio', data.audio_url);
+            }
+        }
+
+        function updateMediaStatus(id, url) {
+            const el = document.getElementById(id);
+            if(url) {
+                el.innerHTML = `<div class="status-tag status-on"></div> CONECTADO`;
+                el.classList.add('status-on');
+            } else {
+                el.innerHTML = `<div class="status-tag status-off"></div> NENHUM`;
             }
         }
 
         async function saveBio() {
             const user = (await _supabase.auth.getUser()).data.user;
             const btn = document.getElementById('save-btn');
-            btn.innerText = "UPANDO...";
+            btn.innerText = "UPANDO ARQUIVOS...";
 
             const { data: current } = await _supabase.from('bios').select('*').eq('user_id', user.id).maybeSingle();
-            
-            let pfpUrl = current?.pfp_url, bgUrl = current?.bg_url, audioUrl = current?.audio_url;
+            let pfp = current?.pfp_url, bg = current?.bg_url, audio = current?.audio_url;
 
-            const up = async (id, folder) => {
-                const file = document.getElementById(id).files[0];
-                if(!file) return null;
-                const path = `${folder}/${user.id}`;
-                await _supabase.storage.from('assets').upload(path, file, {upsert: true});
-                return _supabase.storage.from('assets').getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
+            const up = async (id, path) => {
+                const f = document.getElementById(id).files[0];
+                if(!f) return null;
+                const fullPath = `${path}/${user.id}`;
+                await _supabase.storage.from('assets').upload(fullPath, f, {upsert: true});
+                return _supabase.storage.from('assets').getPublicUrl(fullPath).data.publicUrl + "?v=" + Date.now();
             };
 
-            const newPfp = await up('pfp-input', 'pfp'); if(newPfp) pfpUrl = newPfp;
-            const newBg = await up('bg-input', 'bg'); if(newBg) bgUrl = newBg;
-            const newAud = await up('audio-input', 'audio'); if(newAud) audioUrl = newAud;
+            const nPfp = await up('pfp-input', 'pfp'); if(nPfp) pfp = nPfp;
+            const nBg = await up('bg-input', 'bg'); if(nPfp) bg = nBg;
+            const nAud = await up('audio-input', 'audio'); if(nAud) audio = nAud;
 
             await _supabase.from('bios').upsert({
-                user_id: user.id,
-                username: document.getElementById('username').value.trim().toLowerCase(),
+                user_id: user.id, username: document.getElementById('username').value,
                 display_name: document.getElementById('display_name').value,
-                discord_id: userDiscordId,
-                show_discord: document.getElementById('toggle-discord').checked,
-                links: document.getElementById('links').value,
-                pfp_url: pfpUrl, bg_url: bgUrl, audio_url: audioUrl
+                discord_id: userDiscordId, links: document.getElementById('links').value,
+                pfp_url: pfp, bg_url: bg, audio_url: audio, show_discord: true
             });
 
-            btn.innerText = "SALVO!";
+            btn.innerText = "SUCESSO!";
             setTimeout(() => location.reload(), 1000);
         }
 
         let bioData = null;
         async function loadBioData(nick) {
             const { data } = await _supabase.from('bios').select('*').eq('username', nick).maybeSingle();
-            if(!data) return;
             bioData = data;
         }
 
@@ -251,56 +254,49 @@
                     const v = document.getElementById('bg-video'); v.src = data.bg_url; v.style.display = 'block'; v.play();
                 } else document.body.style.background = `url(${data.bg_url}) center/cover no-repeat fixed`;
             }
-
             if(data.audio_url) {
-                const a = document.getElementById('bg-audio'); a.src = data.audio_url; a.volume = 0.4; a.play();
+                const a = document.getElementById('bg-audio'); a.src = data.audio_url; a.volume = 0.3; a.play();
             }
 
             document.getElementById('bio-pfp').src = data.pfp_url;
             document.getElementById('bio-name').innerText = data.display_name;
 
-            const container = document.getElementById('bio-links-container');
+            const cont = document.getElementById('bio-links-container');
             data.links.split('|').forEach(l => {
-                const [name, url] = l.split(',');
-                if(name && url) {
-                    const a = document.createElement('a');
-                    a.className = 'link-item'; a.href = url; a.target = "_blank";
-                    
-                    // Ícone Automático
-                    let icon = '<i class="fas fa-link"></i> ';
-                    const lowUrl = url.toLowerCase();
-                    if(lowUrl.includes('discord')) icon = '<i class="fab fa-discord"></i> ';
-                    else if(lowUrl.includes('instagram')) icon = '<i class="fab fa-instagram"></i> ';
-                    else if(lowUrl.includes('steam')) icon = '<i class="fab fa-steam"></i> ';
-                    else if(lowUrl.includes('youtube')) icon = '<i class="fab fa-youtube"></i> ';
-                    else if(lowUrl.includes('github')) icon = '<i class="fab fa-github"></i> ';
-
-                    a.innerHTML = `${icon} ${name}`;
-                    container.appendChild(a);
+                const [n, u] = l.split(',');
+                if(n && u) {
+                    const a = document.createElement('a'); a.className = 'link-item'; a.href = u; a.target = "_blank";
+                    let icon = '<i class="fas fa-link"></i>';
+                    if(u.includes('discord')) icon = '<i class="fab fa-discord"></i>';
+                    else if(u.includes('instagram')) icon = '<i class="fab fa-instagram"></i>';
+                    else if(u.includes('steam')) icon = '<i class="fab fa-steam"></i>';
+                    a.innerHTML = `${icon} ${n}`;
+                    cont.appendChild(a);
                 }
             });
 
-            if(data.show_discord && data.discord_id) {
+            if(data.discord_id) {
                 document.getElementById('discord-presence').classList.remove('hidden');
-                updateDiscord(data.discord_id);
-                setInterval(() => updateDiscord(data.discord_id), 10000);
+                updateDC(data.discord_id);
+                setInterval(() => updateDC(data.discord_id), 10000);
             }
         }
 
-        async function updateDiscord(id) {
-            const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
-            const { data } = await res.json();
+        async function updateDC(id) {
+            const r = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+            const { data } = await r.json();
             if(!data) return;
             document.getElementById('dc-user').innerText = data.discord_user.display_name || data.discord_user.username;
             document.getElementById('dc-pfp').src = `https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png`;
-            document.getElementById('dc-status').className = `status-dot ${data.discord_status}`;
+            const dot = document.getElementById('dc-status');
+            dot.style.background = data.discord_status === 'online' ? '#23a559' : (data.discord_status === 'dnd' ? '#f23f43' : '#80848e');
             
-            let activity = "Online";
+            let act = "Online";
             if(data.activities && data.activities.length > 0) {
-                const act = data.activities.find(a => a.type === 0) || data.activities[0];
-                activity = act.name === "Spotify" ? `Ouvindo Spotify` : `Jogando ${act.name}`;
+                const game = data.activities.find(x => x.type === 0);
+                act = game ? `Jogando ${game.name}` : (data.listening_to_spotify ? "Ouvindo Spotify" : "Online");
             }
-            document.getElementById('dc-activity').innerText = activity;
+            document.getElementById('dc-activity').innerText = act;
         }
     </script>
 </body>
